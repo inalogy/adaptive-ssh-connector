@@ -1,66 +1,83 @@
 package com.inalogy.midpoint.connectors.ssh;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.ParseException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.entity.ContentType;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.identityconnectors.common.logging.Log;
-import org.identityconnectors.common.security.GuardedString;
-import org.identityconnectors.framework.common.exceptions.AlreadyExistsException;
-import org.identityconnectors.framework.common.exceptions.ConnectorException;
-import org.identityconnectors.framework.common.exceptions.ConnectorIOException;
-import org.identityconnectors.framework.common.exceptions.UnknownUidException;
-import org.identityconnectors.framework.common.objects.*;
+import org.identityconnectors.framework.common.objects.Attribute;
+import org.identityconnectors.framework.common.objects.AttributeDelta;
+import org.identityconnectors.framework.common.objects.ObjectClass;
+import org.identityconnectors.framework.common.objects.OperationOptions;
+import org.identityconnectors.framework.common.objects.ResultsHandler;
+import org.identityconnectors.framework.common.objects.Schema;
+import org.identityconnectors.framework.common.objects.Uid;
+import org.identityconnectors.framework.common.objects.filter.Filter;
+import org.identityconnectors.framework.common.objects.filter.FilterTranslator;
 import org.identityconnectors.framework.spi.Configuration;
+import org.identityconnectors.framework.spi.Connector;
 import org.identityconnectors.framework.spi.ConnectorClass;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.identityconnectors.framework.spi.PoolableConnector;
+import org.identityconnectors.framework.spi.operations.CreateOp;
+import org.identityconnectors.framework.spi.operations.DeleteOp;
+import org.identityconnectors.framework.spi.operations.SchemaOp;
+import org.identityconnectors.framework.spi.operations.SearchOp;
+import org.identityconnectors.framework.spi.operations.TestOp;
+import org.identityconnectors.framework.spi.operations.UpdateDeltaOp;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import java.util.Set;
 
-@ConnectorClass(displayNameKey = "shh.connector.display", configurationClass = SshConnectorConfiguration.class)
-public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnector {
+@ConnectorClass(displayNameKey = "shh.connector.display", configurationClass = SshConfiguration.class)
+public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnector implements Connector,
+        PoolableConnector,
+        SchemaOp,
+        TestOp,
+        SearchOp<Filter>,
+        CreateOp,
+        UpdateDeltaOp,
+        DeleteOp {
+
     private static final Log LOG = Log.getLog(SshConnector.class);
 
     @Override
     public void init(Configuration configuration) {
-        // TODO
+
+    }
+
+    @Override
+    public void dispose() {
+
     }
 
     @Override
     public void test() {
-        // TODO
+
     }
 
     @Override
     public Schema schema() {
-        SchemaBuilder schemaBuilder = new SchemaBuilder(SshConnector.class);
-
-        // TODO
-
-        return schemaBuilder.build();
+        return null;
     }
 
     @Override
-    public void executeQuery() {
-        // TODO
+    public FilterTranslator<Filter> createFilterTranslator(ObjectClass objectClass, OperationOptions options) {
+        return null;
+    }
+
+    @Override
+    public void executeQuery(ObjectClass objectClass, Filter query, ResultsHandler handler, OperationOptions options) {
+
+    }
+
+    @Override
+    public Uid create(ObjectClass objectClass, Set<Attribute> createAttributes, OperationOptions options) {
+        return null;
+    }
+
+    @Override
+    public Set<AttributeDelta> updateDelta(ObjectClass objclass, Uid uid, Set<AttributeDelta> modifications, OperationOptions options) {
+        return null;
+    }
+
+    @Override
+    public void delete(ObjectClass objectClass, Uid uid, OperationOptions options) {
+
     }
 }
 
