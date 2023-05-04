@@ -23,7 +23,7 @@ import org.identityconnectors.framework.spi.operations.UpdateDeltaOp;
 
 import java.util.Set;
 
-@ConnectorClass(displayNameKey = "shh.connector.display", configurationClass = SshConfiguration.class)
+@ConnectorClass(displayNameKey = "ssh.connector.display", configurationClass = SshConfiguration.class)
 public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnector implements Connector,
         PoolableConnector,
         SchemaOp,
@@ -71,7 +71,7 @@ public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnecto
     }
 
     @Override
-    public Set<AttributeDelta> updateDelta(ObjectClass objclass, Uid uid, Set<AttributeDelta> modifications, OperationOptions options) {
+    public Set<AttributeDelta> updateDelta(ObjectClass objectClass, Uid uid, Set<AttributeDelta> modifications, OperationOptions options) {
         return null;
     }
 
