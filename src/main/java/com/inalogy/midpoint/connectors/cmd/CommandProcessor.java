@@ -21,7 +21,11 @@ import org.identityconnectors.framework.common.exceptions.ConfigurationException
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CommandProcessor extends com.evolveum.polygon.connector.ssh.CommandProcessor {
 
@@ -59,9 +63,9 @@ public class CommandProcessor extends com.evolveum.polygon.connector.ssh.Command
     private String buildCommand(String scriptPath) {
         switch (configuration.getShellType()) {
             case SshConfiguration.TYPE_SHELL:
-                return "sh ./" + scriptPath;
+                return "sh " + scriptPath;
             case SshConfiguration.TYPE_POWERSHELL:
-                return ".\\" + scriptPath;
+                return scriptPath;
             default:
                 throw new ConfigurationException("Unknown value of 'Shell Type': " + configuration.getShellType());
         }
@@ -72,13 +76,13 @@ public class CommandProcessor extends com.evolveum.polygon.connector.ssh.Command
         commandLineBuilder.append(command);
 
         for (Attribute attribute : attributes) {
-            Object value = attribute.getValue();
+            List<Object> values = attribute.getValue();
             boolean insertAttribute = true;
 
-            if(value == null) {
+            if(values == null) {
                 switch (configuration.getHandleNullValues()) {
                     case SshConfiguration.HANDLE_NULL_AS_EMPTY_STRING:
-                        value = "";
+                        values = Stream.of("").collect(Collectors.toList());
                         break;
                     case SshConfiguration.HANDLE_NULL_AS_GONE:
                         insertAttribute = false;
@@ -92,14 +96,18 @@ public class CommandProcessor extends com.evolveum.polygon.connector.ssh.Command
                 commandLineBuilder.append(" ");
                 commandLineBuilder.append(paramPrefix).append(attribute.getName());
                 commandLineBuilder.append(" ");
-                commandLineBuilder.append(quoteDouble(value));
+                for (Object value : values) {
+                    commandLineBuilder.append(quoteDouble(value)).append(",");
+                }
+                // delete the last "," at the end
+                commandLineBuilder.deleteCharAt(commandLineBuilder.length() - 1);
             }
         }
 
         return commandLineBuilder.toString();
     }
 
-    private String quoteDouble(Object value) {
+    private @NotNull String quoteDouble(@NotNull Object value) {
         return '"' + value.toString().replaceAll("\"", "\"\"") + '"';
     }
 }

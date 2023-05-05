@@ -1,27 +1,33 @@
 package com.inalogy.midpoint.connectors.ssh;
 
 
-import org.identityconnectors.common.logging.Log;
+import com.inalogy.midpoint.connectors.cmd.CommandProcessor;
+import com.inalogy.midpoint.connectors.cmd.SessionProcessor;
+
+import org.identityconnectors.framework.common.objects.Attribute;
 import org.testng.annotations.Test;
 
+import java.util.Set;
+
 public class TestClient {
+    private TestProcessor testProcessor;
 
-    private static final Log LOG = Log.getLog(TestClient.class);
-    private static SshConfiguration conf;
-    private static SshConnector conn;
-
-    @Test
-    public void testConn() throws Exception {
-
+    private void init() {
+        testProcessor = new TestProcessor();
     }
 
     @Test
-    public void testSchema() throws Exception {
+    public void testExec() {
+        init();
+        CommandProcessor cmd = new CommandProcessor(testProcessor.getConfiguration());
+        SessionProcessor session = new SessionProcessor(testProcessor.getConfiguration());
 
-    }
+        Set<Attribute> attributes = AttributeProcessor.getTestAttributeSet();
 
-    @Test
-    public void testParser () throws Exception{
+        String command = cmd.process(attributes, testProcessor.getProperties().getProperty("testScriptPath"));
+        System.out.println("[testExec] INFO command: " + command);
 
+        String response = session.exec(command);
+        System.out.println("[testExec] INFO response: " + response);
     }
 }

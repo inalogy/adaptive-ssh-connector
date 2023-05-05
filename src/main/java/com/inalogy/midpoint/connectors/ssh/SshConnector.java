@@ -33,11 +33,12 @@ public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnecto
         UpdateDeltaOp,
         DeleteOp {
 
+    private SshConfiguration configuration;
     private static final Log LOG = Log.getLog(SshConnector.class);
 
     @Override
     public void init(Configuration configuration) {
-
+        this.configuration = (SshConfiguration) configuration;
     }
 
     @Override
