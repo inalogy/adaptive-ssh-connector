@@ -1,0 +1,5 @@
+{
+  "objectClass": "user",
+  "remoteScriptPath": "/home/somescript.ps2",
+  "attributes": ["userName", "userMail", "userNickname"]
+}
