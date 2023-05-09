@@ -18,25 +18,22 @@ import org.identityconnectors.framework.common.exceptions.ConnectorIOException;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-public class SessionProcessor {
+public class SessionManager {
 
     private final SshConfiguration configuration;
     private SSHClient ssh;
     private Session session = null;
     private final HostKeyVerifier hostKeyVerifier;
     private final AuthenticationManager authManager;
-    private static final Log LOG = Log.getLog(SessionProcessor.class);
+    private static final Log LOG = Log.getLog(SessionManager.class);
 
-    public SessionProcessor(SshConfiguration configuration) {
+    public SessionManager(SshConfiguration configuration) {
         this.configuration = configuration;
         this.hostKeyVerifier = new ConnectorKnownHostsVerifier().parse(this.configuration.getKnownHosts());
         this.authManager = new AuthenticationManager(this.configuration);
     }
 
     public String exec(String processedCommand) {
-
-        connect();
-
         final Session.Command cmd;
         try {
             cmd = session.exec(processedCommand);
@@ -85,12 +82,10 @@ public class SessionProcessor {
 
         LOG.info("SSH command exit status: {0}", cmd.getExitStatus());
 
-        disconnect();
-
         return output;
     }
 
-    private void connect() {
+    public void connect() {
         ssh = new SSHClient();
         ssh.addHostKeyVerifier(hostKeyVerifier);
         LOG.ok("Connecting to {0}", authManager.getConnectionDesc());
@@ -111,7 +106,7 @@ public class SessionProcessor {
         LOG.info("Connection to {0} fully established", authManager.getConnectionDesc());
     }
 
-    private void disconnect() {
+    public void disconnect() {
         if (session != null && session.isOpen()) {
             LOG.ok("Closing session to {0}", authManager.getConnectionDesc());
             try {
