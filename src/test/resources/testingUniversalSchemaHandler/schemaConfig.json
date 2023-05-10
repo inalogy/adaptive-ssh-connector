@@ -1,0 +1,21 @@
+{
+  "objects":[
+    {
+      "objectClass": "user",
+      "remoteScriptPath": "/home/somescript.ps2",
+      "attributes": [
+        "userName",
+        "userMail",
+        "userNickname"
+      ]
+    },
+    {
+      "objectClass":  "group",
+      "remoteScriptPath":  "home/somegroupScript.ps3",
+      "attributes":  [
+        "groupName",
+        "members",
+        "staff"
+    ]}
+  ]
+}
