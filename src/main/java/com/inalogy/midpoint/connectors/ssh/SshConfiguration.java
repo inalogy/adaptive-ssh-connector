@@ -8,6 +8,8 @@ public class SshConfiguration extends com.evolveum.polygon.connector.ssh.SshConf
     public static final String TYPE_SHELL = "shell";
     private String shellType = TYPE_SHELL;
 
+    public String schemaFilePath;
+
     public SshConfiguration() {
         super();
     }
@@ -25,4 +27,9 @@ public class SshConfiguration extends com.evolveum.polygon.connector.ssh.SshConf
     public void setShellType(String shellType) {
         this.shellType = shellType;
     }
+    @ConfigurationProperty(
+            displayMessageKey = "schema.file.path"
+    )
+    public void setSchemaFilePath(String schemaFilePath){this.schemaFilePath = schemaFilePath;}
+    public String getSchemaFilePath() {return schemaFilePath;}
 }
