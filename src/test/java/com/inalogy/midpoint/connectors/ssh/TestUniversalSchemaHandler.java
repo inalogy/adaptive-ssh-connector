@@ -20,7 +20,7 @@ public class TestUniversalSchemaHandler {
         assert (ush.getSchemaTypes().size() == 2);
         for (SchemaType schemaType: ush.getSchemaTypes()){
             if (schemaType.getName().equals("user")){
-                assert schemaType.getScriptPath().equals("\"/home/somescript.ps2\"");
+                assert schemaType.getScriptPath().equals("/home/somescript.ps2");
                 assert (schemaType.getAttributes().size() == 3);
             }
         }
