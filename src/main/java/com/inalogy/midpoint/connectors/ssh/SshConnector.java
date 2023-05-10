@@ -1,13 +1,10 @@
 package com.inalogy.midpoint.connectors.ssh;
 
+import com.inalogy.midpoint.connectors.schema.SchemaType;
+import com.inalogy.midpoint.connectors.schema.UniversalSchemaHandler;
+import com.inalogy.midpoint.connectors.utils.FileHashCalculator;
 import org.identityconnectors.common.logging.Log;
-import org.identityconnectors.framework.common.objects.Attribute;
-import org.identityconnectors.framework.common.objects.AttributeDelta;
-import org.identityconnectors.framework.common.objects.ObjectClass;
-import org.identityconnectors.framework.common.objects.OperationOptions;
-import org.identityconnectors.framework.common.objects.ResultsHandler;
-import org.identityconnectors.framework.common.objects.Schema;
-import org.identityconnectors.framework.common.objects.Uid;
+import org.identityconnectors.framework.common.objects.*;
 import org.identityconnectors.framework.common.objects.filter.Filter;
 import org.identityconnectors.framework.common.objects.filter.FilterTranslator;
 import org.identityconnectors.framework.spi.Configuration;
@@ -34,6 +31,7 @@ public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnecto
         DeleteOp {
 
     private SshConfiguration configuration;
+    private static UniversalSchemaHandler schema = null;
     private static final Log LOG = Log.getLog(SshConnector.class);
 
     @Override
@@ -43,6 +41,7 @@ public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnecto
 
     @Override
     public void dispose() {
+        schema = null;
 
     }
 
@@ -53,6 +52,24 @@ public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnecto
 
     @Override
     public Schema schema() {
+        SchemaBuilder schemaBuilder = new SchemaBuilder(SshConnector.class);
+        String currentFileSha256 = FileHashCalculator.calculateSHA256(this.configuration.getSchemaFilePath());
+
+        if (schema == null){
+            schema = new UniversalSchemaHandler(this.configuration.getSchemaFilePath());
+            LOG.info("Creating universalSchemaHandler schemaConfigFilePath: {}", this.configuration.getSchemaFilePath());
+
+        }
+        else if (schema != null && currentFileSha256 != null && !schema.getFileSha256().equals(currentFileSha256)){
+            // if sha256 of schemaFile is unchanged we don't need to fetch it again
+            LOG.info("Change in schemaConfigFile detected");
+            schema = new UniversalSchemaHandler(this.configuration.getSchemaFilePath());
+        }
+        for (SchemaType schemaType: schema.getSchemaTypes()){
+            //TODO build obj class
+//            buildObjectClass(schemaBuilder, schemaType);
+        }
+//        return schemaBuilder.build();
         return null;
     }
 
