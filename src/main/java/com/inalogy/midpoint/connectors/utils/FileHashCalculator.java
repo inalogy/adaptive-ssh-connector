@@ -11,6 +11,8 @@ import java.nio.file.Paths;
 import java.util.Base64;
 
 public class FileHashCalculator {
+    /** Calculating hash of a file to save performance compared to parsing it as json
+     */
     public static String calculateSHA256(String filePath)  {
         if (filePath == null || filePath.isEmpty()){
             return null;
