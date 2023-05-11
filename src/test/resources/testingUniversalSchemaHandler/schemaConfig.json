@@ -1,21 +1,61 @@
 {
   "objects":[
     {
+      "name": "name",
+      "id": "123",
       "objectClass": "user",
-      "remoteScriptPath": "/home/somescript.ps2",
+      "createScript": "createScript.ps2",
+      "updateScript": "updateScript.ps3",
+      "deleteScript": "deleteScript.ps4",
+      "searchScript": "searchScript.ps5",
       "attributes": [
-        "userName",
-        "userMail",
-        "userNickname"
+        {
+          "userName": {
+            "required": true,
+            "creatable":true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false
+          }
+        },
+        {
+          "userMail": {
+            "required": true,
+            "creatable": true,
+            "updateable": false,
+            "dataType": "String",
+            "multivalued": false
+          }
+        }
       ]
     },
+
     {
+      "name": "name",
+      "id": "123",
       "objectClass":  "group",
-      "remoteScriptPath":  "home/somegroupScript.ps3",
+      "createScript": "createScript.ps2",
+      "updateScript": "updateScript.ps3",
+      "deleteScript": "deleteScript.ps4",
+      "searchScript": "searchScript.ps5",
       "attributes":  [
-        "groupName",
-        "members",
-        "staff"
-    ]}
+        {
+          "groupName":{
+            "required": true,
+            "creatable": true,
+            "updateable": true,
+            "multivalued": false,
+            "dataType": "String"
+          },
+          "members": {
+            "required": true,
+            "creatable": false,
+            "updateable": true,
+            "multivalued": true,
+            "dataType": "String"
+          }
+        }
+      ]
+    }
   ]
 }
