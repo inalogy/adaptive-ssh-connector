@@ -38,6 +38,8 @@ public class TestUniversalSchemaHandler {
         Assert.assertNotNull(schema);
         Assert.assertFalse(schema.getObjectClassInfo().isEmpty());
 
+        System.out.println("Schema: " + schema);
+
         for (ObjectClassInfo objectClassInfo : schema.getObjectClassInfo()) {
             Assert.assertFalse(objectClassInfo.getAttributeInfo().isEmpty());
 
