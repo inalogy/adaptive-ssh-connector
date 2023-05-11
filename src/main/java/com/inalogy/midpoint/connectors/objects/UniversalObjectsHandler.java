@@ -15,13 +15,16 @@ public class UniversalObjectsHandler {
         ObjectClassInfoBuilder objClassBuilder = new ObjectClassInfoBuilder();
         objClassBuilder.setType(schemaType.getObjectClass()); //TODO setting type by objectClass from schema?
         // Add attributes
-        for (SchemaTypeAttribute attribute : schemaType.getAttributes()) {
-            AttributeInfoBuilder attrInfoBuilder = new AttributeInfoBuilder(attribute.getAttributeName(), attribute.getDataType());
-            attrInfoBuilder.setRequired(attribute.isRequired());
-            attrInfoBuilder.setCreateable(attribute.isCreatable());
-            attrInfoBuilder.setUpdateable(attribute.isUpdateable());
-            attrInfoBuilder.setMultiValued(attribute.isMultivalued());
-            objClassBuilder.addAttributeInfo(attrInfoBuilder.build());
+        if (schemaType.getAttributes() != null || schemaType.getAttributes().isEmpty()) {
+            //TODO check
+            for (SchemaTypeAttribute attribute : schemaType.getAttributes()) {
+                AttributeInfoBuilder attrInfoBuilder = new AttributeInfoBuilder(attribute.getAttributeName(), attribute.getDataType());
+                attrInfoBuilder.setRequired(attribute.isRequired());
+                attrInfoBuilder.setCreateable(attribute.isCreatable());
+                attrInfoBuilder.setUpdateable(attribute.isUpdateable());
+                attrInfoBuilder.setMultiValued(attribute.isMultivalued());
+                objClassBuilder.addAttributeInfo(attrInfoBuilder.build());
+            }
         }
         schemaBuilder.defineObjectClass(objClassBuilder.build());
     }
