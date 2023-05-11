@@ -15,7 +15,7 @@ public class UniversalObjectsHandler {
         ObjectClassInfoBuilder objClassBuilder = new ObjectClassInfoBuilder();
         objClassBuilder.setType(schemaType.getObjectClass()); //TODO setting type by objectClass from schema?
         // Add attributes
-        if (schemaType.getAttributes() != null || schemaType.getAttributes().isEmpty()) {
+        if (schemaType.getAttributes() != null || !schemaType.getAttributes().isEmpty()) {
             //TODO check
             for (SchemaTypeAttribute attribute : schemaType.getAttributes()) {
                 AttributeInfoBuilder attrInfoBuilder = new AttributeInfoBuilder(attribute.getAttributeName(), attribute.getDataType());
