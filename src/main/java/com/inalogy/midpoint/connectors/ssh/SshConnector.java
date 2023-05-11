@@ -1,5 +1,6 @@
 package com.inalogy.midpoint.connectors.ssh;
 
+import com.inalogy.midpoint.connectors.objects.UniversalObjectsHandler;
 import com.inalogy.midpoint.connectors.schema.SchemaType;
 import com.inalogy.midpoint.connectors.schema.UniversalSchemaHandler;
 import com.inalogy.midpoint.connectors.utils.FileHashCalculator;
@@ -32,6 +33,7 @@ public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnecto
 
     private SshConfiguration configuration;
     private static UniversalSchemaHandler schema = null;
+    //Ssh Connector schema cache
     private static final Log LOG = Log.getLog(SshConnector.class);
 
     @Override
@@ -57,7 +59,7 @@ public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnecto
 
         if (schema == null){
             schema = new UniversalSchemaHandler(this.configuration.getSchemaFilePath());
-            LOG.info("Creating universalSchemaHandler schemaConfigFilePath: {}", this.configuration.getSchemaFilePath());
+//            LOG.info("Creating universalSchemaHandler schemaConfigFilePath: {}", this.configuration.getSchemaFilePath());
 
         }
         else if (schema != null && currentFileSha256 != null && !schema.getFileSha256().equals(currentFileSha256)){
@@ -65,12 +67,12 @@ public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnecto
             LOG.info("Change in schemaConfigFile detected");
             schema = new UniversalSchemaHandler(this.configuration.getSchemaFilePath());
         }
-        for (SchemaType schemaType: schema.getSchemaTypes()){
-            //TODO build obj class
-//            buildObjectClass(schemaBuilder, schemaType);
+        for (SchemaType schemaType: schema.getSchemaTypes().values()){
+//            //TODO check if ok
+            UniversalObjectsHandler.buildObjectClass(schemaBuilder, schemaType);
         }
-//        return schemaBuilder.build();
-        return null;
+        return schemaBuilder.build();
+//        return null;
     }
 
     @Override
