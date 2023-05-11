@@ -8,12 +8,10 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
-
+import java.util.*;
+/**
+ * Every SchemaType is stored inside Set <schemaTypes>
+ */
 public class UniversalSchemaHandler {
     private static final Log LOG = Log.getLog(UniversalSchemaHandler.class);
     private final String schemaFilePath;
@@ -23,9 +21,9 @@ public class UniversalSchemaHandler {
     }
 
     private final String fileSha256;
-    private final Set<SchemaType> schemaTypes = new HashSet<>();
+    private final Map<String, SchemaType> schemaTypes = new HashMap<>();
 
-    public  Set<SchemaType> getSchemaTypes() {
+    public  Map<String, SchemaType> getSchemaTypes() {
         return this.schemaTypes;
     }
 
@@ -35,7 +33,7 @@ public class UniversalSchemaHandler {
         this.loadSchemaFile();
     }
 
-    private  void loadSchemaFile() {
+    private void loadSchemaFile() {
         try {
             Map<String, Object> schemaFile = readJsonFileAsMap(this.schemaFilePath);
             JsonArray jsonArray = (JsonArray) schemaFile.get("objects");
@@ -43,24 +41,44 @@ public class UniversalSchemaHandler {
             for (int j = 0; j < jsonArray.size(); j++) {
                 // loop over all objects in json file
                 JsonObject jsonObject = jsonArray.getJsonObject(j);
-                String name = jsonObject.getString("objectClass");
-                String scriptPath = jsonObject.getString("remoteScriptPath");
-                JsonArray attributesArray = jsonObject.getJsonArray("attributes");
+                String id = jsonObject.getString("id");
+                String name = jsonObject.getString("name");
+                String objectClass = jsonObject.getString("objectClass");
+                String createScript = jsonObject.getString("createScript");
+                String updateScript = jsonObject.getString("updateScript");
+                String deleteScript = jsonObject.getString("deleteScript");
+                String searchScript = jsonObject.getString("searchScript");
 
-                ArrayList<String> attributes = new ArrayList<>();
-                for (int i = 0; i < attributesArray.size(); i++) {
-                    attributes.add(attributesArray.getString(i));
+                List<SchemaTypeAttribute> attributes = new ArrayList<>();
+                if (jsonObject.containsKey("attributes")) {
+                    //attributes are optional
+                    JsonArray attributesArray = jsonObject.getJsonArray("attributes");
+                    for (int i = 0; i < attributesArray.size(); i++) {
+                        JsonObject attributeObject = attributesArray.getJsonObject(i);
+                        for (String attrName : attributeObject.keySet()) {
+                            JsonObject attrDetails = attributeObject.getJsonObject(attrName);
+                            boolean required = attrDetails.getBoolean("required");
+                            boolean creatable = attrDetails.getBoolean("creatable");
+                            boolean updateable = attrDetails.getBoolean("updateable");
+                            boolean multivalued = attrDetails.getBoolean("multivalued");
+                            String dataType = attrDetails.getString("dataType");
+
+                            // Create an instance of class SchemaTypeAttribute based on json file
+                            SchemaTypeAttribute attributeType = new SchemaTypeAttribute(attrName, required, creatable, updateable, multivalued, dataType);
+                            attributes.add(attributeType);
+                        }
+                    }
                 }
-                // create instance of class SchemaType based on json file
-                SchemaType schemaType = new SchemaType(name, scriptPath, attributes);
-                this.schemaTypes.add(schemaType);
+
+                // Create an instance of class SchemaType based on json file
+                SchemaType schemaType = new SchemaType(id, name, objectClass, createScript, updateScript, deleteScript, searchScript, attributes);
+                this.schemaTypes.put(schemaType.getName(), schemaType);
             }
         } catch (IOException e) {
             LOG.error("An error occurred while reading SchemaFile: " + e);
             throw new RuntimeException("An error occurred when reading SchemaFile: " + e);
         }
     }
-
     public static Map<String, Object> readJsonFileAsMap(String filePath) throws IOException {
         Map<String, Object> resultMap = new HashMap<>();
         try (FileReader fileReader = new FileReader(filePath);
