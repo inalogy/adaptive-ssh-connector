@@ -14,7 +14,7 @@ public class AttributeProcessor {
 
     }
 
-    protected static Set<Attribute> getTestAttributeSet() {
+    protected static Set<Attribute> getTestAttributeSet1() {
         Set<Attribute> attributes = new HashSet<>();
 
         Attribute attr1 = AttributeBuilder.build("name", "vaclav");
@@ -22,6 +22,16 @@ public class AttributeProcessor {
 
         attributes.add(attr1);
         attributes.add(attr2);
+
+        return attributes;
+    }
+
+    protected static Set<Attribute> getTestAttributeSet2() {
+        Set<Attribute> attributes = new HashSet<>();
+
+        Attribute attr = AttributeBuilder.build("name", "vaclav");
+
+        attributes.add(attr);
 
         return attributes;
     }
