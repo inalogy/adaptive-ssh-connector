@@ -39,7 +39,10 @@ public class TestProcessor {
         configuration.setHost(properties.getProperty("host"));
         configuration.setShellType(properties.getProperty("shellType"));
         configuration.setArgumentStyle(properties.getProperty("argumentStyle"));
-        configuration.setSchemaFilePath(properties.getProperty("schemaFilePath"));
+
+        String relativeSchemaFilePath = properties.getProperty("schemaFilePath");
+        String absoluteSchemaFilePath = System.getProperty("user.dir") + "/"+ relativeSchemaFilePath;
+        configuration.setSchemaFilePath(absoluteSchemaFilePath);
     }
 
     private void initConnector() {
