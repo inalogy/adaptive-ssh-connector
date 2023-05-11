@@ -61,7 +61,7 @@
     {
       "name": "testName",
       "id": "12345",
-      "objectClass":  "group",
+      "objectClass":  "objectWithoutAttributes",
       "createScript": "createScript.ps2",
       "updateScript": "updateScript.ps3",
       "deleteScript": "deleteScript.ps4",
