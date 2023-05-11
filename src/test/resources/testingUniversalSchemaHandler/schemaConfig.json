@@ -1,8 +1,8 @@
 {
   "objects":[
     {
-      "name": "someUniqueName",
-      "id": "123",
+      "name": "emailAddress",
+      "id": "name",
       "objectClass": "user",
       "createScript": "createScript.ps2",
       "updateScript": "updateScript.ps3",
