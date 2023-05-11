@@ -2,7 +2,9 @@ package com.inalogy.midpoint.connectors.schema;
 
 import org.identityconnectors.common.logging.Log;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * each schemaType is instance of this class
@@ -11,12 +13,27 @@ public class SchemaType {
     private static final Log LOG = Log.getLog(SchemaType.class);
 
     private final String name;
-    private final String scriptPath;
-    private final List<String> attributes;
+    private final String createScript;
+    private final String updateScript;
 
-    public SchemaType(String name, String scriptPath, List<String> attributes){
+
+    private final String searchScript;
+
+    private final String deleteScript;
+
+    private final List<SchemaTypeAttribute> attributes;
+    private final String objectClass;
+    private final String id;
+
+
+    public SchemaType( String id, String name, String objectClass, String createScript, String updateScript, String searchScript, String deleteScript, List<SchemaTypeAttribute> attributes){
         this.name = name;
-        this.scriptPath = scriptPath;
+        this.id = id;
+        this.objectClass = objectClass;
+        this.createScript = createScript;
+        this.updateScript = updateScript;
+        this.searchScript = searchScript;
+        this.deleteScript = deleteScript;
         this.attributes = attributes;
 
     }
@@ -25,11 +42,33 @@ public class SchemaType {
         return name;
     }
 
-    public String getScriptPath() {
-        return scriptPath;
+    public String getCreateScript() {
+        return createScript;
     }
 
-    public List<String> getAttributes() {
+    public String getUpdateScript() {
+        return updateScript;
+    }
+
+    public String getSearchScript() {
+        return searchScript;
+    }
+
+    public String getDeleteScript() {
+        return deleteScript;
+    }
+
+    public String getObjectClass() {
+        return objectClass;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+
+    public List<SchemaTypeAttribute> getAttributes() {
         return attributes;
     }
+
 }
