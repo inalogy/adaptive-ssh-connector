@@ -10,7 +10,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 /**
- * Every SchemaType is stored inside Set <schemaTypes>
+ * Every SchemaType object is stored inside Map<String, SchemaType>
  */
 public class UniversalSchemaHandler {
     private static final Log LOG = Log.getLog(UniversalSchemaHandler.class);
@@ -41,8 +41,8 @@ public class UniversalSchemaHandler {
             for (int j = 0; j < jsonArray.size(); j++) {
                 // loop over all objects in json file
                 JsonObject jsonObject = jsonArray.getJsonObject(j);
-                String id = jsonObject.getString("id");
-                String name = jsonObject.getString("name");
+                String icfsName = jsonObject.getString("icfsName");
+                String icfsUid = jsonObject.getString("icfsUid");
                 String objectClass = jsonObject.getString("objectClass");
                 String createScript = jsonObject.getString("createScript");
                 String updateScript = jsonObject.getString("updateScript");
@@ -71,8 +71,8 @@ public class UniversalSchemaHandler {
                 }
 
                 // Create an instance of class SchemaType based on json file
-                SchemaType schemaType = new SchemaType(id, name, objectClass, createScript, updateScript, deleteScript, searchScript, attributes);
-                this.schemaTypes.put(schemaType.getName(), schemaType);
+                SchemaType schemaType = new SchemaType(icfsUid, icfsName, objectClass, createScript, updateScript, deleteScript, searchScript, attributes);
+                this.schemaTypes.put(schemaType.getObjectClass(), schemaType);
             }
         } catch (IOException e) {
             LOG.error("An error occurred while reading SchemaFile: " + e);

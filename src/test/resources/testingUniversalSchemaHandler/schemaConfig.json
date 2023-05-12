@@ -1,8 +1,8 @@
 {
   "objects":[
     {
-      "name": "emailAddress",
-      "id": "name",
+      "icfsName": "emailAddress",
+      "icfsUid": "name",
       "objectClass": "user",
       "createScript": "createScript.ps2",
       "updateScript": "updateScript.ps3",
@@ -31,8 +31,8 @@
     },
 
     {
-      "name": "someGroupName",
-      "id": "1234",
+      "icfsName": "someGroupName",
+      "icfsUid": "1234",
       "objectClass":  "group",
       "createScript": "createScript.ps2",
       "updateScript": "updateScript.ps3",
@@ -59,8 +59,8 @@
     },
 
     {
-      "name": "testName",
-      "id": "12345",
+      "icfsName": "testName",
+      "icfsUid": "12345",
       "objectClass":  "objectWithoutAttributes",
       "createScript": "createScript.ps2",
       "updateScript": "updateScript.ps3",

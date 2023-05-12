@@ -12,7 +12,7 @@ import java.util.Map;
 public class SchemaType {
     private static final Log LOG = Log.getLog(SchemaType.class);
 
-    private final String name;
+    private final String icfsName;
     private final String createScript;
     private final String updateScript;
 
@@ -23,12 +23,12 @@ public class SchemaType {
 
     private final List<SchemaTypeAttribute> attributes;
     private final String objectClass;
-    private final String id;
+    private final String icfsUid;
 
 
-    public SchemaType( String id, String name, String objectClass, String createScript, String updateScript, String searchScript, String deleteScript, List<SchemaTypeAttribute> attributes){
-        this.name = name;
-        this.id = id;
+    public SchemaType(String icfsUid, String icfsName, String objectClass, String createScript, String updateScript, String searchScript, String deleteScript, List<SchemaTypeAttribute> attributes){
+        this.icfsUid = icfsUid;
+        this.icfsName = icfsName;
         this.objectClass = objectClass;
         this.createScript = createScript;
         this.updateScript = updateScript;
@@ -38,8 +38,8 @@ public class SchemaType {
 
     }
 
-    public String getName() {
-        return name;
+    public String getIcfsName() {
+        return icfsName;
     }
 
     public String getCreateScript() {
@@ -62,8 +62,8 @@ public class SchemaType {
         return objectClass;
     }
 
-    public String getId() {
-        return id;
+    public String getIcfsUid() {
+        return icfsUid;
     }
 
 
