@@ -3,9 +3,7 @@ package com.inalogy.midpoint.connectors.objects;
 import com.inalogy.midpoint.connectors.schema.SchemaType;
 import com.inalogy.midpoint.connectors.schema.SchemaTypeAttribute;
 import org.identityconnectors.common.logging.Log;
-import org.identityconnectors.framework.common.objects.AttributeInfoBuilder;
-import org.identityconnectors.framework.common.objects.ObjectClassInfoBuilder;
-import org.identityconnectors.framework.common.objects.SchemaBuilder;
+import org.identityconnectors.framework.common.objects.*;
 
 public class UniversalObjectsHandler {
     private static final Log LOG = Log.getLog(SchemaType.class);
@@ -15,6 +13,9 @@ public class UniversalObjectsHandler {
         ObjectClassInfoBuilder objClassBuilder = new ObjectClassInfoBuilder();
         objClassBuilder.setType(schemaType.getObjectClass()); //TODO setting type by objectClass from schema?
         // Add attributes
+        String icfsName = schemaType.getIcfsName();
+        String icfsUid = schemaType.getIcfsUid();
+
         if (schemaType.getAttributes() != null || !schemaType.getAttributes().isEmpty()) {
             //TODO check
             for (SchemaTypeAttribute attribute : schemaType.getAttributes()) {
@@ -26,6 +27,24 @@ public class UniversalObjectsHandler {
                 objClassBuilder.addAttributeInfo(attrInfoBuilder.build());
             }
         }
+        if (icfsName != null) {
+            // TODO if null break?
+            AttributeInfoBuilder nameAttrBuilder = new AttributeInfoBuilder(Name.NAME, String.class);
+            nameAttrBuilder.setRequired(true);
+            nameAttrBuilder.setCreateable(true);
+            nameAttrBuilder.setUpdateable(true);
+            nameAttrBuilder.setReadable(true);
+            objClassBuilder.addAttributeInfo(nameAttrBuilder.build());
+        }
+        if (icfsUid != null) {
+            AttributeInfoBuilder uidAttrBuilder = new AttributeInfoBuilder(Uid.NAME, String.class);
+            uidAttrBuilder.setRequired(false);
+            uidAttrBuilder.setCreateable(true);
+            uidAttrBuilder.setUpdateable(false);
+            uidAttrBuilder.setReadable(true);
+            objClassBuilder.addAttributeInfo(uidAttrBuilder.build());
+        }
         schemaBuilder.defineObjectClass(objClassBuilder.build());
     }
+
 }
