@@ -5,6 +5,7 @@ import com.inalogy.midpoint.connectors.schema.UniversalSchemaHandler;
 import org.identityconnectors.framework.common.objects.AttributeInfo;
 import org.identityconnectors.framework.common.objects.ObjectClassInfo;
 import org.identityconnectors.framework.common.objects.Schema;
+import com.inalogy.midpoint.connectors.ssh.SshConnector;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -23,16 +24,17 @@ public class TestUniversalSchemaHandler {
     @Test
     public void testUniversalSchemaHandler() {
         init();
-        String relativeSchemaFilePath = testProcessor.getConfiguration().getSchemaFilePath();
-        String absoluteSchemaFilePath = System.getProperty("user.dir") + "/"+ relativeSchemaFilePath;
-        UniversalSchemaHandler ush = new UniversalSchemaHandler(absoluteSchemaFilePath);
+        String schemaFilePath = testProcessor.getConfiguration().getSchemaFilePath();
+//        String absoluteSchemaFilePath = System.getProperty("user.dir") + "/"+ relativeSchemaFilePath;
+        UniversalSchemaHandler ush = new UniversalSchemaHandler(schemaFilePath);
         Map<String, SchemaType> obj = ush.getSchemaTypes();
-        SchemaType  schemaTypeUser = obj.get("someUniqueName");
+        SchemaType  schemaTypeUser = obj.get("user");
         assert schemaTypeUser.getCreateScript().equals("createScript.ps2");
         System.out.println(schemaTypeUser.getAttributes().get(0).getDataType());
     }
     @Test
     public void testSchema() {
+
         init();
         Schema schema = testProcessor.getConnector().schema();
         Assert.assertNotNull(schema);
@@ -50,5 +52,13 @@ public class TestUniversalSchemaHandler {
             }
         }
     }
+
+@Test
+    public void testTest(){
+        init();
+        SshConnector connector = testProcessor.getConnector();
+
+        connector.test();
+}
 
 }
