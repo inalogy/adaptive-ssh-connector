@@ -1,9 +1,13 @@
 package com.inalogy.midpoint.connectors.ssh;
 
+import com.inalogy.midpoint.connectors.cmd.CommandProcessor;
+import com.inalogy.midpoint.connectors.cmd.SessionManager;
+//import com.inalogy.midpoint.connectors.objects.UniversalFilterTranslator;
 import com.inalogy.midpoint.connectors.objects.UniversalObjectsHandler;
 import com.inalogy.midpoint.connectors.schema.SchemaType;
 import com.inalogy.midpoint.connectors.schema.UniversalSchemaHandler;
 import com.inalogy.midpoint.connectors.utils.FileHashCalculator;
+import com.inalogy.midpoint.connectors.utils.SshResponseHandler;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.objects.*;
 import org.identityconnectors.framework.common.objects.filter.Filter;
@@ -30,20 +34,26 @@ public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnecto
         CreateOp,
         UpdateDeltaOp,
         DeleteOp {
-
+    private CommandProcessor commandProcessor;
+    private SessionManager sshManager;
     private SshConfiguration configuration;
     private static UniversalSchemaHandler schema = null;
     //Ssh Connector schema cache
     private static final Log LOG = Log.getLog(SshConnector.class);
+//    private SessionManager sessionManager;
 
     @Override
     public void init(Configuration configuration) {
         this.configuration = (SshConfiguration) configuration;
+        super.init(this.configuration);
+        this.sshManager = new SessionManager((SshConfiguration) configuration);
+        this.commandProcessor = new CommandProcessor((SshConfiguration) configuration);
     }
 
     @Override
     public void dispose() {
         schema = null;
+//        commandProcessor = null;
 
     }
 
@@ -72,17 +82,32 @@ public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnecto
             UniversalObjectsHandler.buildObjectClass(schemaBuilder, schemaType);
         }
         return schemaBuilder.build();
-//        return null;
     }
 
     @Override
     public FilterTranslator<Filter> createFilterTranslator(ObjectClass objectClass, OperationOptions options) {
         return null;
     }
-
     @Override
     public void executeQuery(ObjectClass objectClass, Filter query, ResultsHandler handler, OperationOptions options) {
+        LOG.info("executeQuery on {0}, query: {1}, options: {2}", objectClass, query, options);
+        try {
+            SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.toString());
 
+            if (schemaType == null) {
+                throw new IllegalArgumentException("Unsupported ObjectClass: " + objectClass);
+            }
+            if (query != null){} //TODO
+//            else{
+//                String searchScript = schemaType.getSearchScript();
+//                String sshResponse = commandProcessor.process(null, searchScript);
+//                SshResponseHandler sshResponseHandler = new SshResponseHandler(schemaType, searchScript, sshResponse);
+//
+//            }
+        } catch (Exception e) {
+            LOG.error("Error executing query", e);
+            // Handle exception
+        }
     }
 
     @Override
