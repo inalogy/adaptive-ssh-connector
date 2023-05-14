@@ -23,6 +23,8 @@ public class UniversalSchemaHandler {
     private final String fileSha256;
     private final Map<String, SchemaType> schemaTypes = new HashMap<>();
 
+
+    // key schemaType.getObjectClass() value: SchemaType object
     public  Map<String, SchemaType> getSchemaTypes() {
         return this.schemaTypes;
     }
