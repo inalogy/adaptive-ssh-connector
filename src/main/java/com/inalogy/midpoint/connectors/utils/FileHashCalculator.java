@@ -20,10 +20,10 @@ public class FileHashCalculator {
         Path path = Paths.get(filePath);
         MessageDigest sha256Digest;
         try{
-            //TODO need to check if SHA-256 is supported
+            //TODO need to check if SHA-256 is supported & add better error handling
             sha256Digest = MessageDigest.getInstance("SHA-256");}
         catch (NoSuchAlgorithmException e){
-            throw new RuntimeException("SHA-256 missing on target system");
+            throw new RuntimeException("SHA-256 missing on target system" + e);
         }
         if (sha256Digest != null){
 
