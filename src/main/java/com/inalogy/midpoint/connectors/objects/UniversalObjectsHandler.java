@@ -11,7 +11,7 @@ public class UniversalObjectsHandler {
 
     public static void buildObjectClass(SchemaBuilder schemaBuilder, SchemaType schemaType){
         ObjectClassInfoBuilder objClassBuilder = new ObjectClassInfoBuilder();
-        objClassBuilder.setType(schemaType.getObjectClass()); //TODO setting type by objectClass from schema?
+        objClassBuilder.setType(schemaType.getObjectClassName()); //TODO setting type by objectClass from schema?
         // Add attributes
         String icfsName = schemaType.getIcfsName();
         String icfsUid = schemaType.getIcfsUid();
