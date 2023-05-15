@@ -74,7 +74,7 @@ public class UniversalSchemaHandler {
 
                 // Create an instance of class SchemaType based on json file
                 SchemaType schemaType = new SchemaType(icfsUid, icfsName, objectClass, createScript, updateScript, deleteScript, searchScript, attributes);
-                this.schemaTypes.put(schemaType.getObjectClass(), schemaType);
+                this.schemaTypes.put(schemaType.getObjectClassName(), schemaType);
             }
         } catch (IOException e) {
             LOG.error("An error occurred while reading SchemaFile: " + e);
