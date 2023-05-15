@@ -1,12 +1,13 @@
 package com.inalogy.midpoint.connectors.ssh;
 
+import com.inalogy.midpoint.connectors.utils.Constants;
+import com.sun.org.apache.bcel.internal.Const;
 import org.identityconnectors.framework.spi.ConfigurationProperty;
 
 public class SshConfiguration extends com.evolveum.polygon.connector.ssh.SshConfiguration {
 
-    public static final String TYPE_POWERSHELL = "powershell";
-    public static final String TYPE_SHELL = "shell";
-    private String shellType = TYPE_SHELL;
+
+    private String shellType = Constants.TYPE_SHELL;
 
     public String schemaFilePath;
 

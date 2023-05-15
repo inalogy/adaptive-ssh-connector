@@ -17,11 +17,13 @@ package com.inalogy.midpoint.connectors.cmd;
 
 import com.inalogy.midpoint.connectors.ssh.SshConfiguration;
 
+import com.inalogy.midpoint.connectors.utils.Constants;
 import org.identityconnectors.framework.common.exceptions.ConfigurationException;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -62,9 +64,9 @@ public class CommandProcessor extends com.evolveum.polygon.connector.ssh.Command
 
     private String buildCommand(String scriptPath) {
         switch (configuration.getShellType()) {
-            case SshConfiguration.TYPE_SHELL:
+            case Constants.TYPE_SHELL:
                 return "sh " + scriptPath;
-            case SshConfiguration.TYPE_POWERSHELL:
+            case Constants.TYPE_POWERSHELL:
                 return scriptPath;
             default:
                 throw new ConfigurationException("Unknown value of 'Shell Type': " + configuration.getShellType());
@@ -109,5 +111,15 @@ public class CommandProcessor extends com.evolveum.polygon.connector.ssh.Command
 
     private @NotNull String quoteDouble(@NotNull Object value) {
         return '"' + value.toString().replaceAll("\"", "\"\"") + '"';
+    }
+
+    protected static String getClearCommand(SshConfiguration configuration){
+        String clearCommand = null;
+        if (configuration.getShellType().equals(Constants.TYPE_SHELL)){
+            clearCommand = Constants.CLEAR_COMMAND_UNIX;
+        } else if (configuration.getShellType().equals(Constants.TYPE_POWERSHELL)) {
+            clearCommand = Constants.CLEAR_COMMAND_WINDOWS;
+        }
+        return clearCommand;
     }
 }
