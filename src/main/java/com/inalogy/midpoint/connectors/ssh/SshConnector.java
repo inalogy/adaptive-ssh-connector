@@ -11,7 +11,9 @@ import com.inalogy.midpoint.connectors.utils.Constants;
 import com.inalogy.midpoint.connectors.utils.FileHashCalculator;
 import com.inalogy.midpoint.connectors.utils.SshResponseHandler;
 import com.sun.org.apache.bcel.internal.Const;
+import net.schmizz.sshj.connection.ConnectionException;
 import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
 import org.identityconnectors.framework.common.objects.*;
 import org.identityconnectors.framework.common.objects.filter.Filter;
 import org.identityconnectors.framework.common.objects.filter.FilterTranslator;
@@ -26,6 +28,7 @@ import org.identityconnectors.framework.spi.operations.SearchOp;
 import org.identityconnectors.framework.spi.operations.TestOp;
 import org.identityconnectors.framework.spi.operations.UpdateDeltaOp;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @ConnectorClass(displayNameKey = "ssh.connector.display", configurationClass = SshConfiguration.class)
@@ -50,19 +53,25 @@ public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnecto
         this.configuration = (SshConfiguration) configuration;
         super.init(this.configuration);
         this.sshManager = new SessionManager((SshConfiguration) configuration);
+        this.sshManager.connect();
         this.commandProcessor = new CommandProcessor((SshConfiguration) configuration);
     }
 
     @Override
     public void dispose() {
         schema = null;
+        this.sshManager.disconnect();
 //        commandProcessor = null;
 
     }
 
     @Override
     public void test() {
-
+        String testEcho = "echo \"Hello\"";
+        String response = this.sshManager.exec(testEcho).replace("\n", "");
+        if (!response.equals("Hello")){
+            throw new ConnectionFailedException("Error occurred while testing connection");
+        }
     }
 
     @Override
@@ -104,8 +113,8 @@ public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnecto
             if (query != null){} //TODO
             else {
                 String searchScript = schemaType.getSearchScript();
-                String sshResponse = commandProcessor.process(null, Constants.SEARCH_OPERATION);
-//                String sshResponseHandler = new SshResponseHandler(schemaType, searchScript, sshResponse).parseResponse();
+                String sshResponse = commandProcessor.process(null, searchScript);
+                String sshResponseHandler = new SshResponseHandler(schemaType, Constants.SEARCH_OPERATION, sshResponse).parseResponse();
             }
         } catch (Exception e) {
             LOG.error("Error executing query", e);
