@@ -1,13 +1,16 @@
 package com.inalogy.midpoint.connectors.ssh;
 
+import com.inalogy.midpoint.connectors.utils.Constants;
 import com.inalogy.midpoint.connectors.cmd.CommandProcessor;
 import com.inalogy.midpoint.connectors.cmd.SessionManager;
 //import com.inalogy.midpoint.connectors.objects.UniversalFilterTranslator;
 import com.inalogy.midpoint.connectors.objects.UniversalObjectsHandler;
 import com.inalogy.midpoint.connectors.schema.SchemaType;
 import com.inalogy.midpoint.connectors.schema.UniversalSchemaHandler;
+import com.inalogy.midpoint.connectors.utils.Constants;
 import com.inalogy.midpoint.connectors.utils.FileHashCalculator;
 import com.inalogy.midpoint.connectors.utils.SshResponseHandler;
+import com.sun.org.apache.bcel.internal.Const;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.objects.*;
 import org.identityconnectors.framework.common.objects.filter.Filter;
@@ -92,18 +95,18 @@ public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnecto
     public void executeQuery(ObjectClass objectClass, Filter query, ResultsHandler handler, OperationOptions options) {
         LOG.info("executeQuery on {0}, query: {1}, options: {2}", objectClass, query, options);
         try {
-            SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.toString());
+            // choosing schema type by key value from map which corresponds to SchemaType object
+            SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
 
             if (schemaType == null) {
                 throw new IllegalArgumentException("Unsupported ObjectClass: " + objectClass);
             }
             if (query != null){} //TODO
-//            else{
-//                String searchScript = schemaType.getSearchScript();
-//                String sshResponse = commandProcessor.process(null, searchScript);
-//                SshResponseHandler sshResponseHandler = new SshResponseHandler(schemaType, searchScript, sshResponse);
-//
-//            }
+            else {
+                String searchScript = schemaType.getSearchScript();
+                String sshResponse = commandProcessor.process(null, Constants.SEARCH_OPERATION);
+//                String sshResponseHandler = new SshResponseHandler(schemaType, searchScript, sshResponse).parseResponse();
+            }
         } catch (Exception e) {
             LOG.error("Error executing query", e);
             // Handle exception

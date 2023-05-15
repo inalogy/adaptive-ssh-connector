@@ -7,10 +7,6 @@ import org.identityconnectors.framework.common.objects.ConnectorObjectBuilder;
 
 public class SshResponseHandler {
 
-    private static final String CREATE_OPERATION = "createScript";
-    private static final String SEARCH_OPERATION = "searchScript";
-    private static final String UPDATE_OPERATION = "updateScript";
-    private static final String DELETE_OPERATION = "deleteScript";
 //    private final String responseTypeOperation;
     private final String rawResponse;
     private final SchemaType schemaType;
@@ -20,18 +16,17 @@ public class SshResponseHandler {
         this.schemaType = schemaType;
         this.operationType  = operationType;
         this.rawResponse = rawResponse;
-        this.parseResponse();
     }
 
     public String parseResponse(){
         switch (this.operationType) {
-            case CREATE_OPERATION:
+            case Constants.CREATE_OPERATION:
                 return parseCreateOperation();
-            case SEARCH_OPERATION:
+            case Constants.SEARCH_OPERATION:
                 return parseSearchOperation();
-            case UPDATE_OPERATION:
+            case Constants.UPDATE_OPERATION:
                 return parseUpdateOperation();
-            case DELETE_OPERATION:
+            case Constants.DELETE_OPERATION:
                 return parseDeleteOperation();
             default:
                 throw new ConnectorException("Unsupported Operation error: " + this.operationType);
@@ -44,7 +39,7 @@ public class SshResponseHandler {
             String line = lines[i];
 
             String[] columns = line.split("\\s+", 3); //firstName lastname email
-            System.out.println("firstName: " + columns[0] + "lastName:" + columns[1] + "email" + columns[2]);
+            System.out.println("firstName: " + columns[0] + " lastName: " + columns[1] + " email: " + columns[2]);
         }
         return null;
     }
