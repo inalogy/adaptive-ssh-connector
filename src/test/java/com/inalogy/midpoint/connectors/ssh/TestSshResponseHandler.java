@@ -2,13 +2,15 @@ package com.inalogy.midpoint.connectors.ssh;
 
 import com.inalogy.midpoint.connectors.schema.SchemaType;
 import com.inalogy.midpoint.connectors.schema.UniversalSchemaHandler;
+import com.inalogy.midpoint.connectors.utils.Constants;
 import com.inalogy.midpoint.connectors.utils.SshResponseHandler;
-import org.identityconnectors.framework.common.objects.Schema;
+import org.identityconnectors.framework.common.objects.ObjectClass;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
 public class TestSshResponseHandler {
 
     TestProcessor testProcessor = new TestProcessor();
@@ -21,10 +23,13 @@ public class TestSshResponseHandler {
         init();
         String schemaFilePath = testProcessor.getConfiguration().getSchemaFilePath();
         UniversalSchemaHandler ush = new UniversalSchemaHandler(schemaFilePath);
-        String dummyResponse = readFileAsString("/Users/patrikrovnak/IdeaProjects/ssh-connector/src/test/resources/testingPowershellScripts/searchPSDummyResponse.txt");
-
+        String searchPowerShellDummyResponse = System.getProperty("user.dir") + "/src/test/resources/testingPowershellScripts/searchPSDummyResponse.txt";
+//        String dummyResponse = readFileAsString(searchPowerShellDummyResponse);
         SchemaType schemaType = ush.getSchemaTypes().get("user");
-        SshResponseHandler sshResponseHandler = new SshResponseHandler(schemaType, "searchScript", dummyResponse);
+//        String sshResponseHandler = new SshResponseHandler(schemaType, Constants.SEARCH_OPERATION, dummyResponse).parseResponse();
+        ObjectClass userClass = new ObjectClass("user");
+        testProcessor.getConnector().schema();
+        testProcessor.getConnector().executeQuery(userClass, null, null, null);
     }
     public  String readFileAsString(String fileName) {
         try {
