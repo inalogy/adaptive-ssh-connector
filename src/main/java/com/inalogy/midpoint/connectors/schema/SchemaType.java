@@ -2,9 +2,7 @@ package com.inalogy.midpoint.connectors.schema;
 
 import org.identityconnectors.common.logging.Log;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * each schemaType is instance of this class
@@ -22,14 +20,14 @@ public class SchemaType {
     private final String deleteScript;
 
     private final List<SchemaTypeAttribute> attributes;
-    private final String objectClass;
+    private final String objectClassName;
     private final String icfsUid;
 
 
-    public SchemaType(String icfsUid, String icfsName, String objectClass, String createScript, String updateScript, String searchScript, String deleteScript, List<SchemaTypeAttribute> attributes){
+    public SchemaType(String icfsUid, String icfsName, String objectClassName, String createScript, String updateScript, String searchScript, String deleteScript, List<SchemaTypeAttribute> attributes){
         this.icfsUid = icfsUid;
         this.icfsName = icfsName;
-        this.objectClass = objectClass;
+        this.objectClassName = objectClassName;
         this.createScript = createScript;
         this.updateScript = updateScript;
         this.searchScript = searchScript;
@@ -58,8 +56,8 @@ public class SchemaType {
         return deleteScript;
     }
 
-    public String getObjectClass() {
-        return objectClass;
+    public String getObjectClassName() {
+        return objectClassName;
     }
 
     public String getIcfsUid() {
