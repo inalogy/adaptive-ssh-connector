@@ -9,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
+import java.nio.file.Files;
 
 public class FileHashCalculator {
     /** Calculating hash of a file to save performance compared to parsing it as json
@@ -18,9 +19,14 @@ public class FileHashCalculator {
             return null;
         }
         Path path = Paths.get(filePath);
+
+        if (!Files.exists(path)){
+            throw new RuntimeException("Filepath for schemaConfig is invalid or missing. Path: " + filePath);
+        }
+
         MessageDigest sha256Digest;
         try{
-            //TODO need to check if SHA-256 is supported & add better error handling
+            //TODO need to check if SHA-256 is supported
             sha256Digest = MessageDigest.getInstance("SHA-256");}
         catch (NoSuchAlgorithmException e){
             throw new RuntimeException("SHA-256 missing on target system" + e);
