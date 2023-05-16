@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @ConnectorClass(displayNameKey = "ssh.connector.display", configurationClass = SshConfiguration.class)
-public class SshConnector implements Connector,
+public class SshConnector implements
         PoolableConnector,
         SchemaOp,
         TestOp,
@@ -69,10 +69,10 @@ public class SshConnector implements Connector,
     public void test() {
         String testEcho = "echo \"Hello\"";
 //        String testEcho = "Get-Process";
-        String response = this.sshManager.exec(testEcho).replace("\n", "");
-//        if (!response.equals("Hello")){
-//            throw new ConnectionFailedException("Error occurred while testing connection");
-//        }
+        String response = this.sshManager.exec(testEcho).replace("\n", "").replace("\r", "");
+        if (!response.equals("Hello")){
+            throw new ConnectionFailedException("Error occurred while testing connection");
+        }
     }
 
     @Override
