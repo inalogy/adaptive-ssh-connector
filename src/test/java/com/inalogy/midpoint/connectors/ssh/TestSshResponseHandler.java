@@ -28,6 +28,7 @@ public class TestSshResponseHandler {
         SchemaType schemaType = ush.getSchemaTypes().get("user");
 //        String sshResponseHandler = new SshResponseHandler(schemaType, Constants.SEARCH_OPERATION, dummyResponse).parseResponse();
         ObjectClass userClass = new ObjectClass("user");
+//        testProcessor.getConnector().test();
         testProcessor.getConnector().schema();
         testProcessor.getConnector().executeQuery(userClass, null, null, null);
     }

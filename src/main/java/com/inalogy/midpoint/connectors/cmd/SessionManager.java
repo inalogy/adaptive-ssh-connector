@@ -1,8 +1,10 @@
 package com.inalogy.midpoint.connectors.cmd;
 
-import com.evolveum.polygon.connector.ssh.ConnectorKnownHostsVerifier;
+//import com.evolveum.polygon.connector.ssh.ConnectorKnownHostsVerifier;
 //import com.evolveum.polygon.connector.ssh.SshConfiguration;
 
+//import com.evolveum.polygon.connector.ssh.ConnectorKnownHostsVerifier;
+//import com.evolveum.polygon.connector.ssh.ConnectorKnownHostsVerifier;
 import com.inalogy.midpoint.connectors.ssh.SshConfiguration;
 import com.inalogy.midpoint.connectors.utils.Constants;
 import net.schmizz.sshj.SSHClient;
@@ -39,7 +41,7 @@ public class SessionManager {
     public String exec(String processedCommand) {
         final Session.Command cmd;
         try {
-            session.exec(CommandProcessor.getClearCommand(this.configuration));
+//            session.exec(CommandProcessor.getClearCommand(this.configuration));
             cmd = session.exec(processedCommand);
         } catch (ConnectionException | TransportException e) {
             throw new ConnectorIOException("Network error while executing SSH command: "+e.getMessage(), e);
@@ -79,7 +81,7 @@ public class SessionManager {
         }
 
         try {
-            cmd.join(5, TimeUnit.SECONDS);
+            cmd.join(30, TimeUnit.SECONDS);
         } catch (ConnectionException e) {
             throw new ConnectorIOException("Error \"joining\" SSH command: "+e.getMessage(), e);
         }
@@ -103,6 +105,7 @@ public class SessionManager {
         LOG.ok("Authentication to {0} successful", authManager.getConnectionDesc());
         try {
             session = ssh.startSession();
+//            session.allocateDefaultPTY();
         } catch (ConnectionException | TransportException e) {
             LOG.error("Communication error while creating SSH session for {1} failed: {2}", authManager.getConnectionDesc(), e.getMessage());
             throw new ConnectionFailedException("Communication error while creating SSH session for "+authManager.getConnectionDesc()+" failed: " + e.getMessage(), e);

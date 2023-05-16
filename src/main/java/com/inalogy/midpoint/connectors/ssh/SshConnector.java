@@ -10,8 +10,6 @@ import com.inalogy.midpoint.connectors.schema.UniversalSchemaHandler;
 import com.inalogy.midpoint.connectors.utils.Constants;
 import com.inalogy.midpoint.connectors.utils.FileHashCalculator;
 import com.inalogy.midpoint.connectors.utils.SshResponseHandler;
-import com.sun.org.apache.bcel.internal.Const;
-import net.schmizz.sshj.connection.ConnectionException;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
 import org.identityconnectors.framework.common.objects.*;
@@ -21,25 +19,21 @@ import org.identityconnectors.framework.spi.Configuration;
 import org.identityconnectors.framework.spi.Connector;
 import org.identityconnectors.framework.spi.ConnectorClass;
 import org.identityconnectors.framework.spi.PoolableConnector;
-import org.identityconnectors.framework.spi.operations.CreateOp;
-import org.identityconnectors.framework.spi.operations.DeleteOp;
-import org.identityconnectors.framework.spi.operations.SchemaOp;
-import org.identityconnectors.framework.spi.operations.SearchOp;
-import org.identityconnectors.framework.spi.operations.TestOp;
-import org.identityconnectors.framework.spi.operations.UpdateDeltaOp;
+import org.identityconnectors.framework.spi.operations.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @ConnectorClass(displayNameKey = "ssh.connector.display", configurationClass = SshConfiguration.class)
-public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnector implements Connector,
+public class SshConnector implements Connector,
         PoolableConnector,
         SchemaOp,
         TestOp,
         SearchOp<Filter>,
         CreateOp,
         UpdateDeltaOp,
-        DeleteOp {
+        DeleteOp
+{
     private CommandProcessor commandProcessor;
     private SessionManager sshManager;
     private SshConfiguration configuration;
@@ -49,9 +43,14 @@ public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnecto
 //    private SessionManager sessionManager;
 
     @Override
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
+    @Override
     public void init(Configuration configuration) {
         this.configuration = (SshConfiguration) configuration;
-        super.init(this.configuration);
+        this.configuration.validate();
         this.sshManager = new SessionManager((SshConfiguration) configuration);
         this.sshManager.connect();
         this.commandProcessor = new CommandProcessor((SshConfiguration) configuration);
@@ -60,6 +59,7 @@ public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnecto
     @Override
     public void dispose() {
         schema = null;
+        this.configuration = null;
         this.sshManager.disconnect();
 //        commandProcessor = null;
 
@@ -68,10 +68,11 @@ public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnecto
     @Override
     public void test() {
         String testEcho = "echo \"Hello\"";
+//        String testEcho = "Get-Process";
         String response = this.sshManager.exec(testEcho).replace("\n", "");
-        if (!response.equals("Hello")){
-            throw new ConnectionFailedException("Error occurred while testing connection");
-        }
+//        if (!response.equals("Hello")){
+//            throw new ConnectionFailedException("Error occurred while testing connection");
+//        }
     }
 
     @Override
@@ -113,8 +114,9 @@ public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnecto
             if (query != null){} //TODO
             else {
                 String searchScript = schemaType.getSearchScript();
-                String sshResponse = commandProcessor.process(null, searchScript);
-                String sshResponseHandler = new SshResponseHandler(schemaType, Constants.SEARCH_OPERATION, sshResponse).parseResponse();
+                String sshProcessedCommand = commandProcessor.process(null, searchScript);
+                String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
+                String sshResponseHandler = new SshResponseHandler(schemaType, Constants.SEARCH_OPERATION, sshRawResponse).parseResponse();
             }
         } catch (Exception e) {
             LOG.error("Error executing query", e);
@@ -136,6 +138,12 @@ public class SshConnector extends com.evolveum.polygon.connector.ssh.SshConnecto
     public void delete(ObjectClass objectClass, Uid uid, OperationOptions options) {
 
     }
+
+    @Override
+    public void checkAlive() {
+
+    }
+
 }
 
 

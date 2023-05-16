@@ -17,11 +17,12 @@ public class FileHashCalculator {
     public static String calculateSHA256(String filePath)  {
         if (filePath == null || filePath.isEmpty()){
             return null;
+            //When loading schema first time this condition occurs
         }
         Path path = Paths.get(filePath);
 
         if (!Files.exists(path)){
-            throw new RuntimeException("Filepath for schemaConfig is invalid or missing. Path: " + filePath);
+            throw new RuntimeException("Filepath for schemaConfig is invalid. Path: " + filePath);
         }
 
         MessageDigest sha256Digest;

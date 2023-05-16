@@ -9,4 +9,5 @@ public class Constants {
     public static final String DELETE_OPERATION = "DELETE_OPERATION";
     public static final String CLEAR_COMMAND_UNIX = "clear";
     public static final String CLEAR_COMMAND_WINDOWS = "cls";
+    public static final String RESPONSE_SEPARATOR = "|";
 }

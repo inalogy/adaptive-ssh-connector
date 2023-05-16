@@ -29,12 +29,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CommandProcessor extends com.evolveum.polygon.connector.ssh.CommandProcessor {
+public class CommandProcessor {
 
     private final SshConfiguration configuration;
 
     public CommandProcessor(SshConfiguration configuration) {
-        super(configuration);
         this.configuration = configuration;
     }
 

@@ -7,7 +7,7 @@
       "createScript": "createScript.ps2",
       "updateScript": "updateScript.ps3",
       "deleteScript": "deleteScript.ps4",
-      "searchScript": "searchScript.ps5",
+      "searchScript": "C:\\Users\\inaadm\\Desktop\\searchScript.ps1",
       "attributes": [
         {
           "userName": {

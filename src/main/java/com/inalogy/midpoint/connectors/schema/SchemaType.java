@@ -24,16 +24,15 @@ public class SchemaType {
     private final String icfsUid;
 
 
-    public SchemaType(String icfsUid, String icfsName, String objectClassName, String createScript, String updateScript, String searchScript, String deleteScript, List<SchemaTypeAttribute> attributes){
+    public SchemaType(String icfsUid, String icfsName, String objectClassName, String createScript, String updateScript, String deleteScript, String searchScript, List<SchemaTypeAttribute> attributes){
         this.icfsUid = icfsUid;
         this.icfsName = icfsName;
         this.objectClassName = objectClassName;
         this.createScript = createScript;
         this.updateScript = updateScript;
-        this.searchScript = searchScript;
         this.deleteScript = deleteScript;
+        this.searchScript = searchScript;
         this.attributes = attributes;
-
     }
 
     public String getIcfsName() {

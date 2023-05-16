@@ -1,8 +1,9 @@
 package com.inalogy.midpoint.connectors.cmd;
 
 import com.evolveum.polygon.common.GuardedStringAccessor;
-import com.evolveum.polygon.connector.ssh.SshConfiguration;
+//import com.evolveum.polygon.connector.ssh.SshConfiguration;
 
+import com.inalogy.midpoint.connectors.ssh.SshConfiguration;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.userauth.UserAuthException;
