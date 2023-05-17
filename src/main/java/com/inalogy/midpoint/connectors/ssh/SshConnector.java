@@ -21,8 +21,7 @@ import org.identityconnectors.framework.spi.ConnectorClass;
 import org.identityconnectors.framework.spi.PoolableConnector;
 import org.identityconnectors.framework.spi.operations.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @ConnectorClass(displayNameKey = "ssh.connector.display", configurationClass = SshConfiguration.class)
 public class SshConnector implements
@@ -99,16 +98,24 @@ public class SshConnector implements
 
     @Override
     public FilterTranslator<Filter> createFilterTranslator(ObjectClass objectClass, OperationOptions options) {
-        return null;
+        return new FilterTranslator<Filter>() {
+            @Override
+            public List<Filter> translate(Filter filter) {
+                return Collections.<Filter>emptyList();
+            }
+        };
     }
+
     @Override
     public void executeQuery(ObjectClass objectClass, Filter query, ResultsHandler handler, OperationOptions options) {
-        LOG.info("executeQuery on {0}, query: {1}, options: {2}", objectClass, query, options);
+        LOG.info("executeQuery on {0}, query: {1}, options: {2} {3}", objectClass.getDisplayNameKey(), query, options, objectClass.toString());
         try {
             // choosing schema type by key value from map which corresponds to SchemaType object
+            System.out.println("objclass " + objectClass.getObjectClassValue() + "\n" + objectClass.getDisplayNameKey());
             SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
 
             if (schemaType == null) {
+                LOG.error("Unsupported ObjectClass");
                 throw new IllegalArgumentException("Unsupported ObjectClass: " + objectClass);
             }
             if (query != null){} //TODO
@@ -116,7 +123,10 @@ public class SshConnector implements
                 String searchScript = schemaType.getSearchScript();
                 String sshProcessedCommand = commandProcessor.process(null, searchScript);
                 String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
-                String sshResponseHandler = new SshResponseHandler(schemaType, Constants.SEARCH_OPERATION, sshRawResponse).parseResponse();
+                ArrayList<ConnectorObject> objectsToHandle = new SshResponseHandler(schemaType, Constants.SEARCH_OPERATION, sshRawResponse).parseResponse();
+                for (ConnectorObject connectorObject: objectsToHandle){
+                    handler.handle(connectorObject);
+                }
             }
         } catch (Exception e) {
             LOG.error("Error executing query", e);
