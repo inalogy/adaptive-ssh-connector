@@ -39,6 +39,7 @@ public class SessionManager {
     }
 
     public String exec(String processedCommand) {
+        connect();
         final Session.Command cmd;
         try {
 //            session.exec(CommandProcessor.getClearCommand(this.configuration));
@@ -87,7 +88,7 @@ public class SessionManager {
         }
 
         LOG.info("SSH command exit status: {0}", cmd.getExitStatus());
-
+        disconnect();
         return output;
     }
 
