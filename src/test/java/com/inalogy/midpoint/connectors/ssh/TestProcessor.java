@@ -42,7 +42,7 @@ public class TestProcessor {
 
         String relativeSchemaFilePath = properties.getProperty("schemaFilePath");
         String absoluteSchemaFilePath = System.getProperty("user.dir") + "/"+ relativeSchemaFilePath;
-//        configuration.setSchemaFilePath(absoluteSchemaFilePath);
+        configuration.setSchemaFilePath(absoluteSchemaFilePath);
     }
 
     private void initConnector() {

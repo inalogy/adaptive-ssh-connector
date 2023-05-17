@@ -38,9 +38,9 @@ public class UniversalObjectsHandler {
         }
         if (icfsUid != null) {
             AttributeInfoBuilder uidAttrBuilder = new AttributeInfoBuilder(Uid.NAME, String.class);
-            uidAttrBuilder.setRequired(false);
+            uidAttrBuilder.setRequired(true);
             uidAttrBuilder.setCreateable(true);
-            uidAttrBuilder.setUpdateable(false);
+            uidAttrBuilder.setUpdateable(true);
             uidAttrBuilder.setReadable(true);
             objClassBuilder.addAttributeInfo(uidAttrBuilder.build());
         }

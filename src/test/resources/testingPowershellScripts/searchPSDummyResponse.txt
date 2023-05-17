@@ -1,5 +1,2 @@
-DisplayName                   EmailAddress\n
------------                   ------------\n
-Daenerys Targaryan            daenerystargaryen@example.com\n
-Jon Snow                      jonsnow@example.com\n
-Arya Stark                    aryastark@example.com\n
+inaadm@inalogy.net|inalogy admin
+DiscoverySearchMailbox{D919BA05-46A6-415f-80AD-7E09334BB852}@inalogy.net|DiscoverySearchMailbox {D919BA05-46A6-415f-80AD-7E09334BB852}
