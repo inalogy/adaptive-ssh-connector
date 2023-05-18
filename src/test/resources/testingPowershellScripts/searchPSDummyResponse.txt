@@ -1,2 +1,5 @@
+smtpMail|mailboxName
+dun@dura.com|duran
+vape@vaporize.net|None
 inaadm@inalogy.net|inalogy admin
 DiscoverySearchMailbox{D919BA05-46A6-415f-80AD-7E09334BB852}@inalogy.net|DiscoverySearchMailbox {D919BA05-46A6-415f-80AD-7E09334BB852}
