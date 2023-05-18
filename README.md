@@ -15,7 +15,6 @@ More info: https://github.com/PowerShell/Win32-OpenSSH/wiki/DefaultShell
 - Schema is generated from schemaConfig.json
 - Schema supports arbitrary number of ObjectClasses and their attributes
 - Every ObjectClass defined in schemaConfig.json must have the following parameters:
-- 
 ```
     {
       "icfsName": "anyicfsName",
@@ -45,7 +44,7 @@ More info: https://github.com/PowerShell/Win32-OpenSSH/wiki/DefaultShell
 Script return values must follow this convention:
 * Script needs to be designed to return null for empty attribute otherwise separator wont be able to tell if attribute is empty
 * first line must have column attributes
-* **First Attribute must be icfsUid or icfsName If you need both unique identifiers specified, first must be icfsUid followed by icfsName example:**
+* **First Attribute must be icfsUid or icfsName If you need both unique identifiers specified, first must be icfsUid followed by icfsName that match those specified in schemaConfig.json example:**
 ```
 uniqueIdentifier|UniqueName|AnyOtherAttributes
 or
