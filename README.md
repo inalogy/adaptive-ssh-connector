@@ -42,7 +42,7 @@ More info: https://github.com/PowerShell/Win32-OpenSSH/wiki/DefaultShell
 - icfsName and icfsUid can point to the same value
 ### Scripts
 Script return values must follow this convention:
-* Script needs to be designed to return null for empty attribute otherwise separator wont be able to tell if attribute is empty
+* Script needs to be designed to return **null** for empty attribute otherwise separator wont be able to tell if attribute is empty
 * first line must have column attributes
 * **First Attribute must be icfsUid or icfsName If you need both unique identifiers specified, first must be icfsUid followed by icfsName that match those specified in schemaConfig.json example:**
 ```
@@ -52,7 +52,6 @@ UniqueIdentifier|AnyOtherAttributes
 ```
 
 
-* UniqueIdentifier must be first attribute Followed by UniqueName
 * if icfsName and icfsUid in schemaConfig.json point to same value, script should return only UniqueName followed by any other attributes defined in schema
 example:
 * **case1**:
@@ -84,7 +83,7 @@ example:
 ``` 
 * Script output:
 ``` 
-    smtpGuid |smtpMail     |mailPrefix|mailBoxNickName
-    UniqIdent|uniqesmtpMail|mailPrefix|examplemailBoxNickName
+    smtpGuid |   smtpMail  |mailPrefix|mailBoxNickName
+    UniqIdent|uniqesmtpMail|mailPrefix|null
 ```
 * **case2:** icfsName and icfsUid will have different value that corresponds to smtpGuid column and smtpMail
