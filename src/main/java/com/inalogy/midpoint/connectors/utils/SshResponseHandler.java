@@ -26,8 +26,9 @@ public class SshResponseHandler {
 
     public ArrayList<ConnectorObject> parseResponse() {
         switch (this.operationType) {
-            case Constants.CREATE_OPERATION:
-                return parseCreateOperation();
+            //TODO Rework
+//            case Constants.CREATE_OPERATION:
+//                return parseCreateOperation();
             case Constants.SEARCH_OPERATION:
                 return parseSearchOperation();
             case Constants.UPDATE_OPERATION:
@@ -42,7 +43,9 @@ public class SshResponseHandler {
     private ArrayList<ConnectorObject> parseSearchOperation() {
         ArrayList<ConnectorObject> connectorObjects = new ArrayList<>();
         String[] lines = this.rawResponse.split("\n");
-        String[] attributeNames = lines[0].split(Pattern.quote(Constants.RESPONSE_SEPARATOR)); // read first line that always contains attr names
+
+        // read first line that always contains attr names
+        String[] attributeNames = lines[0].split(Pattern.quote(Constants.RESPONSE_SEPARATOR));
         for (int i = 1; i <lines.length; i++) {
             String[] attributeValues = lines[i].split(Pattern.quote(Constants.RESPONSE_SEPARATOR));
             Map<String,String> validAttributes = parseAttributes(attributeNames, attributeValues);
@@ -75,15 +78,17 @@ public class SshResponseHandler {
                     if (this.schemaType.isUidAndNameSame()) {
                         validAttributes.put("icfsUid", attributeValue);
                     }
+
                 } else if (attributeName.equals(this.schemaType.getIcfsUid())) {
                     validAttributes.put("icfsUid", attributeValue);
                 } else {
+                    // process all other attributes that match schema
                     for (SchemaTypeAttribute sta : this.schemaType.getAttributes()) {
                         if (sta.getAttributeName().equals(attributeName)) {
                             if(attributeValue.equals(Constants.RESPONSE_EMPTY_ATTRIBUTE_SYMBOL)){
+                                //TODO Validate
                                 validAttributes.put(attributeName, "");
                                 break;
-                            //TODO Validate
                             }
                             validAttributes.put(attributeName, attributeValue);
                             break;
@@ -93,9 +98,11 @@ public class SshResponseHandler {
             }
         } else {
             //TODO better error handling
-            LOG.error("Fatal error: The number of attribute names does not match the number of attribute values");
+            LOG.error("Fatal error: The number of attribute names does not match the number of attribute values " +
+                    "Possible cause: Bad script design, empty attributes should be defined as: " + Constants.RESPONSE_EMPTY_ATTRIBUTE_SYMBOL);
             throw new ConnectorException("the number of attribute names does not match the number of attribute values.");
         }
+        System.out.println(validAttributes);
         return validAttributes;
     }
 
@@ -109,9 +116,19 @@ public class SshResponseHandler {
 
     }
 
-    private ArrayList<ConnectorObject> parseCreateOperation() {
-        return null;
+    public Uid parseCreateOperation() {
+        String[] lines = this.rawResponse.split("\n");
+
+        // read first line that always contains attr names
+        String[] attributeNames = lines[0].split(Pattern.quote(Constants.RESPONSE_SEPARATOR));
+            String[] attributeValues = lines[1].split(Pattern.quote(Constants.RESPONSE_SEPARATOR));
+            Map<String,String> validAttributes = parseAttributes(attributeNames, attributeValues);
+            ConnectorObject connectorObject = convertObjectToConnectorObject(validAttributes);
+            //TODO cant reuse method
+//            System.out.println(validAttributes);
+        return connectorObject.getUid();
     }
+
 
     private ConnectorObject convertObjectToConnectorObject(Map<String, String> attributes) {
         ConnectorObjectBuilder builder = new ConnectorObjectBuilder();
