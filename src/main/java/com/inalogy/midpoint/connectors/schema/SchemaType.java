@@ -68,4 +68,8 @@ public class SchemaType {
         return attributes;
     }
 
+    public boolean isUidAndNameSame(){
+        return (this.icfsName.equals(this.icfsUid));
+    }
+
 }
