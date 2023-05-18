@@ -57,7 +57,7 @@ public class SchemaTypeAttribute {
                 return Byte[].class;
             default:
                 LOG.error("Received Unsupported data type from schemaFile: {} Currently supported dataTypes: String, boolean, int, bytearray", dataType);
-                throw new IllegalArgumentException("Unsupported data type: " + dataType);
+                throw new IllegalArgumentException("Received Unsupported data type from schemaFile: "+ dataType + "Currently supported dataTypes: String, boolean, int, bytearray");
         }
     }
 }
