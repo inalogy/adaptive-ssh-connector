@@ -1,0 +1,62 @@
+{
+  "objects":[
+    {
+      "icfsName": "smtpMail",
+      "icfsUid": "smtpMail",
+      "objectClass": "user",
+      "createScript": "createScript.ps2",
+      "updateScript": "updateScript.ps3",
+      "deleteScript": "deleteScript.ps4",
+      "searchScript": "C:\\Users\\inaadm\\Desktop\\searchScript.ps1",
+      "attributes": [
+        {
+          "mailboxName": {
+            "required": true,
+            "creatable":true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false
+          }
+        }
+      ]
+    },
+
+    {
+      "icfsName": "someGroupName",
+      "icfsUid": "someUniqueGUID",
+      "objectClass":  "group",
+      "createScript": "createScript.ps2",
+      "updateScript": "updateScript.ps3",
+      "deleteScript": "deleteScript.ps4",
+      "searchScript": "searchScript.ps5",
+      "attributes":  [
+        {
+          "groupName":{
+            "required": true,
+            "creatable": true,
+            "updateable": true,
+            "multivalued": false,
+            "dataType": "String"
+          },
+          "members": {
+            "required": true,
+            "creatable": false,
+            "updateable": true,
+            "multivalued": true,
+            "dataType": "String"
+          }
+        }
+      ]
+    },
+
+    {
+      "icfsName": "testName",
+      "icfsUid": "GUID",
+      "objectClass":  "objectWithoutAttributes",
+      "createScript": "createScript.ps2",
+      "updateScript": "updateScript.ps3",
+      "deleteScript": "deleteScript.ps4",
+      "searchScript": "searchScript.ps5"
+    }
+  ]
+}
