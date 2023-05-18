@@ -59,7 +59,10 @@ public class SshConnector implements
     public void dispose() {
         schema = null;
         this.configuration = null;
-        this.sshManager.disconnect();
+        if (this.sshManager != null) {
+            this.sshManager.disconnect();
+            this.sshManager = null;
+        }
 //        commandProcessor = null;
 
     }
@@ -76,12 +79,13 @@ public class SshConnector implements
 
     @Override
     public Schema schema() {
+//        LOG.error("schema method executed");
         SchemaBuilder schemaBuilder = new SchemaBuilder(SshConnector.class);
         String currentFileSha256 = FileHashCalculator.calculateSHA256(this.configuration.getSchemaFilePath());
 
         if (schema == null){
             schema = new UniversalSchemaHandler(this.configuration.getSchemaFilePath());
-//            LOG.info("Creating universalSchemaHandler schemaConfigFilePath: {}", this.configuration.getSchemaFilePath());
+            LOG.info("Creating universalSchemaHandler schemaConfigFilePath:" + this.configuration.getSchemaFilePath());
 
         }
         else if (schema != null && currentFileSha256 != null && !schema.getFileSha256().equals(currentFileSha256)){
@@ -108,10 +112,10 @@ public class SshConnector implements
 
     @Override
     public void executeQuery(ObjectClass objectClass, Filter query, ResultsHandler handler, OperationOptions options) {
-        LOG.info("executeQuery on {0}, query: {1}, options: {2} {3}", objectClass.getDisplayNameKey(), query, options, objectClass.toString());
+        LOG.info("executeQuery on {0}, query: {1}, options: {2}", objectClass, query, options);
         try {
+//            getSchemaHandler();
             // choosing schema type by key value from map which corresponds to SchemaType object
-            System.out.println("objclass " + objectClass.getObjectClassValue() + "\n" + objectClass.getDisplayNameKey());
             SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
 
             if (schemaType == null) {
@@ -129,14 +133,21 @@ public class SshConnector implements
                 }
             }
         } catch (Exception e) {
-            LOG.error("Error executing query", e);
+            LOG.error("Error occurred ", e);
             // Handle exception
         }
     }
 
     @Override
     public Uid create(ObjectClass objectClass, Set<Attribute> createAttributes, OperationOptions options) {
-        return null;
+//        getSchemaHandler();
+        // choosing schema type by key value from map which corresponds to SchemaType object
+        SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
+            String createScript = schemaType.getCreateScript();
+            String sshProcessedCommand = commandProcessor.process(null, createScript);
+            String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
+            Uid uid = new SshResponseHandler(schemaType, Constants.CREATE_OPERATION, sshRawResponse).parseCreateOperation();
+            return uid;
     }
 
     @Override
