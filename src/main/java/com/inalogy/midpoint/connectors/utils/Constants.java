@@ -10,4 +10,5 @@ public class Constants {
     public static final String CLEAR_COMMAND_UNIX = "clear";
     public static final String CLEAR_COMMAND_WINDOWS = "cls";
     public static final String RESPONSE_SEPARATOR = "|";
+    public static final String RESPONSE_EMPTY_ATTRIBUTE_SYMBOL = "null";
 }
