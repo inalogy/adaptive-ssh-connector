@@ -1,8 +1,8 @@
 {
   "objects":[
     {
-      "icfsName": "ExchangeGuid",
-      "icfsUid": "ExchangeGuid",
+      "icfsName": "exchangeGuid",
+      "icfsUid": "exchangeGuid",
       "objectClass": "user",
       "createScript": "C:\\Users\\inaadm\\Desktop\\createScript.ps1  -name \"test\" -email \"test@inalogy.net\" -password \"DpcF@1234\"",
       "updateScript": "updateScript.ps3",
@@ -11,7 +11,7 @@
       "attributes": [
         {
           "mailboxName": {
-            "required": true,
+            "required": false,
             "creatable":true,
             "updateable": true,
             "dataType": "String",
