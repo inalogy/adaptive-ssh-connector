@@ -13,34 +13,15 @@ public class SshResponseHandler {
     private static final Log LOG = Log.getLog(SshResponseHandler.class);
 
 
-    //    private final String responseTypeOperation;
     private final String rawResponse;
     private final SchemaType schemaType;
-    private final String operationType;
 
-    public SshResponseHandler(SchemaType schemaType, String operationType, String rawResponse) {
+    public SshResponseHandler(SchemaType schemaType, String rawResponse) {
         this.schemaType = schemaType;
-        this.operationType = operationType;
         this.rawResponse = rawResponse;
     }
 
-    public ArrayList<ConnectorObject> parseResponse() {
-        switch (this.operationType) {
-            //TODO Rework
-//            case Constants.CREATE_OPERATION:
-//                return parseCreateOperation();
-            case Constants.SEARCH_OPERATION:
-                return parseSearchOperation();
-            case Constants.UPDATE_OPERATION:
-                return parseUpdateOperation();
-            case Constants.DELETE_OPERATION:
-                return parseDeleteOperation();
-            default:
-                throw new ConnectorException("Unsupported Operation error: " + this.operationType);
-        }
-    }
-
-    private ArrayList<ConnectorObject> parseSearchOperation() {
+    public ArrayList<ConnectorObject> parseSearchOperation() {
         ArrayList<ConnectorObject> connectorObjects = new ArrayList<>();
         String[] lines = this.rawResponse.split("\n");
 
@@ -107,12 +88,16 @@ public class SshResponseHandler {
     }
 
 
-    private ArrayList<ConnectorObject> parseUpdateOperation() {
+    private Uid parseUpdateOperation() {
         return null;
     }
 
-    private ArrayList<ConnectorObject> parseDeleteOperation() {
-        return null;
+    public String parseDeleteOperation() {
+
+        if (this.rawResponse.equals("")){
+            return null;
+        }
+        return this.rawResponse;
 
     }
 
@@ -121,15 +106,25 @@ public class SshResponseHandler {
 
         // read first line that always contains attr names
         String[] attributeNames = lines[0].split(Pattern.quote(Constants.RESPONSE_SEPARATOR));
-            String[] attributeValues = lines[1].split(Pattern.quote(Constants.RESPONSE_SEPARATOR));
-            Map<String,String> validAttributes = parseAttributes(attributeNames, attributeValues);
-            ConnectorObject connectorObject = convertObjectToConnectorObject(validAttributes);
-            //TODO cant reuse method
-//            System.out.println(validAttributes);
-        return connectorObject.getUid();
+        String[] attributeValues = lines[1].split(Pattern.quote(Constants.RESPONSE_SEPARATOR));
+        Map<String,String> validAttributes = parseAttributes(attributeNames, attributeValues);
+        return parseUid(validAttributes);
     }
 
+    private Uid parseUid(Map<String, String> attributes) {
+        String uidValue = attributes.get("icfsUid");
+        String nameValue = attributes.get("icfsName");
 
+        if(uidValue != null){
+            return new Uid(uidValue);
+        }
+        else if(nameValue != null){
+            return new Uid(nameValue);
+        }
+        else{
+            throw new ConnectorException("Fatal Error: Cannot find: " + this.schemaType.getIcfsUid() + " " + this.schemaType.getIcfsName());
+        }
+    }
     private ConnectorObject convertObjectToConnectorObject(Map<String, String> attributes) {
         ConnectorObjectBuilder builder = new ConnectorObjectBuilder();
         ObjectClass objectClass = new ObjectClass(this.schemaType.getObjectClassName());
