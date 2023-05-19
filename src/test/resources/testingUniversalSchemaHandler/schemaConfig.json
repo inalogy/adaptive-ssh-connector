@@ -6,7 +6,7 @@
       "objectClass": "user",
       "createScript": "C:\\Users\\inaadm\\Desktop\\createScript.ps1  -name \"test\" -email \"test@inalogy.net\" -password \"DpcF@1234\"",
       "updateScript": "updateScript.ps3",
-      "deleteScript": "deleteScript.ps4",
+      "deleteScript": " C:\\Users\\inaadm\\Desktop\\deleteScript.ps1 -email \"test@inalogy.net\"",
       "searchScript": "C:\\Users\\inaadm\\Desktop\\searchScript.ps1",
       "attributes": [
         {
