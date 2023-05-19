@@ -12,6 +12,7 @@ import com.inalogy.midpoint.connectors.utils.FileHashCalculator;
 import com.inalogy.midpoint.connectors.utils.SshResponseHandler;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
+import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.common.objects.*;
 import org.identityconnectors.framework.common.objects.filter.Filter;
 import org.identityconnectors.framework.common.objects.filter.FilterTranslator;
@@ -127,7 +128,7 @@ public class SshConnector implements
                 String searchScript = schemaType.getSearchScript();
                 String sshProcessedCommand = commandProcessor.process(null, searchScript);
                 String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
-                ArrayList<ConnectorObject> objectsToHandle = new SshResponseHandler(schemaType, Constants.SEARCH_OPERATION, sshRawResponse).parseResponse();
+                ArrayList<ConnectorObject> objectsToHandle = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation();
                 for (ConnectorObject connectorObject: objectsToHandle){
                     handler.handle(connectorObject);
                 }
@@ -143,11 +144,11 @@ public class SshConnector implements
 //        getSchemaHandler();
         // choosing schema type by key value from map which corresponds to SchemaType object
         SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
-            String createScript = schemaType.getCreateScript();
-            String sshProcessedCommand = commandProcessor.process(null, createScript);
-            String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
-            Uid uid = new SshResponseHandler(schemaType, Constants.CREATE_OPERATION, sshRawResponse).parseCreateOperation();
-            return uid;
+        String createScript = schemaType.getCreateScript();
+        String sshProcessedCommand = commandProcessor.process(null, createScript);
+        String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
+        Uid uid = new SshResponseHandler(schemaType, sshRawResponse).parseCreateOperation();
+        return uid;
     }
 
     @Override
@@ -157,7 +158,19 @@ public class SshConnector implements
 
     @Override
     public void delete(ObjectClass objectClass, Uid uid, OperationOptions options) {
-
+        SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
+        String deleteScript = schemaType.getDeleteScript();
+        String sshProcessedCommand = commandProcessor.process(null, deleteScript);
+        String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
+        String DeleteResponse = new SshResponseHandler(schemaType, sshRawResponse).parseDeleteOperation();
+        if (DeleteResponse == null){
+            //success
+            return;
+        }
+        else{
+            //return response error
+            throw new ConnectorException("Error occurred while deleting user: " + DeleteResponse);
+        }
     }
 
     @Override
