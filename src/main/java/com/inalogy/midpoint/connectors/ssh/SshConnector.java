@@ -1,5 +1,7 @@
 package com.inalogy.midpoint.connectors.ssh;
 
+import com.inalogy.midpoint.connectors.filtertranslator.SshFilter;
+import com.inalogy.midpoint.connectors.filtertranslator.SshFilterTranslator;
 import com.inalogy.midpoint.connectors.utils.Constants;
 import com.inalogy.midpoint.connectors.cmd.CommandProcessor;
 import com.inalogy.midpoint.connectors.cmd.SessionManager;
@@ -29,7 +31,7 @@ public class SshConnector implements
         PoolableConnector,
         SchemaOp,
         TestOp,
-        SearchOp<Filter>,
+        SearchOp<SshFilter>,
         CreateOp,
         UpdateDeltaOp,
         DeleteOp
@@ -40,7 +42,6 @@ public class SshConnector implements
     private static UniversalSchemaHandler schema = null;
     //Ssh Connector schema cache
     private static final Log LOG = Log.getLog(SshConnector.class);
-//    private SessionManager sessionManager;
 
     @Override
     public Configuration getConfiguration() {
@@ -58,20 +59,28 @@ public class SshConnector implements
 
     @Override
     public void dispose() {
-        schema = null;
-        this.configuration = null;
-        if (this.sshManager != null) {
-            this.sshManager.disconnect();
-            this.sshManager = null;
+        try {
+            //TODO throwing error
+            this.configuration = null;
+            if (SshConnector.schema != null) {
+                SshConnector.schema = null;
+            }
+            if (this.commandProcessor != null) {
+                this.commandProcessor = null;
+            }
+            if (this.sshManager != null) {
+                this.sshManager.disconnect();
+                this.sshManager = null;
+            }
         }
-//        commandProcessor = null;
-
+        catch (Throwable t){
+            LOG.error("dispose Error " + t);
+        }
     }
 
     @Override
     public void test() {
         String testEcho = "echo \"Hello\"";
-//        String testEcho = "Get-Process";
         String response = this.sshManager.exec(testEcho).replace("\n", "").replace("\r", "");
         if (!response.equals("Hello")){
             throw new ConnectionFailedException("Error occurred while testing connection");
@@ -80,21 +89,20 @@ public class SshConnector implements
 
     @Override
     public Schema schema() {
-//        LOG.error("schema method executed");
         SchemaBuilder schemaBuilder = new SchemaBuilder(SshConnector.class);
         String currentFileSha256 = FileHashCalculator.calculateSHA256(this.configuration.getSchemaFilePath());
 
-        if (schema == null){
-            schema = new UniversalSchemaHandler(this.configuration.getSchemaFilePath());
+        if (SshConnector.schema == null){
+            SshConnector.schema = new UniversalSchemaHandler(this.configuration.getSchemaFilePath());
             LOG.info("Creating universalSchemaHandler schemaConfigFilePath:" + this.configuration.getSchemaFilePath());
 
         }
         else if (schema != null && currentFileSha256 != null && !schema.getFileSha256().equals(currentFileSha256)){
             // if sha256 of schemaFile is unchanged we don't need to fetch it again
             LOG.info("Change in schemaConfigFile detected");
-            schema = new UniversalSchemaHandler(this.configuration.getSchemaFilePath());
+            SshConnector.schema = new UniversalSchemaHandler(this.configuration.getSchemaFilePath());
         }
-        for (SchemaType schemaType: schema.getSchemaTypes().values()){
+        for (SchemaType schemaType: SshConnector.schema.getSchemaTypes().values()){
 //            //TODO check if ok
             UniversalObjectsHandler.buildObjectClass(schemaBuilder, schemaType);
         }
@@ -102,18 +110,14 @@ public class SshConnector implements
     }
 
     @Override
-    public FilterTranslator<Filter> createFilterTranslator(ObjectClass objectClass, OperationOptions options) {
-        return new FilterTranslator<Filter>() {
-            @Override
-            public List<Filter> translate(Filter filter) {
-                return Collections.<Filter>emptyList();
-            }
-        };
+    public FilterTranslator<SshFilter> createFilterTranslator(ObjectClass objectClass, OperationOptions options) {
+        return new SshFilterTranslator();
     }
 
     @Override
-    public void executeQuery(ObjectClass objectClass, Filter query, ResultsHandler handler, OperationOptions options) {
+    public void executeQuery(ObjectClass objectClass, SshFilter query, ResultsHandler handler, OperationOptions options) {
         LOG.info("executeQuery on {0}, query: {1}, options: {2}", objectClass, query, options);
+        getSchemaHandler();
         try {
 //            getSchemaHandler();
             // choosing schema type by key value from map which corresponds to SchemaType object
@@ -123,7 +127,21 @@ public class SshConnector implements
                 LOG.error("Unsupported ObjectClass");
                 throw new IllegalArgumentException("Unsupported ObjectClass: " + objectClass);
             }
-            if (query != null){} //TODO
+            if (query != null && query.byUid != null){
+                String searchScript = schemaType.getSearchScript();
+//                Set<Attribute> attributes = new HashSet<>();
+                //TODO find better way
+                //TODO now when checking single shadow other attributes wont be loaded
+                String formattedSearchScript = searchScript + query;
+                String sshProcessedCommand = commandProcessor.process(null, formattedSearchScript);
+                String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
+                ArrayList<ConnectorObject> objectsToHandle = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation();
+                for (ConnectorObject connectorObject: objectsToHandle){
+                    handler.handle(connectorObject);
+                }
+
+
+            } //TODO
             else {
                 String searchScript = schemaType.getSearchScript();
                 String sshProcessedCommand = commandProcessor.process(null, searchScript);
@@ -141,7 +159,7 @@ public class SshConnector implements
 
     @Override
     public Uid create(ObjectClass objectClass, Set<Attribute> createAttributes, OperationOptions options) {
-//        getSchemaHandler();
+        getSchemaHandler();
         // choosing schema type by key value from map which corresponds to SchemaType object
         SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
         String createScript = schemaType.getCreateScript();
@@ -158,6 +176,7 @@ public class SshConnector implements
 
     @Override
     public void delete(ObjectClass objectClass, Uid uid, OperationOptions options) {
+        getSchemaHandler();
         SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
         String deleteScript = schemaType.getDeleteScript();
         String sshProcessedCommand = commandProcessor.process(null, deleteScript);
@@ -173,6 +192,11 @@ public class SshConnector implements
         }
     }
 
+    public void getSchemaHandler(){
+        if (SshConnector.schema == null){
+            schema();
+        }
+    }
     @Override
     public void checkAlive() {
 
