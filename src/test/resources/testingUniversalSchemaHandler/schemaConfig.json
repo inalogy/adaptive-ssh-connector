@@ -1,36 +1,15 @@
 {
   "objects":[
     {
-      "icfsName": "exchangeGuid",
+      "icfsName": "mailboxName",
       "icfsUid": "exchangeGuid",
       "objectClass": "user",
-      "createScript": "C:\\Users\\inaadm\\Desktop\\createScript.ps1  -name \"test\" -email \"test@inalogy.net\" -password \"DpcF@1234\"",
-      "updateScript": "updateScript.ps3",
-      "deleteScript": " C:\\Users\\inaadm\\Desktop\\deleteScript.ps1 -email \"test@inalogy.net\"",
+      "createScript": "C:\\Users\\inaadm\\Desktop\\createScript.ps1",
+      "updateScript": "C:\\Users\\inaadm\\Desktop\\updateScript.ps1",
+      "deleteScript": " C:\\Users\\inaadm\\Desktop\\deleteScript.ps1",
       "searchScript": "C:\\Users\\inaadm\\Desktop\\searchScript.ps1",
       "attributes": [
         {
-          "mailboxName": {
-            "required": false,
-            "creatable":true,
-            "updateable": true,
-            "dataType": "String",
-            "multivalued": false
-          },
-          "name": {
-            "required": false,
-            "creatable": true,
-            "updateable": true,
-            "dataType": "String",
-            "multivalued": false
-          },
-          "password": {
-            "required": false,
-            "creatable": true,
-            "updateable": true,
-            "dataType": "String",
-            "multivalued": false
-          },
           "email": {
             "required": false,
             "creatable": true,
