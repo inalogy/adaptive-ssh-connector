@@ -94,12 +94,12 @@ public class SshConnector implements
 
         if (SshConnector.schema == null){
             SshConnector.schema = new UniversalSchemaHandler(this.configuration.getSchemaFilePath());
-            LOG.info("Creating universalSchemaHandler schemaConfigFilePath:" + this.configuration.getSchemaFilePath());
+            LOG.ok("Creating universalSchemaHandler schemaConfigFilePath:" + this.configuration.getSchemaFilePath());
 
         }
         else if (schema != null && currentFileSha256 != null && !schema.getFileSha256().equals(currentFileSha256)){
             // if sha256 of schemaFile is unchanged we don't need to fetch it again
-            LOG.info("Change in schemaConfigFile detected");
+            LOG.ok("Change in schemaConfigFile detected");
             SshConnector.schema = new UniversalSchemaHandler(this.configuration.getSchemaFilePath());
         }
         for (SchemaType schemaType: SshConnector.schema.getSchemaTypes().values()){
@@ -152,6 +152,7 @@ public class SshConnector implements
                 }
             }
         } catch (Exception e) {
+            //TODO no error catching in this method
             LOG.error("Error occurred ", e);
             // Handle exception
         }
@@ -160,10 +161,15 @@ public class SshConnector implements
     @Override
     public Uid create(ObjectClass objectClass, Set<Attribute> createAttributes, OperationOptions options) {
         getSchemaHandler();
+//        SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
+//        Set<Attribute> processedAttributes = new HashSet<>();
+//        for (Attribute createAttribute: createAttributes){
+//
+//        }
         // choosing schema type by key value from map which corresponds to SchemaType object
         SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
         String createScript = schemaType.getCreateScript();
-        String sshProcessedCommand = commandProcessor.process(null, createScript);
+        String sshProcessedCommand = commandProcessor.process(createAttributes, createScript);
         String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
         Uid uid = new SshResponseHandler(schemaType, sshRawResponse).parseCreateOperation();
         return uid;
@@ -171,6 +177,56 @@ public class SshConnector implements
 
     @Override
     public Set<AttributeDelta> updateDelta(ObjectClass objectClass, Uid uid, Set<AttributeDelta> modifications, OperationOptions options) {
+        LOG.info("objectClass : {0} uid: {1} modifications: {2} operationOptions: {3}", objectClass, uid.getValue(), modifications, options);
+        // values to remove
+        // values to Add
+        // values to Replace
+        getSchemaHandler();
+        SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
+
+        Set<Attribute> attributeSet = new HashSet<>();
+        Attribute icfsAttribute = AttributeBuilder.build(schemaType.getIcfsUid(), uid.getValue());
+        attributeSet.add(icfsAttribute);
+
+        for (AttributeDelta attributeDelta: modifications){
+            System.out.println(attributeDelta.getName());
+            if (attributeDelta.getValuesToAdd() != null){
+                for (Object singleAttr: attributeDelta.getValuesToAdd()){
+                    System.out.println(singleAttr.toString());;
+                }
+
+            }
+            if (attributeDelta.getValuesToRemove() != null){
+
+            }
+            if (attributeDelta.getValuesToReplace() != null){
+                // add check for multivalued
+                if (attributeDelta.getValuesToReplace() != null){
+                    for (Object value: attributeDelta.getValuesToReplace()){
+                        System.out.println(value.toString());
+
+
+
+
+                        Attribute attribute = AttributeBuilder.build(attributeDelta.getName(), value);
+                        attributeSet.add(attribute);
+
+
+                    }
+                    String updateScript = schemaType.getUpdateScript();
+
+                    //TODO change exec for all modifications in one step
+                    String sshProcessedCommand = commandProcessor.process(attributeSet, updateScript);
+                    String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
+                    if (sshRawResponse.equals("")){
+                        LOG.info("success");
+                    }
+                    else {
+                        throw new ConnectorException("error occurred while modifying object " + sshRawResponse);
+                    }
+                }
+            }
+        }
         return null;
     }
 
@@ -179,7 +235,11 @@ public class SshConnector implements
         getSchemaHandler();
         SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
         String deleteScript = schemaType.getDeleteScript();
-        String sshProcessedCommand = commandProcessor.process(null, deleteScript);
+        Set<Attribute> attributeSet = new HashSet<>();
+        Attribute attribute = AttributeBuilder.build(schemaType.getIcfsUid(), uid.getValue());
+        //TODO delete by uid=exchangeGuid based on powershell script design
+        attributeSet.add(attribute);
+        String sshProcessedCommand = commandProcessor.process(attributeSet, deleteScript);
         String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
         String DeleteResponse = new SshResponseHandler(schemaType, sshRawResponse).parseDeleteOperation();
         if (DeleteResponse == null){
@@ -199,7 +259,6 @@ public class SshConnector implements
     }
     @Override
     public void checkAlive() {
-
     }
 
 }
