@@ -18,6 +18,7 @@ package com.inalogy.midpoint.connectors.cmd;
 import com.inalogy.midpoint.connectors.ssh.SshConfiguration;
 
 import com.inalogy.midpoint.connectors.utils.Constants;
+import com.sun.org.apache.bcel.internal.Const;
 import org.identityconnectors.framework.common.exceptions.ConfigurationException;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.jetbrains.annotations.NotNull;
@@ -95,7 +96,10 @@ public class CommandProcessor {
 
             if(insertAttribute) {
                 commandLineBuilder.append(" ");
-                commandLineBuilder.append(paramPrefix).append(attribute.getName());
+                // check for special attributes
+                String attributeName  = transformSpecialAttributes(attribute.getName());
+
+                commandLineBuilder.append(paramPrefix).append(attributeName);
                 commandLineBuilder.append(" ");
                 for (Object value : values) {
                     commandLineBuilder.append(quoteDouble(value)).append(",");
@@ -121,4 +125,18 @@ public class CommandProcessor {
         }
         return clearCommand;
     }
+
+    private String transformSpecialAttributes(String specialAttribute){
+        if (specialAttribute.equals(Constants.SPECIAL_CONNID_NAME)){
+            return "name";
+        } else if (specialAttribute.equals(Constants.SPECIAL_CONNID_PASSWORD)) {
+            return "password";
+
+        }
+        else {
+            return specialAttribute;
+        }
+    }
+
+
 }
