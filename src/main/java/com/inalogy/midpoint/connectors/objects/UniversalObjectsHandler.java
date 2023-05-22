@@ -32,15 +32,16 @@ public class UniversalObjectsHandler {
             AttributeInfoBuilder nameAttrBuilder = new AttributeInfoBuilder(Name.NAME, String.class);
             nameAttrBuilder.setRequired(true);
             nameAttrBuilder.setCreateable(true);
-            nameAttrBuilder.setUpdateable(true);
+            nameAttrBuilder.setUpdateable(false);
             nameAttrBuilder.setReadable(true);
             objClassBuilder.addAttributeInfo(nameAttrBuilder.build());
         }
         if (icfsUid != null) {
+            //TODO updateable true?
             AttributeInfoBuilder uidAttrBuilder = new AttributeInfoBuilder(Uid.NAME, String.class);
             uidAttrBuilder.setRequired(true);
-            uidAttrBuilder.setCreateable(true);
-            uidAttrBuilder.setUpdateable(true);
+            uidAttrBuilder.setCreateable(false);
+            uidAttrBuilder.setUpdateable(false);
             uidAttrBuilder.setReadable(true);
             objClassBuilder.addAttributeInfo(uidAttrBuilder.build());
         }
