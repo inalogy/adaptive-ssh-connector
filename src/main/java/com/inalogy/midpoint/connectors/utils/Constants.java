@@ -11,4 +11,8 @@ public class Constants {
     public static final String CLEAR_COMMAND_WINDOWS = "cls";
     public static final String RESPONSE_SEPARATOR = "|";
     public static final String RESPONSE_EMPTY_ATTRIBUTE_SYMBOL = "null";
+
+    public static final String SPECIAL_CONNID_NAME = "__NAME__";
+    public static final String SPECIAL_CONNID_UID = "__UID__";
+    public static final String SPECIAL_CONNID_PASSWORD = "__PASSWORD__";
 }
