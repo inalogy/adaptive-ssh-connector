@@ -98,7 +98,7 @@ public class CommandProcessor {
                 commandLineBuilder.append(" ");
                 // check for special attributes
                 String attributeName  = transformSpecialAttributes(attribute.getName());
-
+                // impossible to map same attribute from midpoint to script
                 commandLineBuilder.append(paramPrefix).append(attributeName);
                 commandLineBuilder.append(" ");
                 for (Object value : values) {
@@ -128,9 +128,9 @@ public class CommandProcessor {
 
     private String transformSpecialAttributes(String specialAttribute){
         if (specialAttribute.equals(Constants.SPECIAL_CONNID_NAME)){
-            return "name";
+            return Constants.MICROSOFT_EXCHANGE_NAME_FLAG;
         } else if (specialAttribute.equals(Constants.SPECIAL_CONNID_PASSWORD)) {
-            return "password";
+            return Constants.MICROSOFT_EXCHANGE_PASSWORD_FLAG;
 
         }
         else {
