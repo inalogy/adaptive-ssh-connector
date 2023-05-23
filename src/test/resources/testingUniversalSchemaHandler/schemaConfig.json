@@ -1,8 +1,8 @@
 {
   "objects":[
     {
-      "icfsName": "mailboxName",
-      "icfsUid": "exchangeGuid",
+      "icfsName": "UserPrincipalName",
+      "icfsUid": "ExchangeGuid",
       "objectClass": "user",
       "createScript": "C:\\Users\\inaadm\\Desktop\\createScript.ps1",
       "updateScript": "C:\\Users\\inaadm\\Desktop\\updateScript.ps1",
