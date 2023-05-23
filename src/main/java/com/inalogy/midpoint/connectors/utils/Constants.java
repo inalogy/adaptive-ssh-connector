@@ -18,5 +18,7 @@ public class Constants {
     public static final String MICROSOFT_EXCHANGE_NAME_FLAG = "name";
     public static final String MICROSOFT_EXCHANGE_EMAIL_FLAG = "email";
     public static final String MICROSOFT_EXCHANGE_PASSWORD_FLAG = "password";
-
+    public static final String MICROSOFT_EXCHANGE_MULTIVALUED_SEPARATOR = " ";
+    public static final String MICROSOFT_EXCHANGE_ADD_UPDATEDELTA = "ADD:";
+    public static final String MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA = "REMOVE:";
 }
