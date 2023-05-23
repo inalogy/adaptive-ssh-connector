@@ -15,4 +15,8 @@ public class Constants {
     public static final String SPECIAL_CONNID_NAME = "__NAME__";
     public static final String SPECIAL_CONNID_UID = "__UID__";
     public static final String SPECIAL_CONNID_PASSWORD = "__PASSWORD__";
+    public static final String MICROSOFT_EXCHANGE_NAME_FLAG = "name";
+    public static final String MICROSOFT_EXCHANGE_EMAIL_FLAG = "email";
+    public static final String MICROSOFT_EXCHANGE_PASSWORD_FLAG = "password";
+
 }
