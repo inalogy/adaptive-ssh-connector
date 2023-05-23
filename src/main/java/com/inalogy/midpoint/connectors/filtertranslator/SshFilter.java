@@ -3,7 +3,7 @@ public class SshFilter {
 
     public String byUid;
 
-    public String ExchangeGuidFlag = "-exchangeGuid";
+    public String ExchangeGuidFlag = "-ExchangeGuid";
 
     @Override
     public String toString() {
