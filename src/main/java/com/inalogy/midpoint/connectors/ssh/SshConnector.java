@@ -187,46 +187,62 @@ public class SshConnector implements
         Set<Attribute> attributeSet = new HashSet<>();
         Attribute icfsAttribute = AttributeBuilder.build(schemaType.getIcfsUid(), uid.getValue());
         attributeSet.add(icfsAttribute);
+        // list through all attributes if ADD or Remove modify them
 
+
+//        Map<String, String> preparedAttributes = new HashMap<>();
         for (AttributeDelta attributeDelta: modifications){
-            System.out.println(attributeDelta.getName());
-            if (attributeDelta.getValuesToAdd() != null){
-                for (Object singleAttr: attributeDelta.getValuesToAdd()){
-                    System.out.println(singleAttr.toString());;
+            StringBuilder singleMultivaluedAttribute = new StringBuilder();
+            if (attributeDelta.getValuesToAdd() != null) {
+                //add
+                for (Object value : attributeDelta.getValuesToAdd()) {
+                    String attributeValue = Constants.MICROSOFT_EXCHANGE_MULTIVALUED_SEPARATOR + Constants.MICROSOFT_EXCHANGE_ADD_UPDATEDELTA + value;
+                    singleMultivaluedAttribute.append(attributeValue);
+//                    Attribute attribute = AttributeBuilder.build(attributeDelta.getName(), attributeValue);
+//                    attributeSet.add(attribute);
                 }
-
             }
-            if (attributeDelta.getValuesToRemove() != null){
+            if (attributeDelta.getValuesToRemove() != null) {
 
+                //add
+                for (Object value : attributeDelta.getValuesToRemove()) {
+                    String attributeValue = Constants.MICROSOFT_EXCHANGE_MULTIVALUED_SEPARATOR + Constants.MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA + value;
+                    singleMultivaluedAttribute.append(attributeValue);
+//                    Attribute attribute = AttributeBuilder.build(attributeDelta.getName(), attributeValue);
+//                    attributeSet.add(attribute);
+                }
             }
-            if (attributeDelta.getValuesToReplace() != null){
+            Attribute multivaluedAttribute = AttributeBuilder.build(attributeDelta.getName(), singleMultivaluedAttribute.toString());
+            attributeSet.add(multivaluedAttribute);
+            LOG.info("singlemultivalued: " + singleMultivaluedAttribute);
+            String updateScript = schemaType.getUpdateScript();
+            //TODO change exec for all modifications in one step
+            String sshProcessedCommand = commandProcessor.process(attributeSet, updateScript);
+            String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
+            if (sshRawResponse.equals("")){
+                LOG.info("success");
+            }
+            else {
+                throw new ConnectorException("error occurred while modifying object " + sshRawResponse);
+            }
+//            preparedAttributes.put(attributeDeltaName, singleMultivaluedAttribute.toString());
+
+
+            // else process replace
                 // add check for multivalued
                 if (attributeDelta.getValuesToReplace() != null){
                     for (Object value: attributeDelta.getValuesToReplace()){
                         System.out.println(value.toString());
-
-
-
-
                         Attribute attribute = AttributeBuilder.build(attributeDelta.getName(), value);
                         attributeSet.add(attribute);
 
 
                     }
-                    String updateScript = schemaType.getUpdateScript();
-
-                    //TODO change exec for all modifications in one step
-                    String sshProcessedCommand = commandProcessor.process(attributeSet, updateScript);
-                    String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
-                    if (sshRawResponse.equals("")){
-                        LOG.info("success");
-                    }
-                    else {
-                        throw new ConnectorException("error occurred while modifying object " + sshRawResponse);
-                    }
                 }
             }
-        }
+
+        // for multivalue
+
         return null;
     }
 
