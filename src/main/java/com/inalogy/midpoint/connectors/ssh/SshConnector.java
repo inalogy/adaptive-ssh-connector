@@ -178,9 +178,6 @@ public class SshConnector implements
     @Override
     public Set<AttributeDelta> updateDelta(ObjectClass objectClass, Uid uid, Set<AttributeDelta> modifications, OperationOptions options) {
         LOG.info("objectClass : {0} uid: {1} modifications: {2} operationOptions: {3}", objectClass, uid.getValue(), modifications, options);
-        // values to remove
-        // values to Add
-        // values to Replace
         getSchemaHandler();
         SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
 
@@ -192,53 +189,40 @@ public class SshConnector implements
 
 //        Map<String, String> preparedAttributes = new HashMap<>();
         for (AttributeDelta attributeDelta: modifications){
-            StringBuilder singleMultivaluedAttribute = new StringBuilder();
-            if (attributeDelta.getValuesToAdd() != null) {
-                //add
-                for (Object value : attributeDelta.getValuesToAdd()) {
-                    String attributeValue = Constants.MICROSOFT_EXCHANGE_MULTIVALUED_SEPARATOR + Constants.MICROSOFT_EXCHANGE_ADD_UPDATEDELTA + value;
-                    singleMultivaluedAttribute.append(attributeValue);
-//                    Attribute attribute = AttributeBuilder.build(attributeDelta.getName(), attributeValue);
-//                    attributeSet.add(attribute);
-                }
-            }
-            if (attributeDelta.getValuesToRemove() != null) {
+            //handle multivalued operations for ADD and REMOVE separately
+            if (attributeDelta.getValuesToAdd() != null || attributeDelta.getValuesToRemove() != null){
+                handleMultiValuedAttribute(schemaType, uid, attributeDelta);
+//            } else if (attributeDelta.getValuesToRemove() != null) {
+//                handleMultiValuedAttribute(schemaType, uid, attributeDelta);
+            } else {
+                //handle replace singlevalue
+                if (attributeDelta.getValuesToReplace() != null){
+                    for (Object value: attributeDelta.getValuesToReplace()){
+                        Attribute attribute = AttributeBuilder.build(attributeDelta.getName(), value);
+                        attributeSet.add(attribute);
+                        String updateScript = schemaType.getUpdateScript();
+                        //TODO change exec for all modifications in one step
+                        String sshProcessedCommand = commandProcessor.process(attributeSet, updateScript);
+                        String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
+                        attributeSet.remove(attribute);
 
-                //add
-                for (Object value : attributeDelta.getValuesToRemove()) {
-                    String attributeValue = Constants.MICROSOFT_EXCHANGE_MULTIVALUED_SEPARATOR + Constants.MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA + value;
-                    singleMultivaluedAttribute.append(attributeValue);
-//                    Attribute attribute = AttributeBuilder.build(attributeDelta.getName(), attributeValue);
-//                    attributeSet.add(attribute);
+//            attributeSet.remove(multivaluedAttribute);
+                        if (sshRawResponse.equals("")){
+                            LOG.info("success");
+                        }
+                        else {
+                            throw new ConnectorException("error occurred while modifying object " + sshRawResponse);
+                        }
+                    }
                 }
             }
-            Attribute multivaluedAttribute = AttributeBuilder.build(attributeDelta.getName(), singleMultivaluedAttribute.toString());
-            attributeSet.add(multivaluedAttribute);
-            LOG.info("singlemultivalued: " + singleMultivaluedAttribute);
-            String updateScript = schemaType.getUpdateScript();
-            //TODO change exec for all modifications in one step
-            String sshProcessedCommand = commandProcessor.process(attributeSet, updateScript);
-            String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
-            if (sshRawResponse.equals("")){
-                LOG.info("success");
-            }
-            else {
-                throw new ConnectorException("error occurred while modifying object " + sshRawResponse);
-            }
+
 //            preparedAttributes.put(attributeDeltaName, singleMultivaluedAttribute.toString());
 
 
             // else process replace
                 // add check for multivalued
-                if (attributeDelta.getValuesToReplace() != null){
-                    for (Object value: attributeDelta.getValuesToReplace()){
-                        System.out.println(value.toString());
-                        Attribute attribute = AttributeBuilder.build(attributeDelta.getName(), value);
-                        attributeSet.add(attribute);
 
-
-                    }
-                }
             }
 
         // for multivalue
@@ -246,6 +230,52 @@ public class SshConnector implements
         return null;
     }
 
+    public void handleMultiValuedAttribute(SchemaType schemaType,Uid uid, AttributeDelta attributeDelta){
+        /** Extract all values from attributeDelta and format it into single string separated based on Constant.MICROSOFT_EXCHANGE_MULTIVALUED_SEPARATOR
+         *  e.g.: add=example@mail.com, add=example2@mail.com, remove=example3@mail.com
+         *  output: -attributeName "ADD:example@mail.com ADD:example2@mail.com REMOVE:oldexample3@mail.com"
+         */
+        Set<Attribute> attributeSet = new HashSet<>();
+        Attribute icfsAttribute = AttributeBuilder.build(schemaType.getIcfsUid(), uid.getValue());
+        attributeSet.add(icfsAttribute);
+
+        // all add remove attributes are concatenated into this StringBuilder
+        StringBuilder multivaluedAttributeAsSingleString = new StringBuilder();
+
+        if (attributeDelta.getValuesToAdd() != null) {
+            for (Object value : attributeDelta.getValuesToAdd()) {
+                String attributeValue = Constants.MICROSOFT_EXCHANGE_ADD_UPDATEDELTA + value + Constants.MICROSOFT_EXCHANGE_MULTIVALUED_SEPARATOR;
+                multivaluedAttributeAsSingleString.append(attributeValue);
+            }
+        }
+        if (attributeDelta.getValuesToRemove() != null) {
+            for (Object value : attributeDelta.getValuesToRemove()) {
+                String attributeValue =  Constants.MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA + value + Constants.MICROSOFT_EXCHANGE_MULTIVALUED_SEPARATOR;
+                multivaluedAttributeAsSingleString.append(attributeValue);
+            }
+        }
+
+        //remove last empty space if present
+        if (multivaluedAttributeAsSingleString.length() > 0 && multivaluedAttributeAsSingleString.charAt(multivaluedAttributeAsSingleString.length() - 1) == ' ') {
+            multivaluedAttributeAsSingleString.deleteCharAt(multivaluedAttributeAsSingleString.length() - 1);
+        }
+        // multivaluedAttributeAsSingleString needs to be escaped
+        multivaluedAttributeAsSingleString.insert(0, "\"");
+        multivaluedAttributeAsSingleString.append("\"");
+        Attribute multivaluedAttribute = AttributeBuilder.build(attributeDelta.getName(), multivaluedAttributeAsSingleString.toString());
+        attributeSet.add(multivaluedAttribute);
+
+        String updateScript = schemaType.getUpdateScript();
+        String sshProcessedCommand = commandProcessor.process(attributeSet, updateScript);
+        String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
+        if (sshRawResponse.equals("")){
+            LOG.info("success");
+        }
+        else {
+            throw new ConnectorException("error occurred while modifying object " + sshRawResponse);
+        }
+
+    }
     @Override
     public void delete(ObjectClass objectClass, Uid uid, OperationOptions options) {
         getSchemaHandler();
