@@ -103,7 +103,6 @@ public class SshConnector implements
             SshConnector.schema = new UniversalSchemaHandler(this.configuration.getSchemaFilePath());
         }
         for (SchemaType schemaType: SshConnector.schema.getSchemaTypes().values()){
-//            //TODO check if ok
             UniversalObjectsHandler.buildObjectClass(schemaBuilder, schemaType);
         }
         return schemaBuilder.build();
@@ -119,7 +118,6 @@ public class SshConnector implements
         LOG.info("executeQuery on {0}, query: {1}, options: {2}", objectClass, query, options);
         getSchemaHandler();
         try {
-//            getSchemaHandler();
             // choosing schema type by key value from map which corresponds to SchemaType object
             SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
 
@@ -129,7 +127,6 @@ public class SshConnector implements
             }
             if (query != null && query.byUid != null){
                 String searchScript = schemaType.getSearchScript();
-//                Set<Attribute> attributes = new HashSet<>();
                 //TODO find better way
                 //TODO now when checking single shadow other attributes wont be loaded
                 String formattedSearchScript = searchScript + query;
@@ -161,11 +158,6 @@ public class SshConnector implements
     @Override
     public Uid create(ObjectClass objectClass, Set<Attribute> createAttributes, OperationOptions options) {
         getSchemaHandler();
-//        SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
-//        Set<Attribute> processedAttributes = new HashSet<>();
-//        for (Attribute createAttribute: createAttributes){
-//
-//        }
         // choosing schema type by key value from map which corresponds to SchemaType object
         SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
         String createScript = schemaType.getCreateScript();
@@ -184,16 +176,11 @@ public class SshConnector implements
         Set<Attribute> attributeSet = new HashSet<>();
         Attribute icfsAttribute = AttributeBuilder.build(schemaType.getIcfsUid(), uid.getValue());
         attributeSet.add(icfsAttribute);
-        // list through all attributes if ADD or Remove modify them
 
-
-//        Map<String, String> preparedAttributes = new HashMap<>();
         for (AttributeDelta attributeDelta: modifications){
             //handle multivalued operations for ADD and REMOVE separately
             if (attributeDelta.getValuesToAdd() != null || attributeDelta.getValuesToRemove() != null){
                 handleMultiValuedAttribute(schemaType, uid, attributeDelta);
-//            } else if (attributeDelta.getValuesToRemove() != null) {
-//                handleMultiValuedAttribute(schemaType, uid, attributeDelta);
             } else {
                 //handle replace singlevalue
                 if (attributeDelta.getValuesToReplace() != null){
@@ -206,7 +193,6 @@ public class SshConnector implements
                         String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
                         attributeSet.remove(attribute);
 
-//            attributeSet.remove(multivaluedAttribute);
                         if (sshRawResponse.equals("")){
                             LOG.info("success");
                         }
@@ -216,17 +202,7 @@ public class SshConnector implements
                     }
                 }
             }
-
-//            preparedAttributes.put(attributeDeltaName, singleMultivaluedAttribute.toString());
-
-
-            // else process replace
-                // add check for multivalued
-
-            }
-
-        // for multivalue
-
+        }
         return null;
     }
 
