@@ -18,7 +18,6 @@ package com.inalogy.midpoint.connectors.cmd;
 import com.inalogy.midpoint.connectors.ssh.SshConfiguration;
 
 import com.inalogy.midpoint.connectors.utils.Constants;
-import com.sun.org.apache.bcel.internal.Const;
 import org.identityconnectors.framework.common.exceptions.ConfigurationException;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.jetbrains.annotations.NotNull;
