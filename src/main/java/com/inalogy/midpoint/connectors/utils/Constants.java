@@ -3,10 +3,6 @@ package com.inalogy.midpoint.connectors.utils;
 public class Constants {
     public static final String TYPE_POWERSHELL = "powershell";
     public static final String TYPE_SHELL = "shell";
-    public static final String SEARCH_OPERATION = "SEARCH_OPERATION";
-    public static final String CREATE_OPERATION = "CREATE_OPERATION";
-    public static final String UPDATE_OPERATION = "UPDATE_OPERATION";
-    public static final String DELETE_OPERATION = "DELETE_OPERATION";
     public static final String CLEAR_COMMAND_UNIX = "clear";
     public static final String CLEAR_COMMAND_WINDOWS = "cls";
     public static final String RESPONSE_SEPARATOR = "|";
@@ -18,7 +14,9 @@ public class Constants {
     public static final String MICROSOFT_EXCHANGE_NAME_FLAG = "name";
     public static final String MICROSOFT_EXCHANGE_EMAIL_FLAG = "email";
     public static final String MICROSOFT_EXCHANGE_PASSWORD_FLAG = "password";
-    public static final String MICROSOFT_EXCHANGE_MULTIVALUED_SEPARATOR = " ";
+    public static final String MICROSOFT_EXCHANGE_MULTIVALUED_SEPARATOR = " "; // maybe not good idea to use space
     public static final String MICROSOFT_EXCHANGE_ADD_UPDATEDELTA = "ADD:";
     public static final String MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA = "REMOVE:";
+    public static final int SSH_RESPONSE_TIMEOUT = 30;
+    public static final int SSH_CLIENT_KEEP_ALIVE_TIMEOUT = 15;
 }
