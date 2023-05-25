@@ -1,10 +1,6 @@
 package com.inalogy.midpoint.connectors.cmd;
-
-//import com.evolveum.polygon.connector.ssh.ConnectorKnownHostsVerifier;
-//import com.evolveum.polygon.connector.ssh.SshConfiguration;
-
-//import com.evolveum.polygon.connector.ssh.ConnectorKnownHostsVerifier;
-//import com.evolveum.polygon.connector.ssh.ConnectorKnownHostsVerifier;
+import net.schmizz.keepalive.KeepAliveProvider;
+import net.schmizz.sshj.DefaultConfig;
 import com.inalogy.midpoint.connectors.ssh.SshConfiguration;
 import com.inalogy.midpoint.connectors.utils.Constants;
 import net.schmizz.sshj.SSHClient;
@@ -13,9 +9,7 @@ import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
-
 import org.identityconnectors.common.logging.Log;
-import org.identityconnectors.framework.common.exceptions.ConfigurationException;
 import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.common.exceptions.ConnectorIOException;
@@ -39,7 +33,8 @@ public class SessionManager {
     }
 
     public String exec(String processedCommand) {
-        connect();
+        long startTime = System.currentTimeMillis();
+        startSession();
         final Session.Command cmd;
         try {
 //            session.exec(CommandProcessor.getClearCommand(this.configuration));
@@ -82,59 +77,110 @@ public class SessionManager {
         }
 
         try {
-            cmd.join(30, TimeUnit.SECONDS);
+            cmd.join(Constants.SSH_RESPONSE_TIMEOUT, TimeUnit.SECONDS);
         } catch (ConnectionException e) {
             throw new ConnectorIOException("Error \"joining\" SSH command: "+e.getMessage(), e);
         }
 
         LOG.info("SSH command exit status: {0}", cmd.getExitStatus());
-        disconnect();
+        closeSession();
+        long endTime = System.currentTimeMillis();
+        long time = endTime - startTime ;
+        LOG.warn("exec() execution time " + time + " ms");
         return output;
     }
 
-    public void connect() {
-        ssh = new SSHClient();
-        ssh.addHostKeyVerifier(hostKeyVerifier);
-        LOG.ok("Connecting to {0}", authManager.getConnectionDesc());
-        try {
-            ssh.connect(configuration.getHost(), configuration.getPort());
-        } catch (IOException e) {
-            LOG.error("Error creating SSH connection to {0}: {1}", authManager.getHostDesc(), e.getMessage());
-            throw new ConnectionFailedException("Error creating SSH connection to " + authManager.getHostDesc() + ": " + e.getMessage(), e);
+    public void initSshClient(){
+        /* Establishing connection with SSHClient
+         */
+        if (ssh == null || !ssh.isConnected()) {
+
+            DefaultConfig defaultConfig = new DefaultConfig();
+            defaultConfig.setKeepAliveProvider(KeepAliveProvider.KEEP_ALIVE);
+            ssh = new SSHClient(defaultConfig);
+
+            // need to validate
+            ssh.getConnection().getKeepAlive().setKeepAliveInterval(Constants.SSH_CLIENT_KEEP_ALIVE_TIMEOUT);
+            ssh.addHostKeyVerifier(hostKeyVerifier);
+
+            try {
+                // connect should occur only once till connection is dropped
+                ssh.connect(configuration.getHost(), configuration.getPort());
+                LOG.warn("Connecting to {0}", authManager.getConnectionDesc());
+            } catch (IOException e) {
+                LOG.error("Error creating SSH connection to {0}: {1}", authManager.getHostDesc(), e.getMessage());
+                throw new ConnectionFailedException("Error creating SSH connection to " + authManager.getHostDesc() + ": " + e.getMessage(), e);
+            }
         }
-        authManager.authenticate(ssh);
-        LOG.ok("Authentication to {0} successful", authManager.getConnectionDesc());
+        else {
+            LOG.info("reusing Ssh client");
+        }
+    }
+
+    public void disposeSshClient(){
+        if (ssh != null && ssh.isConnected()){
+            try {
+                LOG.warn("Disposing SSHClient");
+                ssh.disconnect();
+            } catch (IOException e) {
+                LOG.error("Exception occured while disposing SSHClient: " + e);
+
+            }
+        }
+    }
+    public void startSession() {
+        long startTime = System.currentTimeMillis();
+        initSshClient();
+        if (ssh != null && ssh.isConnected() && !ssh.isAuthenticated()) {
+            authManager.authenticate(ssh);
+        }
         try {
-            session = ssh.startSession();
-//            session.allocateDefaultPTY();
+            if (ssh != null && ssh.isConnected()){
+                session = ssh.startSession();
+            }
+
         } catch (ConnectionException | TransportException e) {
             LOG.error("Communication error while creating SSH session for {1} failed: {2}", authManager.getConnectionDesc(), e.getMessage());
             throw new ConnectionFailedException("Communication error while creating SSH session for "+authManager.getConnectionDesc()+" failed: " + e.getMessage(), e);
         }
-        LOG.info("Connection to {0} fully established", authManager.getConnectionDesc());
+        LOG.info("Session Started: {0}", authManager.getConnectionDesc());
+        long endTime = System.currentTimeMillis();
+        long time = endTime - startTime;
+        LOG.warn("startSession() execution time " + time + " ms");
     }
 
-    public void disconnect() {
-        if (session != null && session.isOpen()) {
-            LOG.ok("Closing session to {0}", authManager.getConnectionDesc());
+//    public void disconnect() {
+//        if (session != null && session.isOpen()) {
+//            LOG.ok("Closing session to {0}", authManager.getConnectionDesc());
+//            try {
+//                session.close();
+//            } catch (ConnectionException | TransportException e) {
+//                LOG.warn("Error closing SSH session for {0}: {1} (ignoring)", authManager.getConnectionDesc(), e.getMessage());
+//            }
+////            session = null;
+//        }
+//        if (ssh.isConnected()) {
+//            LOG.ok("Disconnecting from {0}", authManager.getConnectionDesc());
+//            try {
+//                ssh.disconnect();
+//            } catch (IOException e) {
+//                LOG.warn("Error disconnecting SSH session for {0}: {1} (ignoring)", authManager.getConnectionDesc(), e.getMessage());
+//            }
+//            LOG.info("Connection to {0} disconnected", authManager.getConnectionDesc());
+//        }
+//        ssh = null;
+//    }
+
+    public void closeSession(){
+        if (ssh.isConnected() && session.isOpen()) {
+            LOG.info("Disconnecting from {0}", authManager.getConnectionDesc());
             try {
                 session.close();
             } catch (ConnectionException | TransportException e) {
                 LOG.warn("Error closing SSH session for {0}: {1} (ignoring)", authManager.getConnectionDesc(), e.getMessage());
             }
-            session = null;
-        }
-        if (ssh.isConnected()) {
-            LOG.ok("Disconnecting from {0}", authManager.getConnectionDesc());
-            try {
-                ssh.disconnect();
-            } catch (IOException e) {
-                LOG.warn("Error disconnecting SSH session for {0}: {1} (ignoring)", authManager.getConnectionDesc(), e.getMessage());
-            }
             LOG.info("Connection to {0} disconnected", authManager.getConnectionDesc());
         }
-        ssh = null;
     }
-
 
 }
