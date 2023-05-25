@@ -53,7 +53,7 @@ public class SshConnector implements
         this.configuration = (SshConfiguration) configuration;
         this.configuration.validate();
         this.sshManager = new SessionManager((SshConfiguration) configuration);
-        this.sshManager.connect();
+        this.sshManager.initSshClient();
         this.commandProcessor = new CommandProcessor((SshConfiguration) configuration);
     }
 
@@ -69,7 +69,8 @@ public class SshConnector implements
                 this.commandProcessor = null;
             }
             if (this.sshManager != null) {
-                this.sshManager.disconnect();
+//                this.sshManager.closeSession();
+                this.sshManager.disposeSshClient();
                 this.sshManager = null;
             }
         }
@@ -128,7 +129,6 @@ public class SshConnector implements
             if (query != null && query.byUid != null){
                 String searchScript = schemaType.getSearchScript();
                 //TODO find better way
-                //TODO now when checking single shadow other attributes wont be loaded
                 String formattedSearchScript = searchScript + query;
                 String sshProcessedCommand = commandProcessor.process(null, formattedSearchScript);
                 String sshRawResponse = this.sshManager.exec(sshProcessedCommand);

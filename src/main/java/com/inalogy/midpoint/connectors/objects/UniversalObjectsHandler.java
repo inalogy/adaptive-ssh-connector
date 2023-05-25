@@ -3,7 +3,12 @@ package com.inalogy.midpoint.connectors.objects;
 import com.inalogy.midpoint.connectors.schema.SchemaType;
 import com.inalogy.midpoint.connectors.schema.SchemaTypeAttribute;
 import org.identityconnectors.common.logging.Log;
-import org.identityconnectors.framework.common.objects.*;
+import org.identityconnectors.framework.common.objects.AttributeInfoBuilder;
+import org.identityconnectors.framework.common.objects.ObjectClassInfoBuilder;
+import org.identityconnectors.framework.common.objects.SchemaBuilder;
+import org.identityconnectors.framework.common.objects.Uid;
+import org.identityconnectors.framework.common.objects.Name;
+
 
 public class UniversalObjectsHandler {
     private static final Log LOG = Log.getLog(SchemaType.class);
@@ -40,7 +45,7 @@ public class UniversalObjectsHandler {
             //TODO updateable true?
             AttributeInfoBuilder uidAttrBuilder = new AttributeInfoBuilder(Uid.NAME, String.class);
             uidAttrBuilder.setRequired(true);
-            uidAttrBuilder.setCreateable(false);
+            uidAttrBuilder.setCreateable(true);
             uidAttrBuilder.setUpdateable(false);
             uidAttrBuilder.setReadable(true);
             objClassBuilder.addAttributeInfo(uidAttrBuilder.build());

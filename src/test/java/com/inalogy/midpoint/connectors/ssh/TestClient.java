@@ -27,9 +27,9 @@ public class TestClient {
         String command = cmd.process(attributes, testProcessor.getProperties().getProperty("testScriptPath"));
         System.out.println("[testExec] INFO command: " + command);
 
-        session.connect();
+        session.initSshClient();
         String response = session.exec(command);
-        session.disconnect();
+        session.disposeSshClient();
 
         System.out.println("[testExec] INFO response: " + response);
     }
@@ -45,9 +45,9 @@ public class TestClient {
         String command = cmd.process(attributes, testProcessor.getProperties().getProperty("testScriptPath"));
         System.out.println("[testExec] INFO command: " + command);
 
-        session.connect();
+        session.initSshClient();
         String response = session.exec(command);
-        session.disconnect();
+        session.disposeSshClient();
 
         System.out.println("[testExec] INFO response: " + response);
     }
