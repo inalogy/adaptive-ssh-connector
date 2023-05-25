@@ -25,7 +25,7 @@ More info: https://github.com/PowerShell/Win32-OpenSSH/wiki/DefaultShell
       "deleteScript": "path\to\script\deleteScript.ps4",
       "searchScript": "path\to\script\searchScript.ps1",
       "attributes": [
-        {
+        { // secondary attributes are optional
           "anyAttribute": {
             "required": true,
             "creatable":true,
@@ -87,3 +87,19 @@ example:
     UniqIdent|uniqesmtpMail|mailPrefix|null
 ```
 * **case2:** icfsName and icfsUid will have different value that corresponds to smtpGuid column and smtpMail
+
+### Connector Operations
+* Each operation is designed in a way to work with predefined Script input/output
+
+- ### Search Operation
+  - For single account/object Query searchOp needs UID also operation should always return all attributes that are defined in schema for particular object
+- ### Create Operation
+  - createOp expects attributes provided by midpoint based on mappings in resource, CreateScript should return uniqueID|uniqueName or just uniqueId it depends on script and schemaConfig.json design
+
+- ### UpdateDelta operation
+  - updateDelta process attributes, and multivalued attributes which are formatted in a way that remote powershell script know how to handle them based on Constant Prefix ADD:somevalue REMOVE:somevalue2
+  - Script is expected to return ""  if execution of script was successful any other output is considered as error message
+
+- ### Delete operation
+  - deleteOp expects Uid which is then passed into powershell script
+  - Script is expected to return "" if execution of script was successful any other output is considered as error message
