@@ -9,17 +9,14 @@ import com.inalogy.midpoint.connectors.cmd.SessionManager;
 import com.inalogy.midpoint.connectors.objects.UniversalObjectsHandler;
 import com.inalogy.midpoint.connectors.schema.SchemaType;
 import com.inalogy.midpoint.connectors.schema.UniversalSchemaHandler;
-import com.inalogy.midpoint.connectors.utils.Constants;
 import com.inalogy.midpoint.connectors.utils.FileHashCalculator;
 import com.inalogy.midpoint.connectors.utils.SshResponseHandler;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.common.objects.*;
-import org.identityconnectors.framework.common.objects.filter.Filter;
 import org.identityconnectors.framework.common.objects.filter.FilterTranslator;
 import org.identityconnectors.framework.spi.Configuration;
-import org.identityconnectors.framework.spi.Connector;
 import org.identityconnectors.framework.spi.ConnectorClass;
 import org.identityconnectors.framework.spi.PoolableConnector;
 import org.identityconnectors.framework.spi.operations.*;
@@ -123,22 +120,34 @@ public class SshConnector implements
             SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
 
             if (schemaType == null) {
-                LOG.error("Unsupported ObjectClass");
+                LOG.error("Unsupported ObjectClass: " + objectClass);
                 throw new IllegalArgumentException("Unsupported ObjectClass: " + objectClass);
             }
             if (query != null && query.byUid != null){
+                //build single object query byUid and create corresponding shell command
+                Set<Attribute> queryAttribute = new HashSet<>();
                 String searchScript = schemaType.getSearchScript();
-                //TODO find better way
-                String formattedSearchScript = searchScript + query;
-                String sshProcessedCommand = commandProcessor.process(null, formattedSearchScript);
+                Attribute attribute = AttributeBuilder.build(schemaType.getIcfsUid(), query.byUid);
+                queryAttribute.add(attribute);
+
+                String sshProcessedCommand = commandProcessor.process(queryAttribute, searchScript);
                 String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
-                ArrayList<ConnectorObject> objectsToHandle = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation();
-                for (ConnectorObject connectorObject: objectsToHandle){
-                    handler.handle(connectorObject);
-                }
+                ConnectorObject objectToHandle = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation().get(0);
+                handler.handle(objectToHandle);
 
+            }
+            else if (query != null && query.byName != null) {
+                //build single object query byName and create corresponding shell command
+                Set<Attribute> queryAttribute = new HashSet<>();
+                String searchScript = schemaType.getSearchScript();
+                Attribute attribute = AttributeBuilder.build(schemaType.getIcfsName(), query.byName);
+                queryAttribute.add(attribute);
 
-            } //TODO
+                String sshProcessedCommand = commandProcessor.process(queryAttribute, searchScript);
+                String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
+                ConnectorObject objectToHandle = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation().get(0);
+                handler.handle(objectToHandle);
+            }
             else {
                 String searchScript = schemaType.getSearchScript();
                 String sshProcessedCommand = commandProcessor.process(null, searchScript);
@@ -149,7 +158,6 @@ public class SshConnector implements
                 }
             }
         } catch (Exception e) {
-            //TODO no error catching in this method
             LOG.error("Error occurred ", e);
             // Handle exception
         }

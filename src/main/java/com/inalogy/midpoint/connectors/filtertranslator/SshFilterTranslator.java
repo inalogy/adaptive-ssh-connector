@@ -24,6 +24,11 @@ public class SshFilterTranslator extends AbstractFilterTranslator<SshFilter> {
             lookingFor.byUid = String.valueOf(attr.getValue().get(0));
             return lookingFor;
         }
+        else if (Name.NAME.equals(attr.getName())) {
+            SshFilter lookingFor = new SshFilter();
+            lookingFor.byName = String.valueOf(attr.getValue().get(0));
+            return lookingFor;
+        }
         return null;            // not supported
     }
 }
