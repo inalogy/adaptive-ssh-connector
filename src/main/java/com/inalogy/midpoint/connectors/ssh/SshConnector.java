@@ -1,7 +1,7 @@
 package com.inalogy.midpoint.connectors.ssh;
 
-import com.inalogy.midpoint.connectors.filtertranslator.SshFilter;
-import com.inalogy.midpoint.connectors.filtertranslator.SshFilterTranslator;
+import com.inalogy.midpoint.connectors.filter.SshFilter;
+import com.inalogy.midpoint.connectors.filter.SshFilterTranslator;
 import com.inalogy.midpoint.connectors.utils.Constants;
 import com.inalogy.midpoint.connectors.cmd.CommandProcessor;
 import com.inalogy.midpoint.connectors.cmd.SessionManager;
@@ -128,19 +128,6 @@ public class SshConnector implements
                 Set<Attribute> queryAttribute = new HashSet<>();
                 String searchScript = schemaType.getSearchScript();
                 Attribute attribute = AttributeBuilder.build(schemaType.getIcfsUid(), query.byUid);
-                queryAttribute.add(attribute);
-
-                String sshProcessedCommand = commandProcessor.process(queryAttribute, searchScript);
-                String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
-                ConnectorObject objectToHandle = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation().get(0);
-                handler.handle(objectToHandle);
-
-            }
-            else if (query != null && query.byName != null) {
-                //build single object query byName and create corresponding shell command
-                Set<Attribute> queryAttribute = new HashSet<>();
-                String searchScript = schemaType.getSearchScript();
-                Attribute attribute = AttributeBuilder.build(schemaType.getIcfsName(), query.byName);
                 queryAttribute.add(attribute);
 
                 String sshProcessedCommand = commandProcessor.process(queryAttribute, searchScript);

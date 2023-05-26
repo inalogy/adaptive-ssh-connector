@@ -1,4 +1,4 @@
-package com.inalogy.midpoint.connectors.filtertranslator;
+package com.inalogy.midpoint.connectors.filter;
 
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.objects.Attribute;
@@ -22,11 +22,6 @@ public class SshFilterTranslator extends AbstractFilterTranslator<SshFilter> {
         if (Uid.NAME.equals(attr.getName())) {
             SshFilter lookingFor = new SshFilter();
             lookingFor.byUid = String.valueOf(attr.getValue().get(0));
-            return lookingFor;
-        }
-        else if (Name.NAME.equals(attr.getName())) {
-            SshFilter lookingFor = new SshFilter();
-            lookingFor.byName = String.valueOf(attr.getValue().get(0));
             return lookingFor;
         }
         return null;            // not supported
