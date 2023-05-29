@@ -32,7 +32,6 @@ public class SshResponseHandler {
             Map<String,String> validAttributes = parseAttributes(attributeNames, attributeValues);
             ConnectorObject connectorObject = convertObjectToConnectorObject(validAttributes);
             connectorObjects.add(connectorObject);
-//            System.out.println(validAttributes);
         }
         return connectorObjects;
     }
@@ -46,7 +45,7 @@ public class SshResponseHandler {
          * <p>
          *  case2: powershell script returns line[0]:
          *      UniqueID|UniqueName|Other Attributes
-         *      UniqueID and UniqueName must be equals to icfsUid and icfsName specified in schemaConfig.json
+         *      UniqueID and UniqueName must match icfsUid and icfsName specified in schemaConfig.json
          *      this method set icfsUid and icfsName to corresponding values
          **/
         Map<String, String> validAttributes = new HashMap<>();
@@ -64,21 +63,21 @@ public class SshResponseHandler {
                     validAttributes.put("icfsUid", attributeValue);
                 } else {
                     // process all other attributes that match schema
-                    for (SchemaTypeAttribute sta : this.schemaType.getAttributes()) {
-                        if (sta.getAttributeName().equals(attributeName)) {
-                            if(attributeValue.equals(Constants.RESPONSE_EMPTY_ATTRIBUTE_SYMBOL)){
-                                //TODO Validate
-                                validAttributes.put(attributeName, "");
+                    if(schemaType.getAttributes() !=null) {
+                        for (SchemaTypeAttribute sta : this.schemaType.getAttributes()) {
+                            if (sta.getAttributeName().equals(attributeName)) {
+                                if (attributeValue.equals(Constants.RESPONSE_EMPTY_ATTRIBUTE_SYMBOL)) {
+                                    validAttributes.put(attributeName, "");
+                                    break;
+                                }
+                                validAttributes.put(attributeName, attributeValue);
                                 break;
                             }
-                            validAttributes.put(attributeName, attributeValue);
-                            break;
                         }
                     }
                 }
             }
         } else {
-            //TODO better error handling
             LOG.error("Fatal error: The number of attribute names does not match the number of attribute values " +
                     "Possible cause: Bad script design, empty attributes should be defined as: " + Constants.RESPONSE_EMPTY_ATTRIBUTE_SYMBOL);
             throw new ConnectorException("the number of attribute names does not match the number of attribute values.");
@@ -88,9 +87,6 @@ public class SshResponseHandler {
     }
 
 
-    private Uid parseUpdateOperation() {
-        return null;
-    }
 
     public String parseDeleteOperation() {
 
@@ -144,7 +140,7 @@ public class SshResponseHandler {
                     .findFirst();
             if (multivaluedAttribute.isPresent()) {
                 LOG.ok("converting multivalued attribute " + attribute.getKey());
-                String[] values = attribute.getValue().split(Pattern.quote(Constants.MICROSOFT_EXCHANGE_MULTIVALUED_SEPARATOR));
+                String[] values = attribute.getValue().split(Pattern.quote(Constants.MICROSOFT_EXCHANGE_RESPONSE_MULTIVALUED_SEPARATOR));
                 builder.addAttribute(AttributeBuilder.build(attribute.getKey(), values));
             } else {
 
@@ -154,7 +150,5 @@ public class SshResponseHandler {
         }
         return builder.build();
     }
-
-
 
 }
