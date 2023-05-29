@@ -14,7 +14,7 @@ public class Constants {
     public static final String MICROSOFT_EXCHANGE_NAME_FLAG = "name";
     public static final String MICROSOFT_EXCHANGE_EMAIL_FLAG = "email";
     public static final String MICROSOFT_EXCHANGE_PASSWORD_FLAG = "password";
-    public static final String MICROSOFT_EXCHANGE_MULTIVALUED_SEPARATOR = " "; // maybe not good idea to use space
+    public static final String MICROSOFT_EXCHANGE_RESPONSE_MULTIVALUED_SEPARATOR = " ";
     public static final String MICROSOFT_EXCHANGE_ADD_UPDATEDELTA = "ADD:";
     public static final String MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA = "REMOVE:";
     public static final int SSH_RESPONSE_TIMEOUT = 30;
