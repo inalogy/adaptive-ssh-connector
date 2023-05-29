@@ -22,8 +22,6 @@ import org.identityconnectors.framework.common.exceptions.ConfigurationException
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -115,17 +113,9 @@ public class CommandProcessor {
         return '"' + value.toString().replaceAll("\"", "\"\"") + '"';
     }
 
-    protected static String getClearCommand(SshConfiguration configuration){
-        String clearCommand = null;
-        if (configuration.getShellType().equals(Constants.TYPE_SHELL)){
-            clearCommand = Constants.CLEAR_COMMAND_UNIX;
-        } else if (configuration.getShellType().equals(Constants.TYPE_POWERSHELL)) {
-            clearCommand = Constants.CLEAR_COMMAND_WINDOWS;
-        }
-        return clearCommand;
-    }
-
     private String transformSpecialAttributes(String specialAttribute){
+        /* Transform __NAME__ || __PASSWORD__ sent by midpoint to corresponding flags that are defined in constants
+         */
         if (specialAttribute.equals(Constants.SPECIAL_CONNID_NAME)){
             return Constants.MICROSOFT_EXCHANGE_NAME_FLAG;
         } else if (specialAttribute.equals(Constants.SPECIAL_CONNID_PASSWORD)) {
