@@ -73,10 +73,6 @@ public class SshConfiguration extends AbstractConfiguration implements StatefulC
     public String schemaFilePath;
     private String[] knownHosts;
 
-//    public SshConfiguration() {
-//
-//    }
-
     @Override
     public void validate() {
 
