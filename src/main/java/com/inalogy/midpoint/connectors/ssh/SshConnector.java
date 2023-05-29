@@ -5,7 +5,6 @@ import com.inalogy.midpoint.connectors.filter.SshFilterTranslator;
 import com.inalogy.midpoint.connectors.utils.Constants;
 import com.inalogy.midpoint.connectors.cmd.CommandProcessor;
 import com.inalogy.midpoint.connectors.cmd.SessionManager;
-//import com.inalogy.midpoint.connectors.objects.UniversalFilterTranslator;
 import com.inalogy.midpoint.connectors.objects.UniversalObjectsHandler;
 import com.inalogy.midpoint.connectors.schema.SchemaType;
 import com.inalogy.midpoint.connectors.schema.UniversalSchemaHandler;
@@ -56,23 +55,16 @@ public class SshConnector implements
 
     @Override
     public void dispose() {
-        try {
-            //TODO throwing error
-            this.configuration = null;
-            if (SshConnector.schema != null) {
-                SshConnector.schema = null;
-            }
-            if (this.commandProcessor != null) {
-                this.commandProcessor = null;
-            }
-            if (this.sshManager != null) {
-//                this.sshManager.closeSession();
-                this.sshManager.disposeSshClient();
-                this.sshManager = null;
-            }
+        this.configuration = null;
+        if (SshConnector.schema != null) {
+            SshConnector.schema = null;
         }
-        catch (Throwable t){
-            LOG.error("dispose Error " + t);
+        if (this.commandProcessor != null) {
+            this.commandProcessor = null;
+        }
+        if (this.sshManager != null) {
+            this.sshManager.disposeSshClient();
+            this.sshManager = null;
         }
     }
 
@@ -145,8 +137,7 @@ public class SshConnector implements
                 }
             }
         } catch (Exception e) {
-            LOG.error("Error occurred ", e);
-            // Handle exception
+            LOG.error("Error occurred while executing query: ", e);
         }
     }
 
@@ -160,11 +151,12 @@ public class SshConnector implements
         String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
         Uid uid = new SshResponseHandler(schemaType, sshRawResponse).parseCreateOperation();
         return uid;
+        //TODO add error handling if uid||name already exists
     }
 
     @Override
     public Set<AttributeDelta> updateDelta(ObjectClass objectClass, Uid uid, Set<AttributeDelta> modifications, OperationOptions options) {
-        LOG.info("objectClass : {0} uid: {1} modifications: {2} operationOptions: {3}", objectClass, uid.getValue(), modifications, options);
+        LOG.ok("objectClass : {0} uid: {1} modifications: {2} operationOptions: {3}", objectClass, uid.getValue(), modifications, options);
         getSchemaHandler();
         SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
 
@@ -183,12 +175,12 @@ public class SshConnector implements
                         Attribute attribute = AttributeBuilder.build(attributeDelta.getName(), value);
                         attributeSet.add(attribute);
                         String updateScript = schemaType.getUpdateScript();
-                        //TODO change exec for all modifications in one step
                         String sshProcessedCommand = commandProcessor.process(attributeSet, updateScript);
                         String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
                         attributeSet.remove(attribute);
 
                         if (sshRawResponse.equals("")){
+                            //update script return "" if it was executed successfully
                             LOG.info("success");
                         }
                         else {
@@ -209,31 +201,22 @@ public class SshConnector implements
         Set<Attribute> attributeSet = new HashSet<>();
         Attribute icfsAttribute = AttributeBuilder.build(schemaType.getIcfsUid(), uid.getValue());
         attributeSet.add(icfsAttribute);
-
-        // all add remove attributes are concatenated into this StringBuilder
-        StringBuilder multivaluedAttributeAsSingleString = new StringBuilder();
+        ArrayList<String> multivaluedAttributes = new ArrayList<>();
 
         if (attributeDelta.getValuesToAdd() != null) {
             for (Object value : attributeDelta.getValuesToAdd()) {
-                String attributeValue = Constants.MICROSOFT_EXCHANGE_ADD_UPDATEDELTA + value + Constants.MICROSOFT_EXCHANGE_MULTIVALUED_SEPARATOR;
-                multivaluedAttributeAsSingleString.append(attributeValue);
+                String attributeValue = Constants.MICROSOFT_EXCHANGE_ADD_UPDATEDELTA + value;
+                multivaluedAttributes.add(attributeValue);
             }
         }
         if (attributeDelta.getValuesToRemove() != null) {
             for (Object value : attributeDelta.getValuesToRemove()) {
-                String attributeValue =  Constants.MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA + value + Constants.MICROSOFT_EXCHANGE_MULTIVALUED_SEPARATOR;
-                multivaluedAttributeAsSingleString.append(attributeValue);
+                String attributeValue =  Constants.MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA + value;
+                multivaluedAttributes.add(attributeValue);
             }
         }
 
-        //remove last empty space if present
-        if (multivaluedAttributeAsSingleString.length() > 0 && multivaluedAttributeAsSingleString.charAt(multivaluedAttributeAsSingleString.length() - 1) == ' ') {
-            multivaluedAttributeAsSingleString.deleteCharAt(multivaluedAttributeAsSingleString.length() - 1);
-        }
-        // multivaluedAttributeAsSingleString needs to be escaped
-        multivaluedAttributeAsSingleString.insert(0, "\"");
-        multivaluedAttributeAsSingleString.append("\"");
-        Attribute multivaluedAttribute = AttributeBuilder.build(attributeDelta.getName(), multivaluedAttributeAsSingleString.toString());
+        Attribute multivaluedAttribute = AttributeBuilder.build(attributeDelta.getName(), multivaluedAttributes);
         attributeSet.add(multivaluedAttribute);
 
         String updateScript = schemaType.getUpdateScript();
@@ -243,7 +226,8 @@ public class SshConnector implements
             LOG.info("success");
         }
         else {
-            throw new ConnectorException("error occurred while modifying object " + sshRawResponse);
+            LOG.error("Error occurred while modifying object " + sshRawResponse);
+            throw new ConnectorException("Error occurred while modifying object " + sshRawResponse);
         }
 
     }
@@ -254,7 +238,6 @@ public class SshConnector implements
         String deleteScript = schemaType.getDeleteScript();
         Set<Attribute> attributeSet = new HashSet<>();
         Attribute attribute = AttributeBuilder.build(schemaType.getIcfsUid(), uid.getValue());
-        //TODO delete by uid=exchangeGuid based on powershell script design
         attributeSet.add(attribute);
         String sshProcessedCommand = commandProcessor.process(attributeSet, deleteScript);
         String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
@@ -263,7 +246,7 @@ public class SshConnector implements
             //success
             return;
         }
-        else{
+        else {
             //return response error
             throw new ConnectorException("Error occurred while deleting user: " + DeleteResponse);
         }
@@ -276,6 +259,11 @@ public class SshConnector implements
     }
     @Override
     public void checkAlive() {
+        boolean isAlive = this.sshManager.isConnectionAlive();
+        if (!isAlive){
+            LOG.error("connector is not alive");
+            throw new ConnectionFailedException();
+        }
     }
 
 }
