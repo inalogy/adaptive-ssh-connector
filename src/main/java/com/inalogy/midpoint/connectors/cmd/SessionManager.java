@@ -37,7 +37,6 @@ public class SessionManager {
         startSession();
         final Session.Command cmd;
         try {
-//            session.exec(CommandProcessor.getClearCommand(this.configuration));
             cmd = session.exec(processedCommand);
         } catch (ConnectionException | TransportException e) {
             throw new ConnectorIOException("Network error while executing SSH command: "+e.getMessage(), e);
@@ -99,8 +98,9 @@ public class SessionManager {
             defaultConfig.setKeepAliveProvider(KeepAliveProvider.KEEP_ALIVE);
             ssh = new SSHClient(defaultConfig);
 
-            // need to validate
+            // Keep Alive must be supported by ssh server
             ssh.getConnection().getKeepAlive().setKeepAliveInterval(Constants.SSH_CLIENT_KEEP_ALIVE_TIMEOUT);
+
             ssh.addHostKeyVerifier(hostKeyVerifier);
 
             try {
@@ -115,6 +115,10 @@ public class SessionManager {
         else {
             LOG.info("reusing Ssh client");
         }
+    }
+
+    public boolean isConnectionAlive(){
+        return ssh != null && ssh.isConnected();
     }
 
     public void disposeSshClient(){
@@ -148,28 +152,6 @@ public class SessionManager {
         long time = endTime - startTime;
         LOG.warn("startSession() execution time " + time + " ms");
     }
-
-//    public void disconnect() {
-//        if (session != null && session.isOpen()) {
-//            LOG.ok("Closing session to {0}", authManager.getConnectionDesc());
-//            try {
-//                session.close();
-//            } catch (ConnectionException | TransportException e) {
-//                LOG.warn("Error closing SSH session for {0}: {1} (ignoring)", authManager.getConnectionDesc(), e.getMessage());
-//            }
-////            session = null;
-//        }
-//        if (ssh.isConnected()) {
-//            LOG.ok("Disconnecting from {0}", authManager.getConnectionDesc());
-//            try {
-//                ssh.disconnect();
-//            } catch (IOException e) {
-//                LOG.warn("Error disconnecting SSH session for {0}: {1} (ignoring)", authManager.getConnectionDesc(), e.getMessage());
-//            }
-//            LOG.info("Connection to {0} disconnected", authManager.getConnectionDesc());
-//        }
-//        ssh = null;
-//    }
 
     public void closeSession(){
         if (ssh.isConnected() && session.isOpen()) {
