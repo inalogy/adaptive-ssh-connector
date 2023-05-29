@@ -1,5 +1,6 @@
 package com.inalogy.midpoint.connectors.utils;
 
+import org.identityconnectors.common.logging.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -14,6 +15,7 @@ import java.nio.file.Files;
 public class FileHashCalculator {
     /** Calculating hash of a file to save performance compared to parsing it as json
      */
+    private static final Log LOG = Log.getLog(FileHashCalculator.class);
     public static String calculateSHA256(String filePath)  {
         if (filePath == null || filePath.isEmpty()){
             return null;
@@ -27,9 +29,9 @@ public class FileHashCalculator {
 
         MessageDigest sha256Digest;
         try{
-            //TODO need to check if SHA-256 is supported
             sha256Digest = MessageDigest.getInstance("SHA-256");}
         catch (NoSuchAlgorithmException e){
+            LOG.error("SHA-256 missing on target system");
             throw new RuntimeException("SHA-256 missing on target system" + e);
         }
         if (sha256Digest != null){
@@ -43,9 +45,10 @@ public class FileHashCalculator {
 
             return Base64.getEncoder().encodeToString(hashBytes);
         } catch (IOException e){
-            System.out.println("IOException in FileHashCalculator: " + e);
+            LOG.error("IOException in FileHashCalculator: " + e);
         }
     }
-        throw new RuntimeException("SHA-256 missing on target system");
+
+        throw new RuntimeException("Error occurred while calculating hash of schemaConfig.json");
     }
 }
