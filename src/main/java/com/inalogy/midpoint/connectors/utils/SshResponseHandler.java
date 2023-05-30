@@ -1,18 +1,25 @@
 package com.inalogy.midpoint.connectors.utils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Pattern;
+
 import com.inalogy.midpoint.connectors.schema.SchemaType;
 import com.inalogy.midpoint.connectors.schema.SchemaTypeAttribute;
-import org.identityconnectors.framework.common.exceptions.ConnectorException;
-import org.identityconnectors.framework.common.objects.*;
 
-import java.util.*;
-import java.util.regex.Pattern;
 import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.exceptions.ConnectorException;
+import org.identityconnectors.framework.common.objects.ConnectorObject;
+import org.identityconnectors.framework.common.objects.Name;
+import org.identityconnectors.framework.common.objects.Uid;
+import org.identityconnectors.framework.common.objects.ConnectorObjectBuilder;
+import org.identityconnectors.framework.common.objects.ObjectClass;
+import org.identityconnectors.framework.common.objects.AttributeBuilder;
 
 public class SshResponseHandler {
     private static final Log LOG = Log.getLog(SshResponseHandler.class);
-
-
     private final String rawResponse;
     private final SchemaType schemaType;
 
@@ -23,12 +30,12 @@ public class SshResponseHandler {
 
     public ArrayList<ConnectorObject> parseSearchOperation() {
         ArrayList<ConnectorObject> connectorObjects = new ArrayList<>();
-        String[] lines = this.rawResponse.split("\n");
+        String[] lines = this.rawResponse.split(Constants.RESPONSE_NEW_LINE_SEPARATOR);
 
         // read first line that always contains attr names
-        String[] attributeNames = lines[0].split(Pattern.quote(Constants.RESPONSE_SEPARATOR));
+        String[] attributeNames = lines[0].split(Pattern.quote(Constants.RESPONSE_COLUMN_SEPARATOR));
         for (int i = 1; i <lines.length; i++) {
-            String[] attributeValues = lines[i].split(Pattern.quote(Constants.RESPONSE_SEPARATOR));
+            String[] attributeValues = lines[i].split(Pattern.quote(Constants.RESPONSE_COLUMN_SEPARATOR));
             Map<String,String> validAttributes = parseAttributes(attributeNames, attributeValues);
             ConnectorObject connectorObject = convertObjectToConnectorObject(validAttributes);
             connectorObjects.add(connectorObject);
@@ -82,7 +89,6 @@ public class SshResponseHandler {
                     "Possible cause: Bad script design, empty attributes should be defined as: " + Constants.RESPONSE_EMPTY_ATTRIBUTE_SYMBOL);
             throw new ConnectorException("the number of attribute names does not match the number of attribute values.");
         }
-        System.out.println(validAttributes);
         return validAttributes;
     }
 
@@ -101,8 +107,8 @@ public class SshResponseHandler {
         String[] lines = this.rawResponse.split("\n");
 
         // read first line that always contains attr names
-        String[] attributeNames = lines[0].split(Pattern.quote(Constants.RESPONSE_SEPARATOR));
-        String[] attributeValues = lines[1].split(Pattern.quote(Constants.RESPONSE_SEPARATOR));
+        String[] attributeNames = lines[0].split(Pattern.quote(Constants.RESPONSE_COLUMN_SEPARATOR));
+        String[] attributeValues = lines[1].split(Pattern.quote(Constants.RESPONSE_COLUMN_SEPARATOR));
         Map<String,String> validAttributes = parseAttributes(attributeNames, attributeValues);
         return parseUid(validAttributes);
     }
@@ -117,7 +123,8 @@ public class SshResponseHandler {
         else if(nameValue != null){
             return new Uid(nameValue);
         }
-        else{
+        else {
+            LOG.error("Fatal Error: Cannot find: " + this.schemaType.getIcfsUid() + " " + this.schemaType.getIcfsName());
             throw new ConnectorException("Fatal Error: Cannot find: " + this.schemaType.getIcfsUid() + " " + this.schemaType.getIcfsName());
         }
     }
