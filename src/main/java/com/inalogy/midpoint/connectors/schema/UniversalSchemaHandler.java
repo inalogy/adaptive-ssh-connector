@@ -1,14 +1,22 @@
 package com.inalogy.midpoint.connectors.schema;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+
 import com.inalogy.midpoint.connectors.utils.FileHashCalculator;
+
 import org.identityconnectors.common.logging.Log;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.*;
+
+
 /**
  * Every SchemaType object is stored inside Map<String, SchemaType>
  */
@@ -52,29 +60,41 @@ public class UniversalSchemaHandler {
                 String searchScript = jsonObject.getString("searchScript");
 
                 List<SchemaTypeAttribute> attributes = new ArrayList<>();
-                if (jsonObject.containsKey("attributes")) {
-                    //attributes are optional
-                    JsonArray attributesArray = jsonObject.getJsonArray("attributes");
-                    for (int i = 0; i < attributesArray.size(); i++) {
-                        JsonObject attributeObject = attributesArray.getJsonObject(i);
-                        for (String attrName : attributeObject.keySet()) {
-                            JsonObject attrDetails = attributeObject.getJsonObject(attrName);
-                            boolean required = attrDetails.getBoolean("required");
-                            boolean creatable = attrDetails.getBoolean("creatable");
-                            boolean updateable = attrDetails.getBoolean("updateable");
-                            boolean multivalued = attrDetails.getBoolean("multivalued");
-                            String dataType = attrDetails.getString("dataType");
+                try {
+                    if (jsonObject.containsKey("attributes")) {
+                        //attributes are optional
+                        JsonArray attributesArray = jsonObject.getJsonArray("attributes");
+                        for (int i = 0; i < attributesArray.size(); i++) {
+                            JsonObject attributeObject = attributesArray.getJsonObject(i);
+                            for (String attrName : attributeObject.keySet()) {
+                                JsonObject attrDetails = attributeObject.getJsonObject(attrName);
+                                boolean required = attrDetails.getBoolean("required");
+                                boolean creatable = attrDetails.getBoolean("creatable");
+                                boolean updateable = attrDetails.getBoolean("updateable");
+                                boolean multivalued = attrDetails.getBoolean("multivalued");
+                                String dataType = attrDetails.getString("dataType");
 
-                            // Create an instance of class SchemaTypeAttribute based on json file
-                            SchemaTypeAttribute attributeType = new SchemaTypeAttribute(attrName, required, creatable, updateable, multivalued, dataType);
-                            attributes.add(attributeType);
+                                // Create an instance of class SchemaTypeAttribute based on json file
+                                SchemaTypeAttribute attributeType = new SchemaTypeAttribute(attrName, required, creatable, updateable, multivalued, dataType);
+                                attributes.add(attributeType);
+                            }
                         }
                     }
-                }
 
-                // Create an instance of class SchemaType based on json file
-                SchemaType schemaType = new SchemaType(icfsUid, icfsName, objectClass, createScript, updateScript, deleteScript, searchScript, attributes);
-                this.schemaTypes.put(schemaType.getObjectClassName(), schemaType);
+                    // Create an instance of class SchemaType based on json file
+                    SchemaType schemaType = new SchemaType(icfsUid, icfsName, objectClass, createScript, updateScript, deleteScript, searchScript, attributes);
+                    this.schemaTypes.put(schemaType.getObjectClassName(), schemaType);
+
+                } catch (NullPointerException e) {
+                LOG.error("Null pointer exception occurred in UniversalSchemaHandler: " + e.getMessage());
+                throw new RuntimeException("Null pointer exception occurred in UniversalSchemaHandler: " + e.getMessage());
+            } catch (ClassCastException e) {
+                    LOG.error("Class cast exception occurred in UniversalSchemaHandler: " + e.getMessage());
+                    throw new RuntimeException("Class cast exception occurred in UniversalSchemaHandler: " + e.getMessage());
+            } catch (Exception e) {
+                    LOG.error("An unexpected error occurred: in UniversalSchemaHandler: " + e.getMessage());
+                    throw new RuntimeException("An unexpected error occurred: in UniversalSchemaHandler: " + e.getMessage());
+            }
             }
         } catch (IOException e) {
             LOG.error("An error occurred while reading SchemaFile: " + e);
