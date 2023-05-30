@@ -20,6 +20,8 @@
         <assembly.path>src/main/assembly/connector.xml</assembly.path>
         <maven.jar.plugin.version>2.3.1</maven.jar.plugin.version>
         <java.version>1.8</java.version>
+        <com.hierynomus.version>0.35.0</com.hierynomus.version>
+        <org.bouncycastle.version>1.70</org.bouncycastle.version>
         <org.testing.version>7.7.0</org.testing.version>
         <org.json.version>20230227</org.json.version>
         <org.jetbrains.version>24.0.1</org.jetbrains.version>
@@ -49,7 +51,7 @@
         <dependency>
             <groupId>com.hierynomus</groupId>
             <artifactId>sshj</artifactId>
-            <version>0.35.0</version>
+            <version>${com.hierynomus.version}</version>
             <!-- Exclude SLF4J API from the lib to avoid bundling it with the
                  connector. The SLF4J is already part of midPoint.
                  If it would be also bundled with the connector then we will
@@ -113,6 +115,19 @@
                         <phase>none</phase>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <additionalOptions>
+                    <!--   Hide full classpath for external classes in javadoc    -->
+                        <additionalOption>-noqualifier all</additionalOption>
+                    </additionalOptions>
+                    <show>private</show>
+                    <reportOutputDirectory>${project.basedir}/javadoc</reportOutputDirectory>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
