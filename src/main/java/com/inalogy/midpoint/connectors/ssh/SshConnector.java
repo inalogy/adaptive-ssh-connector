@@ -202,9 +202,12 @@ public class SshConnector implements
         return null;
     }
 
+    /**
+     * Extract and modify all values from attributeDelta and add them to arrayList, execute Ssh request
+     * @param schemaType SchemaType Object that corresponds to currently processed object
+     * @param attributeDelta of currently processed modification
+     */
     public void handleMultiValuedAttribute(SchemaType schemaType,Uid uid, AttributeDelta attributeDelta){
-        /** Extract all values from attributeDelta and add them to arrayList that is later processed by CommandProcessor
-         */
         Set<Attribute> attributeSet = new HashSet<>();
         Attribute icfsAttribute = AttributeBuilder.build(schemaType.getIcfsUid(), uid.getValue());
         attributeSet.add(icfsAttribute);
@@ -230,7 +233,7 @@ public class SshConnector implements
         String sshProcessedCommand = commandProcessor.process(attributeSet, updateScript);
         String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
         if (sshRawResponse.equals("")){
-            LOG.info("success");
+            LOG.ok("Successfully Modified object: {0}", schemaType.getObjectClassName());
         }
         else {
             LOG.error("Error occurred while modifying object " + sshRawResponse);
@@ -251,11 +254,13 @@ public class SshConnector implements
         String DeleteResponse = new SshResponseHandler(schemaType, sshRawResponse).parseDeleteOperation();
         if (DeleteResponse == null){
             //success
+            LOG.ok("Successfully deleted object: {0} uid: {1}", schemaType.getObjectClassName(), uid.getValue());
             return;
         }
         else {
             //return response error
-            throw new ConnectorException("Error occurred while deleting user: " + DeleteResponse);
+            LOG.error("Error occurred while deleting object: {0}", sshRawResponse);
+            throw new ConnectorException("Error occurred while deleting object: " + DeleteResponse);
         }
     }
 
