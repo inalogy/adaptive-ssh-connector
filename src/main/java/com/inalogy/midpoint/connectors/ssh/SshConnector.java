@@ -1,5 +1,9 @@
 package com.inalogy.midpoint.connectors.ssh;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 import com.inalogy.midpoint.connectors.filter.SshFilter;
 import com.inalogy.midpoint.connectors.filter.SshFilterTranslator;
 import com.inalogy.midpoint.connectors.utils.Constants;
@@ -10,6 +14,7 @@ import com.inalogy.midpoint.connectors.schema.SchemaType;
 import com.inalogy.midpoint.connectors.schema.UniversalSchemaHandler;
 import com.inalogy.midpoint.connectors.utils.FileHashCalculator;
 import com.inalogy.midpoint.connectors.utils.SshResponseHandler;
+
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
@@ -18,9 +23,13 @@ import org.identityconnectors.framework.common.objects.filter.FilterTranslator;
 import org.identityconnectors.framework.spi.Configuration;
 import org.identityconnectors.framework.spi.ConnectorClass;
 import org.identityconnectors.framework.spi.PoolableConnector;
-import org.identityconnectors.framework.spi.operations.*;
+import org.identityconnectors.framework.spi.operations.CreateOp;
+import org.identityconnectors.framework.spi.operations.SchemaOp;
+import org.identityconnectors.framework.spi.operations.SearchOp;
+import org.identityconnectors.framework.spi.operations.TestOp;
+import org.identityconnectors.framework.spi.operations.UpdateDeltaOp;
+import org.identityconnectors.framework.spi.operations.DeleteOp;
 
-import java.util.*;
 
 @ConnectorClass(displayNameKey = "ssh.connector.display", configurationClass = SshConfiguration.class)
 public class SshConnector implements
@@ -35,8 +44,8 @@ public class SshConnector implements
     private CommandProcessor commandProcessor;
     private SessionManager sshManager;
     private SshConfiguration configuration;
-    private static UniversalSchemaHandler schema = null;
     //Ssh Connector schema cache
+    private static UniversalSchemaHandler schema = null;
     private static final Log LOG = Log.getLog(SshConnector.class);
 
     @Override
@@ -73,7 +82,8 @@ public class SshConnector implements
         String testEcho = "echo \"Hello\"";
         String response = this.sshManager.exec(testEcho).replace("\n", "").replace("\r", "");
         if (!response.equals("Hello")){
-            throw new ConnectionFailedException("Error occurred while testing connection");
+            LOG.error("Error occurred in test() method while testing Ssh connection");
+            throw new ConnectionFailedException("Error occurred in test() method while testing Ssh connection");
         }
     }
 
@@ -144,7 +154,6 @@ public class SshConnector implements
     @Override
     public Uid create(ObjectClass objectClass, Set<Attribute> createAttributes, OperationOptions options) {
         getSchemaHandler();
-        // choosing schema type by key value from map which corresponds to SchemaType object
         SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
         String createScript = schemaType.getCreateScript();
         String sshProcessedCommand = commandProcessor.process(createAttributes, createScript);
@@ -194,9 +203,7 @@ public class SshConnector implements
     }
 
     public void handleMultiValuedAttribute(SchemaType schemaType,Uid uid, AttributeDelta attributeDelta){
-        /** Extract all values from attributeDelta and format it into single string separated based on Constant.MICROSOFT_EXCHANGE_MULTIVALUED_SEPARATOR
-         *  e.g.: add=example@mail.com, add=example2@mail.com, remove=example3@mail.com
-         *  output: -attributeName "ADD:example@mail.com ADD:example2@mail.com REMOVE:oldexample3@mail.com"
+        /** Extract all values from attributeDelta and add them to arrayList that is later processed by CommandProcessor
          */
         Set<Attribute> attributeSet = new HashSet<>();
         Attribute icfsAttribute = AttributeBuilder.build(schemaType.getIcfsUid(), uid.getValue());
@@ -265,7 +272,6 @@ public class SshConnector implements
             throw new ConnectionFailedException();
         }
     }
-
 }
 
 
