@@ -121,11 +121,15 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.3.0</version>
                 <configuration>
-                    <additionalOptions>
-                    <!--   Hide full classpath for external classes in javadoc    -->
-                        <additionalOption>-noqualifier all</additionalOption>
-                    </additionalOptions>
+<!--                    <additionalOptions>-->
+                        <!--   Hide full classpath for external classes in javadoc    -->
+<!--                        <additionalOption>-noqualifier all</additionalOption>-->
+<!--                    </additionalOptions>-->
                     <show>private</show>
+                    <links>
+                        <!-- links objects from local project with external api  -->
+                        <link>https://connid.tirasa.net/apidocs/1.5/</link>
+                    </links>
                     <reportOutputDirectory>${project.basedir}/javadoc</reportOutputDirectory>
                 </configuration>
             </plugin>
