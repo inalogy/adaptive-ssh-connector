@@ -2,10 +2,12 @@ package com.inalogy.midpoint.connectors.ssh;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import com.inalogy.midpoint.connectors.filter.SshFilter;
 import com.inalogy.midpoint.connectors.filter.SshFilterTranslator;
+import com.inalogy.midpoint.connectors.objects.ObjectConverter;
 import com.inalogy.midpoint.connectors.utils.Constants;
 import com.inalogy.midpoint.connectors.cmd.CommandProcessor;
 import com.inalogy.midpoint.connectors.cmd.SessionManager;
@@ -134,15 +136,19 @@ public class SshConnector implements
 
                 String sshProcessedCommand = commandProcessor.process(queryAttribute, searchScript);
                 String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
-                ConnectorObject objectToHandle = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation().get(0);
-                handler.handle(objectToHandle);
+                Set<Map<String, String>> parsedResponse = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation();
+                Map<String, String> singleLine = parsedResponse.iterator().next(); // search result for single user/object should always return single object
+                ConnectorObject connectorObject = ObjectConverter.convertObjectToConnectorObject(schemaType, singleLine);
+                handler.handle(connectorObject);
+
             }
             else {
                 String searchScript = schemaType.getSearchScript();
                 String sshProcessedCommand = commandProcessor.process(null, searchScript);
                 String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
-                ArrayList<ConnectorObject> objectsToHandle = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation();
-                for (ConnectorObject connectorObject: objectsToHandle){
+                Set<Map<String, String>> parsedResponse  = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation();
+                for (Map<String, String> parsedResponseLine: parsedResponse){
+                    ConnectorObject connectorObject = ObjectConverter.convertObjectToConnectorObject(schemaType, parsedResponseLine);
                     handler.handle(connectorObject);
                 }
             }

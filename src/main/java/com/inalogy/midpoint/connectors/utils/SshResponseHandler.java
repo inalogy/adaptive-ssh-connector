@@ -1,9 +1,6 @@
 package com.inalogy.midpoint.connectors.utils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import com.inalogy.midpoint.connectors.schema.SchemaType;
@@ -28,33 +25,37 @@ public class SshResponseHandler {
         this.rawResponse = rawResponse;
     }
 
-    public ArrayList<ConnectorObject> parseSearchOperation() {
-        ArrayList<ConnectorObject> connectorObjects = new ArrayList<>();
+    public Set<Map<String, String>> parseSearchOperation() {
         String[] lines = this.rawResponse.split(Constants.RESPONSE_NEW_LINE_SEPARATOR);
-
+        Set<Map<String, String>> parsedResult = new HashSet<>();
         // read first line that always contains attr names
         String[] attributeNames = lines[0].split(Pattern.quote(Constants.RESPONSE_COLUMN_SEPARATOR));
         for (int i = 1; i <lines.length; i++) {
             String[] attributeValues = lines[i].split(Pattern.quote(Constants.RESPONSE_COLUMN_SEPARATOR));
             Map<String,String> validAttributes = parseAttributes(attributeNames, attributeValues);
-            ConnectorObject connectorObject = convertObjectToConnectorObject(validAttributes);
-            connectorObjects.add(connectorObject);
+            parsedResult.add(validAttributes);
+
         }
-        return connectorObjects;
+        return parsedResult;
     }
 
+    /**
+     * Map valid attributes based on schema
+     *  case1:
+     *      powershell script returns line[0]:
+     *      UniqueID|otherAttribute
+     *      this method set icfsUid and icfsName to same value if icfsUid and icfsName in schemaConfig.json are same
+     *  case2:
+     *      powershell script returns line[0]:
+     *      UniqueID|UniqueName|Other Attributes
+     *      UniqueID and UniqueName must match icfsUid and icfsName specified in schemaConfig.json
+     *      this method set icfsUid and icfsName to corresponding values
+     * @param attributeNames  first line returned by ssh which define column names e.g. ExchangeGuid|Attributes
+     * @param attributeValues every other line define single object with attributes e.g. 341eb-......|example@mail.com
+     * @return parsed attributes map with corresponding pairs e.g. icfsUid="341eb-......", ...
+     *
+     */
     private Map<String, String> parseAttributes(String[] attributeNames, String[] attributeValues) {
-        /** this method map valid attributes based on schema
-         *  case1:
-         *      powershell script returns line[0]:
-         *      UniqueID|otherAttribute
-         *      this method set icfsUid and icfsName to same value if icfsUid and icfsName in schemaConfig.json are same
-         * <p>
-         *  case2: powershell script returns line[0]:
-         *      UniqueID|UniqueName|Other Attributes
-         *      UniqueID and UniqueName must match icfsUid and icfsName specified in schemaConfig.json
-         *      this method set icfsUid and icfsName to corresponding values
-         **/
         Map<String, String> validAttributes = new HashMap<>();
         if (attributeNames.length == attributeValues.length) {
             for (int i = 0; i < attributeNames.length; i++) {
@@ -93,7 +94,9 @@ public class SshResponseHandler {
     }
 
 
-
+    /**
+     * @return null if deleteOperation was successful otherwise return error message
+     */
     public String parseDeleteOperation() {
 
         if (this.rawResponse.equals("")){
@@ -104,7 +107,7 @@ public class SshResponseHandler {
     }
 
     public Uid parseCreateOperation() {
-        String[] lines = this.rawResponse.split("\n");
+        String[] lines = this.rawResponse.split(Constants.RESPONSE_NEW_LINE_SEPARATOR);
 
         // read first line that always contains attr names
         String[] attributeNames = lines[0].split(Pattern.quote(Constants.RESPONSE_COLUMN_SEPARATOR));
@@ -128,34 +131,4 @@ public class SshResponseHandler {
             throw new ConnectorException("Fatal Error: Cannot find: " + this.schemaType.getIcfsUid() + " " + this.schemaType.getIcfsName());
         }
     }
-    private ConnectorObject convertObjectToConnectorObject(Map<String, String> attributes) {
-        ConnectorObjectBuilder builder = new ConnectorObjectBuilder();
-        ObjectClass objectClass = new ObjectClass(this.schemaType.getObjectClassName());
-        builder.setObjectClass(objectClass);
-
-        builder.setUid(new Uid(attributes.get("icfsUid")));
-        builder.setName(new Name(attributes.get("icfsName")));
-        attributes.remove("icfsUid");
-        attributes.remove("icfsName");
-
-        for (Map.Entry<String, String> attribute : attributes.entrySet()) {
-
-            // check if attribute is multivalued based on schema
-            Optional<Boolean> multivaluedAttribute = schemaType.getAttributes().stream()
-                    .filter(attr -> attr.getAttributeName().equals(attribute.getKey()))
-                    .map(SchemaTypeAttribute::isMultivalued)
-                    .findFirst();
-            if (multivaluedAttribute.isPresent()) {
-                LOG.ok("converting multivalued attribute " + attribute.getKey());
-                String[] values = attribute.getValue().split(Pattern.quote(Constants.MICROSOFT_EXCHANGE_RESPONSE_MULTIVALUED_SEPARATOR));
-                builder.addAttribute(AttributeBuilder.build(attribute.getKey(), values));
-            } else {
-
-                // Attribute is not multiValued. Add it as a single value.
-                builder.addAttribute(AttributeBuilder.build(attribute.getKey(), attribute.getValue()));
-            }
-        }
-        return builder.build();
-    }
-
 }
