@@ -59,4 +59,9 @@ public class ConnectorKnownHostsVerifier implements HostKeyVerifier  {
         }
         return false;
     }
+
+    @Override
+    public List<String> findExistingAlgorithms(String s, int i) {
+        return null;
+    }
 }

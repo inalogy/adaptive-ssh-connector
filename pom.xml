@@ -49,7 +49,7 @@
         <dependency>
             <groupId>com.hierynomus</groupId>
             <artifactId>sshj</artifactId>
-            <version>0.30.0</version>
+            <version>0.35.0</version>
             <!-- Exclude SLF4J API from the lib to avoid bundling it with the
                  connector. The SLF4J is already part of midPoint.
                  If it would be also bundled with the connector then we will
