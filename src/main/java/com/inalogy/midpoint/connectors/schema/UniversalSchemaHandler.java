@@ -18,7 +18,12 @@ import javax.json.JsonReader;
 
 
 /**
- * Every SchemaType object is stored inside Map<String, SchemaType>
+ * The UniversalSchemaHandler is responsible for parsing the schemaConfig file
+ * and creating instances of SchemaType Objects, which are stored in a Map as class attributes.
+ *
+ * @author P-Rovnak
+ * @version 1.0
+ * @since 30-6-2023
  */
 public class UniversalSchemaHandler {
     private static final Log LOG = Log.getLog(UniversalSchemaHandler.class);
@@ -98,7 +103,7 @@ public class UniversalSchemaHandler {
             }
         } catch (IOException e) {
             LOG.error("An error occurred while reading SchemaFile: " + e);
-            throw new RuntimeException("An error occurred when reading SchemaFile: " + e);
+            throw new RuntimeException("An error occurred while SchemaFile: " + e);
         }
     }
     public static Map<String, Object> readJsonFileAsMap(String filePath) throws IOException {

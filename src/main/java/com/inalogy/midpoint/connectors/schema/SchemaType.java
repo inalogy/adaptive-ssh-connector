@@ -1,11 +1,19 @@
 package com.inalogy.midpoint.connectors.schema;
 
-import org.identityconnectors.common.logging.Log;
-
 import java.util.List;
 
+import org.identityconnectors.common.logging.Log;
+
 /**
- * each schemaType is instance of this class
+ * This class represents ObjectClass.
+ * <p>
+ * The SchemaType class is used to define the structure and
+ * characteristics of ObjectClass. Each instance of the
+ * SchemaType class represents a distinct type of ObjectClass e.g. user, group
+ * <p>
+ * @author P-Rovnak
+ * @version 1.0
+ * @since 30-6-2023
  */
 public class SchemaType {
     private static final Log LOG = Log.getLog(SchemaType.class);
@@ -13,7 +21,6 @@ public class SchemaType {
     private final String icfsName;
     private final String createScript;
     private final String updateScript;
-
 
     private final String searchScript;
 
@@ -62,7 +69,6 @@ public class SchemaType {
     public String getIcfsUid() {
         return icfsUid;
     }
-
 
     public List<SchemaTypeAttribute> getAttributes() {
         return attributes;

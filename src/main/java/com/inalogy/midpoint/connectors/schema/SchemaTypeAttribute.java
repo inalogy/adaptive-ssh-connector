@@ -2,6 +2,13 @@ package com.inalogy.midpoint.connectors.schema;
 
 import org.identityconnectors.common.logging.Log;
 
+/**
+ * This class represents an attribute of particular SchemaType.
+ *
+ * @author P-Rovnak
+ * @version 1.0
+ * @since 30-6-2023
+ */
 public class SchemaTypeAttribute {
     private static final Log LOG = Log.getLog(UniversalSchemaHandler.class);
     private final boolean required;
