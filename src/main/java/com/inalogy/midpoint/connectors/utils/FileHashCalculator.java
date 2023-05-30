@@ -1,16 +1,16 @@
 package com.inalogy.midpoint.connectors.utils;
 
-import org.identityconnectors.common.logging.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Base64;
-import java.nio.file.Files;
+
+import org.identityconnectors.common.logging.Log;
 
 public class FileHashCalculator {
     /** Calculating hash of a file to save performance compared to parsing it as json
@@ -48,7 +48,6 @@ public class FileHashCalculator {
             LOG.error("IOException in FileHashCalculator: " + e);
         }
     }
-
         throw new RuntimeException("Error occurred while calculating hash of schemaConfig.json");
     }
 }
