@@ -1,6 +1,7 @@
 package com.inalogy.midpoint.connectors.ssh;
 
 import com.inalogy.midpoint.connectors.utils.Constants;
+
 import org.identityconnectors.common.security.GuardedString;
 import org.identityconnectors.framework.spi.AbstractConfiguration;
 import org.identityconnectors.framework.spi.ConfigurationProperty;

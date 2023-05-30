@@ -1,17 +1,17 @@
 package com.inalogy.midpoint.connectors.cmd;
 
-import net.schmizz.sshj.common.KeyType;
-import net.schmizz.sshj.transport.verification.HostKeyVerifier;
-import net.schmizz.sshj.transport.verification.OpenSSHKnownHosts;
-import org.identityconnectors.framework.common.exceptions.ConfigurationException;
-
-import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringReader;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.identityconnectors.framework.common.exceptions.ConfigurationException;
+
+import net.schmizz.sshj.common.KeyType;
+import net.schmizz.sshj.transport.verification.HostKeyVerifier;
+import net.schmizz.sshj.transport.verification.OpenSSHKnownHosts;
+
 
 public class ConnectorKnownHostsVerifier implements HostKeyVerifier  {
     private final List<OpenSSHKnownHosts.KnownHostEntry> entries = new ArrayList<>();

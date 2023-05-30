@@ -1,9 +1,11 @@
 package com.inalogy.midpoint.connectors.cmd;
 
-import com.evolveum.polygon.common.GuardedStringAccessor;
-//import com.evolveum.polygon.connector.ssh.SshConfiguration;
+import java.io.IOException;
 
 import com.inalogy.midpoint.connectors.ssh.SshConfiguration;
+
+import com.evolveum.polygon.common.GuardedStringAccessor;
+
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.userauth.UserAuthException;
@@ -14,8 +16,6 @@ import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.common.security.GuardedString;
 import org.identityconnectors.framework.common.exceptions.ConfigurationException;
 import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
-
-import java.io.IOException;
 
 public class AuthenticationManager {
 

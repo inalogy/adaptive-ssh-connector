@@ -1,21 +1,24 @@
 package com.inalogy.midpoint.connectors.cmd;
-import net.schmizz.keepalive.KeepAliveProvider;
-import net.schmizz.sshj.DefaultConfig;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
 import com.inalogy.midpoint.connectors.ssh.SshConfiguration;
 import com.inalogy.midpoint.connectors.utils.Constants;
+
+import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
+import org.identityconnectors.framework.common.exceptions.ConnectorException;
+import org.identityconnectors.framework.common.exceptions.ConnectorIOException;
+
+import net.schmizz.keepalive.KeepAliveProvider;
+import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
-import org.identityconnectors.common.logging.Log;
-import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
-import org.identityconnectors.framework.common.exceptions.ConnectorException;
-import org.identityconnectors.framework.common.exceptions.ConnectorIOException;
-
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 public class SessionManager {
 
@@ -33,7 +36,6 @@ public class SessionManager {
     }
 
     public String exec(String processedCommand) {
-        long startTime = System.currentTimeMillis();
         startSession();
         final Session.Command cmd;
         try {
@@ -83,9 +85,6 @@ public class SessionManager {
 
         LOG.info("SSH command exit status: {0}", cmd.getExitStatus());
         closeSession();
-        long endTime = System.currentTimeMillis();
-        long time = endTime - startTime ;
-        LOG.warn("exec() execution time " + time + " ms");
         return output;
     }
 
@@ -99,7 +98,7 @@ public class SessionManager {
             ssh = new SSHClient(defaultConfig);
 
             // Keep Alive must be supported by ssh server
-            ssh.getConnection().getKeepAlive().setKeepAliveInterval(Constants.SSH_CLIENT_KEEP_ALIVE_TIMEOUT);
+            ssh.getConnection().getKeepAlive().setKeepAliveInterval(Constants.SSH_CLIENT_KEEP_ALIVE_INTERVAL);
 
             ssh.addHostKeyVerifier(hostKeyVerifier);
 
@@ -113,7 +112,7 @@ public class SessionManager {
             }
         }
         else {
-            LOG.info("reusing Ssh client");
+            LOG.ok("reusing Ssh client");
         }
     }
 
@@ -133,7 +132,6 @@ public class SessionManager {
         }
     }
     public void startSession() {
-        long startTime = System.currentTimeMillis();
         initSshClient();
         if (ssh != null && ssh.isConnected() && !ssh.isAuthenticated()) {
             authManager.authenticate(ssh);
@@ -148,9 +146,6 @@ public class SessionManager {
             throw new ConnectionFailedException("Communication error while creating SSH session for "+authManager.getConnectionDesc()+" failed: " + e.getMessage(), e);
         }
         LOG.info("Session Started: {0}", authManager.getConnectionDesc());
-        long endTime = System.currentTimeMillis();
-        long time = endTime - startTime;
-        LOG.warn("startSession() execution time " + time + " ms");
     }
 
     public void closeSession(){
