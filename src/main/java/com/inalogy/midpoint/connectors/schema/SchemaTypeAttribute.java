@@ -19,8 +19,7 @@ public class SchemaTypeAttribute {
     private final Class<?> dataType;
 
 
-
-    public SchemaTypeAttribute(String attrName, boolean required, boolean creatable, boolean updateable, boolean multivalued, String dataType){
+    protected SchemaTypeAttribute(String attrName, boolean required, boolean creatable, boolean updateable, boolean multivalued, String dataType){
         this.attributeName = attrName;
         this.required = required;
         this.creatable = creatable;

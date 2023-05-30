@@ -31,7 +31,7 @@ public class SchemaType {
     private final String icfsUid;
 
 
-    public SchemaType(String icfsUid, String icfsName, String objectClassName, String createScript, String updateScript, String deleteScript, String searchScript, List<SchemaTypeAttribute> attributes){
+    protected SchemaType(String icfsUid, String icfsName, String objectClassName, String createScript, String updateScript, String deleteScript, String searchScript, List<SchemaTypeAttribute> attributes){
         this.icfsUid = icfsUid;
         this.icfsName = icfsName;
         this.objectClassName = objectClassName;
