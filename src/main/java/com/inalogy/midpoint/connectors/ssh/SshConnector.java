@@ -209,7 +209,10 @@ public class SshConnector implements
     }
 
     /**
-     * Extract and modify all values from attributeDelta and add them to arrayList, execute Ssh request
+     * Process the provided attributeDelta to prepare for an SSH request.
+     * Extracts all values from the attributeDelta, formats them for compatibility with
+     * the remote script using {@link Constants#MICROSOFT_EXCHANGE_ADD_UPDATEDELTA} or {@link Constants#MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA},
+     * and adds them to ArrayList, finally, it executes SSH request.
      * @param schemaType SchemaType Object that corresponds to currently processed object
      * @param attributeDelta of currently processed modification
      */
@@ -275,6 +278,10 @@ public class SshConnector implements
             schema();
         }
     }
+
+    /**
+     * Checks if SshClient is connected if not poolable Connector dispose this instance
+     */
     @Override
     public void checkAlive() {
         boolean isAlive = this.sshManager.isConnectionAlive();

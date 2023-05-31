@@ -1,6 +1,9 @@
 package com.inalogy.midpoint.connectors.utils;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.regex.Pattern;
 
 import com.inalogy.midpoint.connectors.schema.SchemaType;
@@ -8,23 +11,37 @@ import com.inalogy.midpoint.connectors.schema.SchemaTypeAttribute;
 
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
-import org.identityconnectors.framework.common.objects.ConnectorObject;
-import org.identityconnectors.framework.common.objects.Name;
 import org.identityconnectors.framework.common.objects.Uid;
-import org.identityconnectors.framework.common.objects.ConnectorObjectBuilder;
-import org.identityconnectors.framework.common.objects.ObjectClass;
-import org.identityconnectors.framework.common.objects.AttributeBuilder;
 
+/**
+ * This class is responsible for handling the response from the SSH server.
+ * It parses the raw response into a more manageable format, depending on the operation performed (search, delete, create)
+ * It also use SchemaType Object for pairing with response attributes.
+ * @author P-Rovnak
+ * @version 1.0
+ * @since 31-6-2023
+ */
 public class SshResponseHandler {
     private static final Log LOG = Log.getLog(SshResponseHandler.class);
     private final String rawResponse;
     private final SchemaType schemaType;
 
+    /**
+     * Constructs a new SshResponseHandler.
+     *
+     * @param schemaType The schema type associated with the operation.
+     * @param rawResponse The raw response returned by the SSH server.
+     */
     public SshResponseHandler(SchemaType schemaType, String rawResponse) {
         this.schemaType = schemaType;
         this.rawResponse = rawResponse;
     }
 
+    /**
+     * Parses the raw response from a search operation.
+     *
+     * @return A set of maps where each map represents an individual result from the search operation. The keys of the map are attribute names and the values are the corresponding attribute values.
+     */
     public Set<Map<String, String>> parseSearchOperation() {
         String[] lines = this.rawResponse.split(Constants.RESPONSE_NEW_LINE_SEPARATOR);
         Set<Map<String, String>> parsedResult = new HashSet<>();
@@ -50,7 +67,7 @@ public class SshResponseHandler {
      *      UniqueID|UniqueName|Other Attributes
      *      UniqueID and UniqueName must match icfsUid and icfsName specified in schemaConfig.json
      *      this method set icfsUid and icfsName to corresponding values
-     * @param attributeNames  first line returned by ssh which define column names e.g. ExchangeGuid|Attributes
+     * @param attributeNames  first line returned by Ssh which define column names e.g. ExchangeGuid|Attributes
      * @param attributeValues every other line define single object with attributes e.g. 341eb-......|example@mail.com
      * @return parsed attributes map with corresponding pairs e.g. icfsUid="341eb-......", ...
      *
@@ -106,6 +123,12 @@ public class SshResponseHandler {
 
     }
 
+    /**
+     * Parses the raw response from a create operation.
+     *
+     * @return The Uid object created as a result of the create operation.
+     * The Uid is extracted from the parsed attributes in the raw response.
+     */
     public Uid parseCreateOperation() {
         String[] lines = this.rawResponse.split(Constants.RESPONSE_NEW_LINE_SEPARATOR);
 
@@ -116,6 +139,14 @@ public class SshResponseHandler {
         return parseUid(validAttributes);
     }
 
+    /**
+     * Parses the Uid from the given map of attributes.
+     *
+     * @param attributes A map where the key is the attribute name and the value is the attribute value.
+     * It expects the map to contain either "icfsUid" or "icfsName" as a key.
+     * @return The Uid object corresponding to the Uid value found in the map.
+     * @throws ConnectorException If neither "icfsUid" nor "icfsName" is found in the attributes map.
+     */
     private Uid parseUid(Map<String, String> attributes) {
         String uidValue = attributes.get("icfsUid");
         String nameValue = attributes.get("icfsName");

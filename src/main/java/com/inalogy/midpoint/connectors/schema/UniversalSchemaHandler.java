@@ -28,16 +28,14 @@ import javax.json.JsonReader;
 public class UniversalSchemaHandler {
     private static final Log LOG = Log.getLog(UniversalSchemaHandler.class);
     private final String schemaFilePath;
-
     public  String getFileSha256() {
         return fileSha256;
     }
-
     private final String fileSha256;
+    /**
+     * Holds all SchemaTypes in map in which key is: SchemaType.getObjectClassName value: SchemaType Object
+     */
     private final Map<String, SchemaType> schemaTypes = new HashMap<>();
-
-
-    // key schemaType.getObjectClass() value: SchemaType object
     public  Map<String, SchemaType> getSchemaTypes() {
         return this.schemaTypes;
     }
@@ -48,6 +46,10 @@ public class UniversalSchemaHandler {
         this.loadSchemaFile();
     }
 
+    /**
+     * Loads SchemaFile and instantiate SchemaType objects
+     * that represents ObjectClasses with all attributes defined in SchemaFile
+     */
     private void loadSchemaFile() {
         try {
             Map<String, Object> schemaFile = readJsonFileAsMap(this.schemaFilePath);
@@ -106,7 +108,7 @@ public class UniversalSchemaHandler {
             throw new RuntimeException("An error occurred while SchemaFile: " + e);
         }
     }
-    public static Map<String, Object> readJsonFileAsMap(String filePath) throws IOException {
+    private static Map<String, Object> readJsonFileAsMap(String filePath) throws IOException {
         Map<String, Object> resultMap = new HashMap<>();
         try (FileReader fileReader = new FileReader(filePath);
              JsonReader jsonReader = Json.createReader(fileReader)) {
