@@ -27,6 +27,8 @@
         <org.jetbrains.version>24.0.1</org.jetbrains.version>
         <slf4j.version>2.0.5</slf4j.version>
         <javax.json.version>1.1.4</javax.json.version>
+        <maven.javadoc.plugin.version>3.3.0</maven.javadoc.plugin.version>
+        <com.evolveum.polygon.javadoc.link>https://connid.tirasa.net/apidocs/1.5/</com.evolveum.polygon.javadoc.link>
     </properties>
 
     <repositories>
@@ -119,16 +121,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>${maven.javadoc.plugin.version}</version>
                 <configuration>
-<!--                    <additionalOptions>-->
-                        <!--   Hide full classpath for external classes in javadoc    -->
-<!--                        <additionalOption>-noqualifier all</additionalOption>-->
-<!--                    </additionalOptions>-->
+                    <!--    include private methods in javadoc     -->
                     <show>private</show>
                     <links>
-                        <!-- links objects from local project with external api  -->
-                        <link>https://connid.tirasa.net/apidocs/1.5/</link>
+                        <!-- links javadoc objects from local project with external apidocs  -->
+                        <link>${com.evolveum.polygon.javadoc.link}</link>
                     </links>
                     <reportOutputDirectory>${project.basedir}/javadoc</reportOutputDirectory>
                 </configuration>
