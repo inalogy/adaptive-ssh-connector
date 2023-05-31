@@ -57,12 +57,13 @@ public class SshResponseHandler {
     }
 
     /**
-     * Map valid attributes based on schema
-     *  case1:
+     * Parse valid attributes based on schema.
+     *
+     *  <p>case1:
      *      powershell script returns line[0]:
      *      UniqueID|otherAttribute
      *      this method set icfsUid and icfsName to same value if icfsUid and icfsName in schemaConfig.json are same
-     *  case2:
+     *  <p>case2:
      *      powershell script returns line[0]:
      *      UniqueID|UniqueName|Other Attributes
      *      UniqueID and UniqueName must match icfsUid and icfsName specified in schemaConfig.json

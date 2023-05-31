@@ -19,7 +19,7 @@ import javax.json.JsonReader;
 
 /**
  * The UniversalSchemaHandler is responsible for parsing the schemaConfig file
- * and creating instances of SchemaType Objects, which are stored in a Map as class attributes.
+ * and creating instances of SchemaType Objects, which are stored in a Map as instance attribute.
  *
  * @author P-Rovnak
  * @version 1.0
@@ -27,6 +27,10 @@ import javax.json.JsonReader;
  */
 public class UniversalSchemaHandler {
     private static final Log LOG = Log.getLog(UniversalSchemaHandler.class);
+
+    /**
+     * Absolute Schema Filepath
+     */
     private final String schemaFilePath;
     public  String getFileSha256() {
         return fileSha256;

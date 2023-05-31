@@ -35,6 +35,11 @@ public class SessionManager {
         this.authManager = new AuthenticationManager(this.configuration);
     }
 
+    /**
+     *
+     * @param processedCommand e.g. C:/Users/test/Desktop/searchScript.ps1 -exchangeGuid "someguid"
+     * @return Response as String
+     */
     public String exec(String processedCommand) {
         startSession();
         final Session.Command cmd;
@@ -88,9 +93,13 @@ public class SessionManager {
         return output;
     }
 
+    /**
+     * Establish connection with remote SSH Server.
+     * Single SshClient connection can handle multiple open Sessions
+     * For maximum performance we need to keep SshClient alive, so we prevent establishing connection for every request
+     */
     public void initSshClient(){
-        /* Establishing connection with SSHClient
-         */
+
         if (ssh == null || !ssh.isConnected()) {
 
             DefaultConfig defaultConfig = new DefaultConfig();
@@ -120,6 +129,9 @@ public class SessionManager {
         return ssh != null && ssh.isConnected();
     }
 
+    /**
+     * Dispose SshClient and close connection when connector is disposed
+     */
     public void disposeSshClient(){
         if (ssh != null && ssh.isConnected()){
             try {
@@ -131,6 +143,10 @@ public class SessionManager {
             }
         }
     }
+
+    /**
+     * For every request we need to create new session
+     */
     public void startSession() {
         initSshClient();
         if (ssh != null && ssh.isConnected() && !ssh.isAuthenticated()) {
@@ -148,6 +164,9 @@ public class SessionManager {
         LOG.info("Session Started: {0}", authManager.getConnectionDesc());
     }
 
+    /**
+     * Every session can be used to execute only single command, after each exec we need to closeSession
+     */
     public void closeSession(){
         if (ssh.isConnected() && session.isOpen()) {
             LOG.info("Disconnecting from {0}", authManager.getConnectionDesc());

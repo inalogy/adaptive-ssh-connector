@@ -100,9 +100,13 @@ public class CommandProcessor {
         return '"' + value.toString().replaceAll("\"", "\"\"") + '"';
     }
 
+    /**
+     * Transform __NAME__ || __PASSWORD__ sent by midpoint to corresponding flags that are defined in constants
+     * @param specialAttribute __NAME__ || __PASSWORD_
+     * @return constant e.g. __NAME__ -> name
+     */
     private String transformSpecialAttributes(String specialAttribute){
-        /* Transform __NAME__ || __PASSWORD__ sent by midpoint to corresponding flags that are defined in constants
-         */
+
         if (specialAttribute.equals(Constants.SPECIAL_CONNID_NAME)){
             return Constants.MICROSOFT_EXCHANGE_NAME_FLAG;
         } else if (specialAttribute.equals(Constants.SPECIAL_CONNID_PASSWORD)) {
