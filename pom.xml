@@ -104,8 +104,12 @@
             <artifactId>javax.json</artifactId>
             <version>${javax.json.version}</version>
         </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk15on</artifactId>
+                <version>${org.bouncycastle.version}</version>
+            </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -129,7 +133,7 @@
                         <!-- links javadoc objects from local project with external apidocs  -->
                         <link>${com.evolveum.polygon.javadoc.link}</link>
                     </links>
-                    <reportOutputDirectory>${project.basedir}/javadoc</reportOutputDirectory>
+                    <reportOutputDirectory>${project.basedir}/JavaDoc</reportOutputDirectory>
                 </configuration>
             </plugin>
             <plugin>
