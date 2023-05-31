@@ -33,16 +33,16 @@ public class ObjectConverter {
         for (Map.Entry<String, String> attribute : attributes.entrySet()) {
 
             // check if attribute is multivalued based on schema
-            Optional<Boolean> multivaluedAttribute = schemaType.getAttributes().stream()
+            boolean multivaluedAttribute = schemaType.getAttributes().stream()
                     .filter(attr -> attr.getAttributeName().equals(attribute.getKey()))
                     .map(SchemaTypeAttribute::isMultivalued)
-                    .findFirst();
-            if (multivaluedAttribute.isPresent()) {
-                LOG.ok("converting multivalued attribute " + attribute.getKey());
+                    .findFirst()
+                    .orElse(false);
+            if (multivaluedAttribute) {
+                LOG.ok("converting multivalued attribute {0}", attribute.getKey());
                 String[] values = attribute.getValue().split(Pattern.quote(Constants.MICROSOFT_EXCHANGE_RESPONSE_MULTIVALUED_SEPARATOR));
                 builder.addAttribute(AttributeBuilder.build(attribute.getKey(), values));
             } else {
-
                 // Attribute is not multiValued. Add it as a single value.
                 builder.addAttribute(AttributeBuilder.build(attribute.getKey(), attribute.getValue()));
             }
