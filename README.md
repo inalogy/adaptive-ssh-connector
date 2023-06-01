@@ -3,7 +3,7 @@
 1. [Introduction](#introduction)
 2. [Capabilities and Features](#capabilities-and-features)
 3. [Dynamic Schema](#dynamic-schema)
-4. [Configuration]()
+4. [Configuration](#configuration)
 5. [Script design](#script-design)
 6. [Build](#build)
 # Introduction
@@ -115,6 +115,8 @@ example:
   $commandsToImport = "Set-Mailbox", "Get-Mailbox", "Set-User"
   Import-PSSession $Session -CommandName $commandsToImport -AllowClobber > $null
 ``` 
+### Configuration
+- TODO
 ### Connector Operations
 * Each operation is designed in a way to work with predefined Script input/output
 
