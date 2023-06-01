@@ -7,7 +7,6 @@ import java.util.Set;
 
 import com.inalogy.midpoint.connectors.filter.SshFilter;
 import com.inalogy.midpoint.connectors.filter.SshFilterTranslator;
-import com.inalogy.midpoint.connectors.objects.ObjectConverter;
 import com.inalogy.midpoint.connectors.utils.Constants;
 import com.inalogy.midpoint.connectors.cmd.CommandProcessor;
 import com.inalogy.midpoint.connectors.cmd.SessionManager;
@@ -138,7 +137,7 @@ public class SshConnector implements
                 String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
                 Set<Map<String, String>> parsedResponse = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation();
                 Map<String, String> singleLine = parsedResponse.iterator().next(); // search result for single user/object should always return single object
-                ConnectorObject connectorObject = ObjectConverter.convertObjectToConnectorObject(schemaType, singleLine);
+                ConnectorObject connectorObject = UniversalObjectsHandler.convertObjectToConnectorObject(schemaType, singleLine);
                 handler.handle(connectorObject);
 
             }
@@ -148,7 +147,7 @@ public class SshConnector implements
                 String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
                 Set<Map<String, String>> parsedResponse  = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation();
                 for (Map<String, String> parsedResponseLine: parsedResponse){
-                    ConnectorObject connectorObject = ObjectConverter.convertObjectToConnectorObject(schemaType, parsedResponseLine);
+                    ConnectorObject connectorObject = UniversalObjectsHandler.convertObjectToConnectorObject(schemaType, parsedResponseLine);
                     handler.handle(connectorObject);
                 }
             }
@@ -174,7 +173,7 @@ public class SshConnector implements
         LOG.ok("objectClass : {0} uid: {1} modifications: {2} operationOptions: {3}", objectClass, uid.getValue(), modifications, options);
         getSchemaHandler();
         SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
-
+//        UniversalObjectsHandler.handleUpdateDelta(schemaType, uid, modifications, options);
         Set<Attribute> attributeSet = new HashSet<>();
         Attribute icfsAttribute = AttributeBuilder.build(schemaType.getIcfsUid(), uid.getValue());
         attributeSet.add(icfsAttribute);
@@ -286,7 +285,7 @@ public class SshConnector implements
     public void checkAlive() {
         boolean isAlive = this.sshManager.isConnectionAlive();
         if (!isAlive){
-            LOG.error("connector is not alive");
+            LOG.info("connector is not alive");
             throw new ConnectionFailedException();
         }
     }
