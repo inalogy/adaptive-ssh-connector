@@ -13,7 +13,10 @@ import org.identityconnectors.framework.common.objects.Attribute;
 
 import org.jetbrains.annotations.NotNull;
 
-
+/**
+ * The CommandProcessor class is responsible for processing sets of attributes and generating
+ * corresponding commands and flags that can be understood by an SSH interface.
+ */
 public class CommandProcessor {
 
     private final SshConfiguration configuration;
@@ -102,7 +105,7 @@ public class CommandProcessor {
 
     /**
      * Transform __NAME__ || __PASSWORD__ sent by midpoint to corresponding flags that are defined in constants
-     * @param specialAttribute __NAME__ || __PASSWORD_
+     * @param specialAttribute __NAME__ || __PASSWORD__
      * @return constant e.g. __NAME__ -> name
      */
     private String transformSpecialAttributes(String specialAttribute){

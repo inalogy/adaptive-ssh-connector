@@ -22,8 +22,7 @@ import javax.json.JsonReader;
  * and creating instances of SchemaType Objects, which are stored in a Map as instance attribute.
  *
  * @author P-Rovnak
- * @version 1.0
- * @since 30-6-2023
+ * @since 1.0
  */
 public class UniversalSchemaHandler {
     private static final Log LOG = Log.getLog(UniversalSchemaHandler.class);

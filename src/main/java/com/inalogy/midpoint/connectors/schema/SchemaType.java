@@ -12,8 +12,7 @@ import org.identityconnectors.common.logging.Log;
  * SchemaType class represents a distinct type of ObjectClass e.g. user, group
  * <p>
  * @author P-Rovnak
- * @version 1.0
- * @since 30-6-2023
+ * @since 1.0
  */
 public class SchemaType {
     private static final Log LOG = Log.getLog(SchemaType.class);

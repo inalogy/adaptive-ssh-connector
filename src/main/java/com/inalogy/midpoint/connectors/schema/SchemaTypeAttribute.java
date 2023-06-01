@@ -7,7 +7,7 @@ import org.identityconnectors.common.logging.Log;
  *
  * @author P-Rovnak
  * @version 1.0
- * @since 30-6-2023
+ * @since 1.0
  */
 public class SchemaTypeAttribute {
     private static final Log LOG = Log.getLog(UniversalSchemaHandler.class);

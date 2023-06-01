@@ -18,8 +18,7 @@ import org.identityconnectors.framework.common.objects.Uid;
  * It parses the raw response into a more manageable format, depending on the operation performed (search, delete, create)
  * It also use SchemaType Object for pairing with response attributes.
  * @author P-Rovnak
- * @version 1.0
- * @since 31-6-2023
+ * @since 1.0
  */
 public class SshResponseHandler {
     private static final Log LOG = Log.getLog(SshResponseHandler.class);

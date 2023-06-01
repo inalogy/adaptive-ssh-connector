@@ -5,8 +5,8 @@ import java.util.regex.Pattern;
 
 import com.inalogy.midpoint.connectors.schema.SchemaType;
 import com.inalogy.midpoint.connectors.schema.SchemaTypeAttribute;
-
 import com.inalogy.midpoint.connectors.utils.Constants;
+
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.objects.AttributeBuilder;
 import org.identityconnectors.framework.common.objects.AttributeInfoBuilder;
@@ -18,9 +18,13 @@ import org.identityconnectors.framework.common.objects.SchemaBuilder;
 import org.identityconnectors.framework.common.objects.Uid;
 import org.identityconnectors.framework.common.objects.Name;
 
-
-
-
+/**
+ * A utility class responsible for the transformation and handling of object classes and connector objects.
+ * <p>
+ * This class provides functionality for building an {@link ObjectClass} instance based on a provided
+ * {@link SchemaType}, and for converting a Map of attributes into a {@link ConnectorObject}.
+ * </p>
+ */
 public class UniversalObjectsHandler {
     private static final Log LOG = Log.getLog(SchemaType.class);
 
@@ -69,6 +73,17 @@ public class UniversalObjectsHandler {
         LOG.ok("buildingObjectClass for: " + schemaType.getObjectClassName());
         schemaBuilder.defineObjectClass(objClassBuilder.build());
     }
+
+    /**
+     * Converts a given Map of attributes to a ConnectorObject.
+     * <p>
+     * The conversion process is influenced by the provided SchemaType, which defines how
+     * the attributes should be mapped into the ConnectorObject.
+     * </p>
+     * @param schemaType SchemaType object representing currently processed object e.g. user,group
+     * @param attributes Map of strings representing currently processed object
+     * @return ConnectorObject
+     */
     public static ConnectorObject convertObjectToConnectorObject(SchemaType schemaType, Map<String, String> attributes) {
         ConnectorObjectBuilder builder = new ConnectorObjectBuilder();
         ObjectClass objectClass = new ObjectClass(schemaType.getObjectClassName());
@@ -98,5 +113,4 @@ public class UniversalObjectsHandler {
         }
         return builder.build();
     }
-
 }

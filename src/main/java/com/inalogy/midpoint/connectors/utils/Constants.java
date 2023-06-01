@@ -1,5 +1,11 @@
 package com.inalogy.midpoint.connectors.utils;
 
+
+/**
+ * A class that defines constant values used throughout the project.
+ * @author P-Rovnak
+ * @since 1.0
+ */
 public class Constants {
     public static final String TYPE_POWERSHELL = "powershell";
     public static final String TYPE_SHELL = "shell";

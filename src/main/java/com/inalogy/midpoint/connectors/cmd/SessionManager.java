@@ -20,6 +20,9 @@ import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 
+/**
+ * This class is responsible for Initializing and establishing Ssh connection and Ssh session spawning, Execution of commands.
+ */
 public class SessionManager {
 
     private final SshConfiguration configuration;
@@ -95,7 +98,7 @@ public class SessionManager {
 
     /**
      * Establish connection with remote SSH Server.
-     * Single SshClient connection can handle multiple open Sessions
+     * Single SshClient connection can handle multiple Sessions
      * For maximum performance we need to keep SshClient alive, so we prevent establishing connection for every request
      */
     public void initSshClient(){
