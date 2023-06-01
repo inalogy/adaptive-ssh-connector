@@ -1,6 +1,9 @@
 package com.inalogy.midpoint.connectors.objects;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.inalogy.midpoint.connectors.schema.SchemaType;
@@ -8,7 +11,9 @@ import com.inalogy.midpoint.connectors.schema.SchemaTypeAttribute;
 import com.inalogy.midpoint.connectors.utils.Constants;
 
 import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.AttributeBuilder;
+import org.identityconnectors.framework.common.objects.AttributeDelta;
 import org.identityconnectors.framework.common.objects.AttributeInfoBuilder;
 import org.identityconnectors.framework.common.objects.ConnectorObject;
 import org.identityconnectors.framework.common.objects.ConnectorObjectBuilder;
@@ -112,5 +117,39 @@ public class UniversalObjectsHandler {
             }
         }
         return builder.build();
+    }
+    /**
+     * Process the provided attributeDelta to prepare for an SSH request.
+     * Extracts all values from the attributeDelta, formats them for compatibility with
+     * the remote script using {@link Constants#MICROSOFT_EXCHANGE_ADD_UPDATEDELTA} or {@link Constants#MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA},
+     * and adds them to ArrayList, finally, it executes SSH request.
+     * @param schemaType SchemaType Object that corresponds to currently processed object
+     * @param attributeDelta of currently processed modification
+     */
+    public static Set<Attribute> formatMultiValuedAttribute(SchemaType schemaType, Uid uid, AttributeDelta attributeDelta){
+        Set<Attribute> attributeSet = new HashSet<>();
+        Attribute icfsAttribute = AttributeBuilder.build(schemaType.getIcfsUid(), uid.getValue());
+        attributeSet.add(icfsAttribute);
+        ArrayList<String> multivaluedAttributes = new ArrayList<>();
+
+        if (attributeDelta.getValuesToAdd() != null) {
+            for (Object value : attributeDelta.getValuesToAdd()) {
+                String attributeValue = Constants.MICROSOFT_EXCHANGE_ADD_UPDATEDELTA + value;
+                multivaluedAttributes.add(attributeValue);
+            }
+        }
+        if (attributeDelta.getValuesToRemove() != null) {
+            for (Object value : attributeDelta.getValuesToRemove()) {
+                String attributeValue =  Constants.MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA + value;
+                multivaluedAttributes.add(attributeValue);
+            }
+        }
+
+        Attribute multivaluedAttribute = AttributeBuilder.build(attributeDelta.getName(), multivaluedAttributes);
+        attributeSet.add(multivaluedAttribute);
+
+        return  attributeSet;
+
+
     }
 }
