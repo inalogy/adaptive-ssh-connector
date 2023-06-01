@@ -12,7 +12,6 @@ public class Constants {
      * Separator that should be returned by remote Script.
      */
     public static final String RESPONSE_COLUMN_SEPARATOR = "|";
-    //TODO add check between RESPONSE_COLUMN_SEPARATOR & RESPONSE_NEW_LINE_SEPARATOR they should never be same
     /**
      * Each line represent single object for processing, e.g. user,group.
      */
