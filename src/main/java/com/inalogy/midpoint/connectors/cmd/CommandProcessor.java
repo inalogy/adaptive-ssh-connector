@@ -16,6 +16,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * The CommandProcessor class is responsible for processing sets of attributes and generating
  * corresponding commands and flags that can be understood by an SSH interface.
+ * @author Frantisek Mikus
+ * @since 1.0
  */
 public class CommandProcessor {
 
@@ -25,6 +27,12 @@ public class CommandProcessor {
         this.configuration = configuration;
     }
 
+    /**
+     * process Attributes based on {@link SshConfiguration#getArgumentStyle()}
+     * @param attributes set of attributes that need to be formatted with appropriate flags
+     * @param scriptPath of currently processed Object
+     * @return processed string with scriptPath and attributes
+     */
     public String process(Set<Attribute> attributes, @NotNull String scriptPath) {
         String command = buildCommand(scriptPath);
 
@@ -49,6 +57,10 @@ public class CommandProcessor {
         }
     }
 
+    /**
+     * build command based on configuration ShellType
+     * @param scriptPath which is defined in SchemaType for particular object
+     */
     private String buildCommand(String scriptPath) {
         switch (configuration.getShellType()) {
             case Constants.TYPE_SHELL:
@@ -60,6 +72,13 @@ public class CommandProcessor {
         }
     }
 
+    /**
+     * encodeArguments and Commands to String with paramPrefix.
+     * Each attribute name represent flag that should be accepted by remote script
+     * Each attribute value define value of attribute associated with name
+     * Multivalued attributes are separated by "," .
+     * Special attribute names are handled in this method, if midpoint send __NAME__ it gets matched to appropriate flag defined in constants.
+     */
     private String encodeArgumentsAndCommandToString(String command, Set<Attribute> attributes, String paramPrefix) {
         StringBuilder commandLineBuilder = new StringBuilder();
         commandLineBuilder.append(command);
@@ -106,7 +125,7 @@ public class CommandProcessor {
     /**
      * Transform __NAME__ || __PASSWORD__ sent by midpoint to corresponding flags that are defined in constants
      * @param specialAttribute __NAME__ || __PASSWORD__
-     * @return constant e.g. __NAME__ -> name
+     * @return constant e.g. __NAME__ -> {@link Constants#MICROSOFT_EXCHANGE_NAME_FLAG}
      */
     private String transformSpecialAttributes(String specialAttribute){
 

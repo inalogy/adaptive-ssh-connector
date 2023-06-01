@@ -78,6 +78,9 @@ public class SshConnector implements
         }
     }
 
+    /**
+     * Simple test connection with echo command.
+     */
     @Override
     public void test() {
         String testEcho = "echo \"Hello\"";
@@ -88,6 +91,9 @@ public class SshConnector implements
         }
     }
 
+    /**
+     * Schema is cached after first initialisation, and is automatically refreshed whenever hash of schema File is changed.
+     */
     @Override
     public Schema schema() {
         SchemaBuilder schemaBuilder = new SchemaBuilder(SshConnector.class);
@@ -114,6 +120,11 @@ public class SshConnector implements
         return new SshFilterTranslator();
     }
 
+    /**
+     * executeQuery execute searchScript on remote ssh server.
+     * if query contains SshFilter.byUid it create query with appropriate flag that match schema definition and returns exact object that match query Uid.
+     * Otherwise, executeQuery returns all output/objects from searchScript, paging is not supported yet.
+     */
     @Override
     public void executeQuery(ObjectClass objectClass, SshFilter query, ResultsHandler handler, OperationOptions options) {
         LOG.info("executeQuery on {0}, query: {1}, options: {2}", objectClass, query, options);
@@ -156,6 +167,10 @@ public class SshConnector implements
         }
     }
 
+    /**
+     * create Method execute createScript through ssh on target system.
+     * Set Uid based on response returned from the script.
+     */
     @Override
     public Uid create(ObjectClass objectClass, Set<Attribute> createAttributes, OperationOptions options) {
         getSchemaHandler();
@@ -168,6 +183,14 @@ public class SshConnector implements
         //TODO add error handling if uid||name already exists
     }
 
+
+    /**
+     * Process modifications sent from midpoint and transform them based on modification type.
+     * Single value is processed without much overhead, however multivalued attribute need to be formatted in a way that
+     * remote script understand which attribute add and which to remove
+     * for that we use {@link Constants#MICROSOFT_EXCHANGE_ADD_UPDATEDELTA} and {@link Constants#MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA}
+     *
+     */
     @Override
     public Set<AttributeDelta> updateDelta(ObjectClass objectClass, Uid uid, Set<AttributeDelta> modifications, OperationOptions options) {
         LOG.ok("objectClass : {0} uid: {1} modifications: {2} operationOptions: {3}", objectClass, uid.getValue(), modifications, options);
@@ -181,7 +204,17 @@ public class SshConnector implements
         for (AttributeDelta attributeDelta: modifications){
             //handle multivalued operations for ADD and REMOVE separately
             if (attributeDelta.getValuesToAdd() != null || attributeDelta.getValuesToRemove() != null){
-                handleMultiValuedAttribute(schemaType, uid, attributeDelta);
+                Set<Attribute> formattedAttributes = UniversalObjectsHandler.formatMultiValuedAttribute(schemaType, uid, attributeDelta);
+                String updateScript = schemaType.getUpdateScript();
+                String sshProcessedCommand = commandProcessor.process(formattedAttributes, updateScript);
+                String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
+                if (sshRawResponse.equals("")){
+                    LOG.ok("Successfully Modified object: {0}", schemaType.getObjectClassName());
+                }
+                else {
+                    LOG.error("Error occurred while modifying object " + sshRawResponse);
+                    throw new ConnectorException("Error occurred while modifying object " + sshRawResponse);
+                }
             } else {
                 //handle replace singlevalue
                 if (attributeDelta.getValuesToReplace() != null){
@@ -203,52 +236,17 @@ public class SshConnector implements
                     }
                 }
             }
+
         }
         return null;
     }
 
+
     /**
-     * Process the provided attributeDelta to prepare for an SSH request.
-     * Extracts all values from the attributeDelta, formats them for compatibility with
-     * the remote script using {@link Constants#MICROSOFT_EXCHANGE_ADD_UPDATEDELTA} or {@link Constants#MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA},
-     * and adds them to ArrayList, finally, it executes SSH request.
-     * @param schemaType SchemaType Object that corresponds to currently processed object
-     * @param attributeDelta of currently processed modification
+     * delete method, execute script on target system with appropriate flag.
+     * Script should return "" if operation was successful
+     * @throws ConnectorException if remote script returns any other output
      */
-    public void handleMultiValuedAttribute(SchemaType schemaType,Uid uid, AttributeDelta attributeDelta){
-        Set<Attribute> attributeSet = new HashSet<>();
-        Attribute icfsAttribute = AttributeBuilder.build(schemaType.getIcfsUid(), uid.getValue());
-        attributeSet.add(icfsAttribute);
-        ArrayList<String> multivaluedAttributes = new ArrayList<>();
-
-        if (attributeDelta.getValuesToAdd() != null) {
-            for (Object value : attributeDelta.getValuesToAdd()) {
-                String attributeValue = Constants.MICROSOFT_EXCHANGE_ADD_UPDATEDELTA + value;
-                multivaluedAttributes.add(attributeValue);
-            }
-        }
-        if (attributeDelta.getValuesToRemove() != null) {
-            for (Object value : attributeDelta.getValuesToRemove()) {
-                String attributeValue =  Constants.MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA + value;
-                multivaluedAttributes.add(attributeValue);
-            }
-        }
-
-        Attribute multivaluedAttribute = AttributeBuilder.build(attributeDelta.getName(), multivaluedAttributes);
-        attributeSet.add(multivaluedAttribute);
-
-        String updateScript = schemaType.getUpdateScript();
-        String sshProcessedCommand = commandProcessor.process(attributeSet, updateScript);
-        String sshRawResponse = this.sshManager.exec(sshProcessedCommand);
-        if (sshRawResponse.equals("")){
-            LOG.ok("Successfully Modified object: {0}", schemaType.getObjectClassName());
-        }
-        else {
-            LOG.error("Error occurred while modifying object " + sshRawResponse);
-            throw new ConnectorException("Error occurred while modifying object " + sshRawResponse);
-        }
-
-    }
     @Override
     public void delete(ObjectClass objectClass, Uid uid, OperationOptions options) {
         getSchemaHandler();
