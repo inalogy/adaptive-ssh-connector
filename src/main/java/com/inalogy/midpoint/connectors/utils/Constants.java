@@ -1,6 +1,5 @@
 package com.inalogy.midpoint.connectors.utils;
 
-
 /**
  * A class that defines constant values used throughout the project.
  * @author P-Rovnak
@@ -9,19 +8,41 @@ package com.inalogy.midpoint.connectors.utils;
 public class Constants {
     public static final String TYPE_POWERSHELL = "powershell";
     public static final String TYPE_SHELL = "shell";
+    /**
+     * Separator that should be returned by remote Script.
+     */
     public static final String RESPONSE_COLUMN_SEPARATOR = "|";
+    //TODO add check between RESPONSE_COLUMN_SEPARATOR & RESPONSE_NEW_LINE_SEPARATOR they should never be same
+    /**
+     * Each line represent single object for processing, e.g. user,group.
+     */
     public static final String RESPONSE_NEW_LINE_SEPARATOR = "\n";
+
+    /**
+     * remote script is supposed to return this Constant that represent empty attribute
+     */
     public static final String RESPONSE_EMPTY_ATTRIBUTE_SYMBOL = "null";
 
     public static final String SPECIAL_CONNID_NAME = "__NAME__";
     public static final String SPECIAL_CONNID_UID = "__UID__";
     public static final String SPECIAL_CONNID_PASSWORD = "__PASSWORD__";
+
+    /**
+     * Value of this constant depends on the implementation of remote script.
+     */
     public static final String MICROSOFT_EXCHANGE_NAME_FLAG = "name";
     public static final String MICROSOFT_EXCHANGE_EMAIL_FLAG = "email";
     public static final String MICROSOFT_EXCHANGE_PASSWORD_FLAG = "password";
+
+    /**
+     * By default, Microsoft Exchange returns multivalued attribute separated by " "
+     */
     public static final String MICROSOFT_EXCHANGE_RESPONSE_MULTIVALUED_SEPARATOR = " ";
     public static final String MICROSOFT_EXCHANGE_ADD_UPDATEDELTA = "ADD:";
     public static final String MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA = "REMOVE:";
     public static final int SSH_RESPONSE_TIMEOUT = 30;
+    /**
+     * How often SshClient send keep alive packet
+     */
     public static final int SSH_CLIENT_KEEP_ALIVE_INTERVAL = 15;
 }
