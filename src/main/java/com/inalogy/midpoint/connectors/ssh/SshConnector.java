@@ -128,37 +128,33 @@ public class SshConnector implements
     public void executeQuery(ObjectClass objectClass, SshFilter query, ResultsHandler handler, OperationOptions options) {
         LOG.info("executeQuery on {0}, query: {1}, options: {2}", objectClass, query, options);
         getSchemaHandler();
-        try {
-            // choosing schema type by key value from map which corresponds to SchemaType object
-            SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
+        // choosing schema type by key value from map which corresponds to SchemaType object
+        SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
 
-            if (schemaType == null) {
-                LOG.error("Unsupported ObjectClass: " + objectClass);
-                throw new IllegalArgumentException("Unsupported ObjectClass: " + objectClass);
-            }
-            if (query != null && query.byUid != null){
-                //build single object query byUid and create corresponding shell command
-                Set<Attribute> queryAttribute = new HashSet<>();
-                Attribute attribute = AttributeBuilder.build(schemaType.getIcfsUid(), query.byUid);
-                queryAttribute.add(attribute);
+        if (schemaType == null) {
+            LOG.error("Unsupported ObjectClass: " + objectClass);
+            throw new IllegalArgumentException("Unsupported ObjectClass: " + objectClass);
+        }
+        if (query != null && query.byUid != null){
+            //build single object query byUid and create corresponding shell command
+            Set<Attribute> queryAttribute = new HashSet<>();
+            Attribute attribute = AttributeBuilder.build(schemaType.getIcfsUid(), query.byUid);
+            queryAttribute.add(attribute);
 
-                String sshRawResponse = processAndExecuteCommand(queryAttribute, Constants.SEARCH_OPERATION, schemaType);
-                Set<Map<String, String>> parsedResponse = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation();
-                Map<String, String> singleLine = parsedResponse.iterator().next(); // search result for single user/object should always return single object
-                ConnectorObject connectorObject = UniversalObjectsHandler.convertObjectToConnectorObject(schemaType, singleLine);
+            String sshRawResponse = processAndExecuteCommand(queryAttribute, Constants.SEARCH_OPERATION, schemaType);
+            Set<Map<String, String>> parsedResponse = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation();
+            Map<String, String> singleLine = parsedResponse.iterator().next(); // search result for single user/object should always return single object
+            ConnectorObject connectorObject = UniversalObjectsHandler.convertObjectToConnectorObject(schemaType, singleLine);
+            handler.handle(connectorObject);
+
+        }
+        else {
+            String sshRawResponse = processAndExecuteCommand(null, Constants.SEARCH_OPERATION, schemaType);
+            Set<Map<String, String>> parsedResponse  = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation();
+            for (Map<String, String> parsedResponseLine: parsedResponse){
+                ConnectorObject connectorObject = UniversalObjectsHandler.convertObjectToConnectorObject(schemaType, parsedResponseLine);
                 handler.handle(connectorObject);
-
             }
-            else {
-                String sshRawResponse = processAndExecuteCommand(null, Constants.SEARCH_OPERATION, schemaType);
-                Set<Map<String, String>> parsedResponse  = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation();
-                for (Map<String, String> parsedResponseLine: parsedResponse){
-                    ConnectorObject connectorObject = UniversalObjectsHandler.convertObjectToConnectorObject(schemaType, parsedResponseLine);
-                    handler.handle(connectorObject);
-                }
-            }
-        } catch (Exception e) {
-            LOG.error("Error occurred while executing query: ", e);
         }
     }
 
@@ -262,7 +258,8 @@ public class SshConnector implements
             throw new ConnectionFailedException();
         }
     }
-    public String processAndExecuteCommand(Set<Attribute> attributes, String operationName, SchemaType schemaType){
+
+    private String processAndExecuteCommand(Set<Attribute> attributes, String operationName, SchemaType schemaType){
         String operationScript;
         switch (operationName){
             case Constants.SEARCH_OPERATION:
