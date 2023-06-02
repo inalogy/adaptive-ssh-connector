@@ -6,7 +6,7 @@
       "objectClass": "user",
       "createScript": "C:\\Users\\inaadm\\Desktop\\createScript.ps1",
       "updateScript": "C:\\Users\\inaadm\\Desktop\\updateScript.ps1",
-      "deleteScript": " C:\\Users\\inaadm\\Desktop\\deleteScript.ps1",
+      "deleteScript": "C:\\Users\\inaadm\\Desktop\\deleteScript.ps1",
       "searchScript": "C:\\Users\\inaadm\\Desktop\\searchScript.ps1",
       "attributes": [
         {
@@ -16,6 +16,13 @@
             "updateable": true,
             "dataType": "String",
             "multivalued": false
+          },
+          "EmailAddresses": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": true
           }
         }
       ]
@@ -40,7 +47,7 @@
           },
           "members": {
             "required": true,
-            "creatable": false,
+            "creatable": true,
             "updateable": true,
             "multivalued": true,
             "dataType": "String"
@@ -53,7 +60,7 @@
       "icfsName": "testName",
       "icfsUid": "12345",
       "objectClass":  "objectWithoutAttributes",
-      "createScript": "createScript.ps2",
+      "createScript": "createScript.ps1",
       "updateScript": "updateScript.ps3",
       "deleteScript": "deleteScript.ps4",
       "searchScript": "searchScript.ps5"
