@@ -32,8 +32,10 @@ More info: https://github.com/PowerShell/Win32-OpenSSH/wiki/DefaultShell
 
 ## Dynamic Schema
 - Schema is generated from schemaConfig.json
+- Schema File should be properly secured and protected with appropriate permissions
 - Schema supports arbitrary number of ObjectClasses and their attributes
 - Every ObjectClass defined in schemaConfig.json must have the following parameters:
+- **Any modifications of schemaFile need to be carefully planned and tested, before any modification of schemaFile resource should be put into maintenance mode.**
 ```
     {
       "icfsName": "anyicfsName",
