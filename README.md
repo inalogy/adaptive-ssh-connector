@@ -5,7 +5,8 @@
 3. [Dynamic Schema](#dynamic-schema)
 4. [Configuration](#configuration)
 5. [Script design](#script-design)
-6. [Build](#build)
+6. [Customisation](#customisation)
+7. [Build](#build)
 # Introduction
   ### ssh-connector
   Standalone SSH Connector for midPoint IDM focused primarily for Microsoft Exchange provisioning
@@ -61,8 +62,8 @@ More info: https://github.com/PowerShell/Win32-OpenSSH/wiki/DefaultShell
 - icfsName and icfsUid can point to the same value
 ### Script design
 Script return values must follow this convention:
-* first line must always have column attributes that match schema
-* Script needs to be designed to return Constants.RESPONSE_EMPTY_ATTRIBUTE_SYMBOL -> "null" for empty attribute otherwise separator wont be able to tell if attribute is empty
+* first line must always have column attributes that match schema -> this apply only for searchScript and createScript
+* Script needs to be designed to return Constants.RESPONSE_EMPTY_ATTRIBUTE_SYMBOL -> "null" for empty attribute otherwise separator won't be able to tell if attribute is empty
 * **First Attribute must be icfsUid or icfsName If you need both unique identifiers specified, first must be icfsUid followed by icfsName that match those specified in schemaConfig.json example:**
 ```
 uniqueIdentifier|UniqueName|AnyOtherAttributes
@@ -134,8 +135,12 @@ example:
   - deleteOp expects Uid which is then passed into powershell script
   - Script is expected to return "" if execution of script was successful any other output is considered as error message
 
+## Customisation
+- Ssh Response column separator  and new line separator can be changed in class utils/Constants
+- Also, Ssh Response that define successful execution for updateDelta and DeleteOp are defined in utils/Constants -> default empty string
+- RESPONSE_COLUMN_SEPARATOR should never be equal to RESPONSE_NEW_LINE_SEPARATOR
 ## Build
 ```
 mvn clean install
 ```
-After successful the build, you can find ssh-v1.0-connector.jar in target directory.
+After successful build, you can find ssh-v1.0-connector.jar in target directory.
