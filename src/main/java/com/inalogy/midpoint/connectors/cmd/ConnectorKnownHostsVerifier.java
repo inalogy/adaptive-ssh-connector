@@ -12,7 +12,11 @@ import net.schmizz.sshj.common.KeyType;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 import net.schmizz.sshj.transport.verification.OpenSSHKnownHosts;
 
-
+/**
+ * This class implements the HostKeyVerifier interface from the SSHJ library.
+ * It provides a means to handle verification of known hosts for SSH connections.
+ *
+ */
 public class ConnectorKnownHostsVerifier implements HostKeyVerifier  {
     private final List<OpenSSHKnownHosts.KnownHostEntry> entries = new ArrayList<>();
 

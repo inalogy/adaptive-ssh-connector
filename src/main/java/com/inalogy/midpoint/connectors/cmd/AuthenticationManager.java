@@ -17,6 +17,10 @@ import org.identityconnectors.common.security.GuardedString;
 import org.identityconnectors.framework.common.exceptions.ConfigurationException;
 import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
 
+/**
+ * This class is responsible for authentication based on configuration.
+ * Currently only password authentication and pubKey without password is supported.
+ */
 public class AuthenticationManager {
 
     private final SshConfiguration configuration;
