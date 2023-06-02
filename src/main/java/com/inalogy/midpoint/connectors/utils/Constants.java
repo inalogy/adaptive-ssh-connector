@@ -8,8 +8,12 @@ package com.inalogy.midpoint.connectors.utils;
 public class Constants {
     public static final String TYPE_POWERSHELL = "powershell";
     public static final String TYPE_SHELL = "shell";
+    public static final String SEARCH_OPERATION = "searchOperation";
+    public static final String UPDATE_OPERATION = "updateOperation";
+    public static final String CREATE_OPERATION = "createOperation";
+    public static final String DELETE_OPERATION = "deleteOperation";
     /**
-     * Separator that should be returned by remote Script.
+     * Separator that should be returned by remote Script. It should never match RESPONSE_NEW_LINE_SEPARATOR
      */
     public static final String RESPONSE_COLUMN_SEPARATOR = "|";
     /**
