@@ -112,11 +112,11 @@ public class SshResponseHandler {
 
 
     /**
-     * @return null if deleteOperation was successful otherwise return error message
+     * @return null if updateOperation or deleteOperation was successful otherwise return error message
      */
-    public String parseDeleteOperation() {
+    public String HandleUpdateOrDeleteResponse() {
 
-        if (this.rawResponse.equals("")){
+        if (this.rawResponse.equals(Constants.MICROSOFT_EXCHANGE_RESPONSE_SUCCESS_SYMBOL)){
             return null;
         }
         return this.rawResponse;

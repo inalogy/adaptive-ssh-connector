@@ -39,6 +39,12 @@ public class Constants {
     public static final String MICROSOFT_EXCHANGE_RESPONSE_MULTIVALUED_SEPARATOR = " ";
     public static final String MICROSOFT_EXCHANGE_ADD_UPDATEDELTA = "ADD:";
     public static final String MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA = "REMOVE:";
+
+    /**
+     * This constant should be returned by remote script if updateDelta or Delete() operation were successfully executed
+     */
+    public static final String MICROSOFT_EXCHANGE_RESPONSE_SUCCESS_SYMBOL = "";
+
     public static final int SSH_RESPONSE_TIMEOUT = 30;
     /**
      * How often SshClient send keep alive packet
