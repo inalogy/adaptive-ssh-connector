@@ -6,7 +6,8 @@
 4. [Configuration](#configuration)
 5. [Script design](#script-design)
 6. [Customisation](#customisation)
-7. [Build](#build)
+7. [JavaDoc](#javadoc)
+8. [Build](#build)
 # Introduction
   ### ssh-connector
   Standalone SSH Connector for midPoint IDM focused primarily for Microsoft Exchange provisioning
@@ -139,6 +140,12 @@ example:
 - Ssh Response column separator  and new line separator can be changed in class utils/Constants
 - Also, Ssh Response that define successful execution for updateDelta and DeleteOp are defined in utils/Constants -> default empty string
 - RESPONSE_COLUMN_SEPARATOR should never be equal to RESPONSE_NEW_LINE_SEPARATOR
+
+## JavaDoc
+- JavaDoc can be generated locally by this command:
+```bash
+clean javadoc:javadoc
+```
 ## Build
 ```
 mvn clean install
