@@ -213,7 +213,7 @@ public class SshConnector implements
 
         String sshRawResponse = processAndExecuteCommand(attributeSet, Constants.UPDATE_OPERATION, schemaType);
         String response = new SshResponseHandler(schemaType, sshRawResponse).HandleUpdateOrDeleteResponse();
-        if (response != Constants.MICROSOFT_EXCHANGE_RESPONSE_SUCCESS_SYMBOL){
+        if (response != null){
             LOG.error("Error occurred while updating entity: {0}", sshRawResponse);
             throw new RuntimeException("Error occurred while updating entity: " + sshRawResponse);
         }
@@ -235,7 +235,7 @@ public class SshConnector implements
         attributeSet.add(attribute);
         String sshRawResponse = processAndExecuteCommand(attributeSet, Constants.DELETE_OPERATION, schemaType);
         String deleteResponse = new SshResponseHandler(schemaType, sshRawResponse).HandleUpdateOrDeleteResponse();
-        if (deleteResponse != Constants.MICROSOFT_EXCHANGE_RESPONSE_SUCCESS_SYMBOL){
+        if (deleteResponse != null){
             LOG.error("Error occured while deleting entity: {0}", deleteResponse);
             throw new RuntimeException("Error occured while deleting entity: " + deleteResponse);
         }
