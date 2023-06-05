@@ -164,7 +164,7 @@ public class SessionManager {
             LOG.error("Communication error while creating SSH session for {1} failed: {2}", authManager.getConnectionDesc(), e.getMessage());
             throw new ConnectionFailedException("Communication error while creating SSH session for "+authManager.getConnectionDesc()+" failed: " + e.getMessage(), e);
         }
-        LOG.info("Session Started: {0}", authManager.getConnectionDesc());
+        LOG.ok("Session Started: {0}", authManager.getConnectionDesc());
     }
 
     /**
@@ -172,13 +172,13 @@ public class SessionManager {
      */
     public void closeSession(){
         if (ssh.isConnected() && session.isOpen()) {
-            LOG.info("Disconnecting from {0}", authManager.getConnectionDesc());
+            LOG.ok("Disconnecting from {0}", authManager.getConnectionDesc());
             try {
                 session.close();
             } catch (ConnectionException | TransportException e) {
                 LOG.warn("Error closing SSH session for {0}: {1} (ignoring)", authManager.getConnectionDesc(), e.getMessage());
             }
-            LOG.info("Connection to {0} disconnected", authManager.getConnectionDesc());
+            LOG.ok("Connection to {0} disconnected", authManager.getConnectionDesc());
         }
     }
 
