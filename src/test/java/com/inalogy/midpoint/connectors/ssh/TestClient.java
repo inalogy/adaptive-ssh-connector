@@ -19,8 +19,8 @@ public class TestClient {
     @Test
     public void testExec1() {
         init();
-        CommandProcessor cmd = new CommandProcessor(testProcessor.getConfiguration());
         SessionManager session = new SessionManager(testProcessor.getConfiguration());
+        CommandProcessor cmd = new CommandProcessor(testProcessor.getConfiguration(), session);
 
         Set<Attribute> attributes = AttributeProcessor.getTestAttributeSet1();
 
@@ -37,8 +37,8 @@ public class TestClient {
     @Test
     public void testExec2() {
         init();
-        CommandProcessor cmd = new CommandProcessor(testProcessor.getConfiguration());
         SessionManager session = new SessionManager(testProcessor.getConfiguration());
+        CommandProcessor cmd = new CommandProcessor(testProcessor.getConfiguration(), session);
 
         Set<Attribute> attributes = AttributeProcessor.getTestAttributeSet2();
 

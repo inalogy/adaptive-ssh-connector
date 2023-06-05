@@ -59,7 +59,7 @@ public class SshConnector implements
         this.configuration.validate();
         this.sshManager = new SessionManager((SshConfiguration) configuration);
         this.sshManager.initSshClient();
-        this.commandProcessor = new CommandProcessor((SshConfiguration) configuration);
+        this.commandProcessor = new CommandProcessor((SshConfiguration) configuration, this.sshManager);
     }
 
     @Override
@@ -141,7 +141,7 @@ public class SshConnector implements
             Attribute attribute = AttributeBuilder.build(schemaType.getIcfsUid(), query.byUid);
             queryAttribute.add(attribute);
 
-            String sshRawResponse = processAndExecuteCommand(queryAttribute, Constants.SEARCH_OPERATION, schemaType);
+            String sshRawResponse = commandProcessor.processAndExecuteCommand(queryAttribute, Constants.SEARCH_OPERATION, schemaType);
             Set<Map<String, String>> parsedResponse = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation();
             Map<String, String> singleLine = parsedResponse.iterator().next(); // search result for single user/object should always return single object
             ConnectorObject connectorObject = UniversalObjectsHandler.convertObjectToConnectorObject(schemaType, singleLine);
@@ -149,7 +149,7 @@ public class SshConnector implements
 
         }
         else {
-            String sshRawResponse = processAndExecuteCommand(null, Constants.SEARCH_OPERATION, schemaType);
+            String sshRawResponse = commandProcessor.processAndExecuteCommand(null, Constants.SEARCH_OPERATION, schemaType);
             Set<Map<String, String>> parsedResponse  = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation();
             for (Map<String, String> parsedResponseLine: parsedResponse){
                 ConnectorObject connectorObject = UniversalObjectsHandler.convertObjectToConnectorObject(schemaType, parsedResponseLine);
@@ -166,7 +166,7 @@ public class SshConnector implements
     public Uid create(ObjectClass objectClass, Set<Attribute> createAttributes, OperationOptions options) {
         getSchemaHandler();
         SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
-        String sshRawResponse = processAndExecuteCommand(createAttributes, Constants.CREATE_OPERATION, schemaType);
+        String sshRawResponse = commandProcessor.processAndExecuteCommand(createAttributes, Constants.CREATE_OPERATION, schemaType);
         Uid uid = new SshResponseHandler(schemaType, sshRawResponse).parseCreateOperation();
         return uid;
         //TODO add error handling if uid||name already exists
@@ -196,7 +196,7 @@ public class SshConnector implements
                 attributeSet.addAll(formattedAttributes);
 
             } else {
-                //handle replace singlevalue
+                //handle replace single value
                 if (attributeDelta.getValuesToReplace() != null){
                     for (Object value: attributeDelta.getValuesToReplace()){
                         Attribute attribute = AttributeBuilder.build(attributeDelta.getName(), value);
@@ -207,7 +207,7 @@ public class SshConnector implements
 
         }
 
-        String sshRawResponse = processAndExecuteCommand(attributeSet, Constants.UPDATE_OPERATION, schemaType);
+        String sshRawResponse = commandProcessor.processAndExecuteCommand(attributeSet, Constants.UPDATE_OPERATION, schemaType);
         String response = new SshResponseHandler(schemaType, sshRawResponse).HandleUpdateOrDeleteResponse();
         if (response != null){
             LOG.error("Error occurred while updating entity: {0}", sshRawResponse);
@@ -229,7 +229,7 @@ public class SshConnector implements
         Set<Attribute> attributeSet = new HashSet<>();
         Attribute attribute = AttributeBuilder.build(schemaType.getIcfsUid(), uid.getValue());
         attributeSet.add(attribute);
-        String sshRawResponse = processAndExecuteCommand(attributeSet, Constants.DELETE_OPERATION, schemaType);
+        String sshRawResponse = commandProcessor.processAndExecuteCommand(attributeSet, Constants.DELETE_OPERATION, schemaType);
         String deleteResponse = new SshResponseHandler(schemaType, sshRawResponse).HandleUpdateOrDeleteResponse();
         if (deleteResponse != null){
             LOG.error("Error occured while deleting entity: {0}", deleteResponse);
@@ -259,27 +259,5 @@ public class SshConnector implements
         }
     }
 
-    private String processAndExecuteCommand(Set<Attribute> attributes, String operationName, SchemaType schemaType){
-        String operationScript;
-        switch (operationName){
-            case Constants.SEARCH_OPERATION:
-                operationScript = schemaType.getSearchScript();
-                break;
-            case Constants.UPDATE_OPERATION:
-                operationScript = schemaType.getUpdateScript();
-                break;
-            case Constants.CREATE_OPERATION:
-                operationScript = schemaType.getCreateScript();
-                break;
-            case Constants.DELETE_OPERATION:
-                operationScript = schemaType.getDeleteScript();
-                break;
-            default:
-                LOG.error("Unsupported operation");
-                throw new RuntimeException("Unsupported operation");
-        }
-        String sshProcessedCommand = commandProcessor.process(attributes, operationScript);
-        return this.sshManager.exec(sshProcessedCommand);
-    }
 }
 

@@ -5,9 +5,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.inalogy.midpoint.connectors.schema.SchemaType;
 import com.inalogy.midpoint.connectors.ssh.SshConfiguration;
 import com.inalogy.midpoint.connectors.utils.Constants;
 
+import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConfigurationException;
 import org.identityconnectors.framework.common.objects.Attribute;
 
@@ -21,10 +23,13 @@ import org.jetbrains.annotations.NotNull;
  */
 public class CommandProcessor {
 
+    private static final Log LOG = Log.getLog(CommandProcessor.class);
+    private final SessionManager sshManager;
     private final SshConfiguration configuration;
 
-    public CommandProcessor(SshConfiguration configuration) {
+    public CommandProcessor(SshConfiguration configuration, SessionManager sshManager) {
         this.configuration = configuration;
+        this.sshManager = sshManager;
     }
 
     /**
@@ -138,5 +143,35 @@ public class CommandProcessor {
         else {
             return specialAttribute;
         }
+    }
+
+    /**
+     *
+     * @param attributes that need to be transformed to appropriate flags
+     * @param operationName type of operation defined in Constants
+     * @param schemaType corresponding schemaType objet of currently processed entity
+     * @return String response
+     */
+    public String processAndExecuteCommand(Set<Attribute> attributes, String operationName, SchemaType schemaType){
+        String operationScript;
+        switch (operationName){
+            case Constants.SEARCH_OPERATION:
+                operationScript = schemaType.getSearchScript();
+                break;
+            case Constants.UPDATE_OPERATION:
+                operationScript = schemaType.getUpdateScript();
+                break;
+            case Constants.CREATE_OPERATION:
+                operationScript = schemaType.getCreateScript();
+                break;
+            case Constants.DELETE_OPERATION:
+                operationScript = schemaType.getDeleteScript();
+                break;
+            default:
+                LOG.error("Unsupported operation");
+                throw new RuntimeException("Unsupported operation");
+        }
+        String sshProcessedCommand = process(attributes, operationScript);
+        return this.sshManager.exec(sshProcessedCommand);
     }
 }
