@@ -49,7 +49,7 @@ public class Constants {
      */
     public static final String MICROSOFT_EXCHANGE_RESPONSE_SUCCESS_SYMBOL = "";
 
-    public static final int SSH_RESPONSE_TIMEOUT = 30;
+    public static final int SSH_RESPONSE_TIMEOUT = 15;
     /**
      * How often SshClient send keep alive packet
      */
