@@ -8,9 +8,10 @@
 6. [Customisation](#customisation)
 7. [JavaDoc](#javadoc)
 8. [Build](#build)
+9. [TODO](#todo)
 # Introduction
   ### ssh-connector
-  Standalone SSH Connector for midPoint IDM focused primarily for Microsoft Exchange provisioning
+  Standalone SSH Connector for midPoint IDM customised for Microsoft Exchange provisioning
 # Capabilities and Features
 
 - Schema: YES - dynamic
@@ -86,7 +87,7 @@ example:
        "smtpMailbox: {....},
        "mailBoxNickName": {....}
        ]
-  ``` 
+``` 
 * SearchScript.ps1 output :
 ``` 
     smtpMail|smtpMailbox|mailBoxNickName
@@ -153,3 +154,7 @@ clean javadoc:javadoc
 mvn clean install
 ```
 After successful build, you can find ssh-v1.0-connector.jar in target directory.
+
+## TODO
+- Private/public key authentication
+- Response handler for different type of script output e.g. json
