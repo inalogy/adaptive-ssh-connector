@@ -9,9 +9,12 @@
 7. [JavaDoc](#javadoc)
 8. [Build](#build)
 9. [TODO](#todo)
+10. [Special Thanks](#special-thanks)
 # Introduction
   ### ssh-connector
   Standalone SSH Connector for midPoint IDM customised for Microsoft Exchange provisioning
+
+version 1.0-beta
 # Capabilities and Features
 
 - Schema: YES - dynamic
@@ -66,7 +69,7 @@ More info: https://github.com/PowerShell/Win32-OpenSSH/wiki/DefaultShell
 - icfsName and icfsUid can point to the same value
 ### Script design
 Script return values must follow this convention:
-* first line must always have column attributes that match schema -> this apply only for searchScript and createScript
+* first line must always have column attributes that match schema -> this applies only for searchScript and createScript
 * Script needs to be designed to return Constants.RESPONSE_EMPTY_ATTRIBUTE_SYMBOL -> "null" for empty attribute otherwise separator won't be able to tell if attribute is empty
 * **First Attribute must be icfsUid or icfsName If you need both unique identifiers specified, first must be icfsUid followed by icfsName that match those specified in schemaConfig.json example:**
 ```
@@ -147,14 +150,28 @@ example:
 ## JavaDoc
 - JavaDoc can be generated locally by this command:
 ```bash
-clean javadoc:javadoc
+mvn clean javadoc:javadoc
 ```
 ## Build
 ```
 mvn clean install
+```
+## Build without Tests
+```
+mvn clean install -DskipTests=True
 ```
 After successful build, you can find ssh-v1.0-connector.jar in target directory.
 
 ## TODO
 - Private/public key authentication
 - Response handler for different type of script output e.g. json
+- Feature that will optionally allow to store schema file within the connector jar
+- Test on Unix/Linux based systems
+- Script validator that validate SchemaFile/SchemaType obj. with script return values
+## Special Thanks
+This project is inspired by and owes a debt of gratitude to the [Evolveum SSH Connector](https://github.com/Evolveum/connector-ssh) project.
+
+# Status
+Tested only on Microsoft Windows server with powershell version 5.1.17763
+
+Ssh Connector is intended for production use. Tested with MidPoint version 4.6. The connector was introduced as a contribution to midPoint project by Inalogy and is not officially supported by Evolveum. If you need support, please contact info@inalogy.com.
