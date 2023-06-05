@@ -29,6 +29,8 @@ import org.identityconnectors.framework.common.objects.Name;
  * This class provides functionality for building an {@link ObjectClass} instance based on a provided
  * {@link SchemaType}, and for converting a Map of attributes into a {@link ConnectorObject}.
  * </p>
+ * @author P-Rovnak
+ * @since 1.0
  */
 public class UniversalObjectsHandler {
     private static final Log LOG = Log.getLog(SchemaType.class);

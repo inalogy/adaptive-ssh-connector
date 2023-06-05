@@ -15,6 +15,8 @@ import org.identityconnectors.common.logging.Log;
 /**
  * The FileHashCalculator class provides functionality to compute
  * the hash of a file. It uses SHA-256 hash algorithm
+ * @author P-Rovnak
+ * @since 1.0
  */
 public class FileHashCalculator {
     private static final Log LOG = Log.getLog(FileHashCalculator.class);
