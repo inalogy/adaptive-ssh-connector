@@ -40,7 +40,7 @@ public class SessionManager {
 
     /**
      *
-     * @param processedCommand e.g. C:/Users/test/Desktop/searchScript.ps1 -exchangeGuid "someguid"
+     * @param processedCommand e.g. C:/Users/test/Desktop/searchScript.ps1 -ExchangeGuid "someguid"
      * @return Response as String
      */
     public String exec(String processedCommand) {
@@ -117,7 +117,7 @@ public class SessionManager {
             try {
                 // connect should occur only once till connection is dropped
                 ssh.connect(configuration.getHost(), configuration.getPort());
-                LOG.warn("Connecting to {0}", authManager.getConnectionDesc());
+                LOG.info("Connecting to {0}", authManager.getConnectionDesc());
             } catch (IOException e) {
                 LOG.error("Error creating SSH connection to {0}: {1}", authManager.getHostDesc(), e.getMessage());
                 throw new ConnectionFailedException("Error creating SSH connection to " + authManager.getHostDesc() + ": " + e.getMessage(), e);
@@ -138,10 +138,10 @@ public class SessionManager {
     public void disposeSshClient(){
         if (ssh != null && ssh.isConnected()){
             try {
-                LOG.warn("Disposing SSHClient");
+                LOG.info("Disposing SSHClient");
                 ssh.disconnect();
             } catch (IOException e) {
-                LOG.error("Exception occured while disposing SSHClient: " + e);
+                LOG.error("Exception occurred while disposing SSHClient: " + e);
 
             }
         }
