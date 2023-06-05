@@ -41,9 +41,6 @@ foreach($operation in $operations){
         }
         'REMOVE' {
             if($isPresent){
-                #Write-Host "REMOVE:$emailaddress"
-                $eas = $mailbox.EmailAddresses
-                #Write-Host "allMails:$eas"
                 $mailbox.EmailAddresses = $mailbox.EmailAddresses -ne $emailaddress
                 Set-Mailbox $mailbox.Identity -EmailAddresses $mailbox.EmailAddresses
             }
