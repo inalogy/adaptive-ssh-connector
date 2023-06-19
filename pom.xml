@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.inalogy.midpoint.connectors</groupId>
     <artifactId>ssh</artifactId>
-    <version>1.0</version>
+    <version>v0.1.0.0</version>
     <parent>
         <artifactId>connector-parent</artifactId>
         <groupId>com.evolveum.polygon</groupId>
@@ -161,8 +161,8 @@
                     <descriptors>
                         <descriptor>${assembly.path}</descriptor>
                     </descriptors>
-                    <finalName>${project.artifactId}-${project.version}</finalName>
-                    <appendAssemblyId>true</appendAssemblyId>
+                    <finalName>${project.artifactId}-connector-${project.version}</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
                     <execution>
