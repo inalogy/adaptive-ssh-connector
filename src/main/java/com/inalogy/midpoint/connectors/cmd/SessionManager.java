@@ -7,6 +7,7 @@ import com.inalogy.midpoint.connectors.ssh.SshConfiguration;
 import com.inalogy.midpoint.connectors.utils.Constants;
 
 import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.exceptions.AlreadyExistsException;
 import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.common.exceptions.ConnectorIOException;
@@ -19,6 +20,7 @@ import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
+import org.identityconnectors.framework.common.exceptions.UnknownUidException;
 
 /**
  * This class is responsible for Initializing and establishing Ssh connection and Ssh session spawning, Execution of commands.
@@ -79,7 +81,14 @@ public class SessionManager {
                 LOG.error("-- command exitStatus: {0}", cmd.getExitStatus());
                 LOG.error("-- command exitSignal: {0}", cmd.getExitSignal());
                 LOG.error("--------------------------------------");
-                throw new ConnectorException("Error executing SSH command: "+ error);
+                if (error.contains(Constants.ALREADY_EXISTS_ERROR_RESPONSE)){
+                    throw new AlreadyExistsException(error);
+                } else if (error.contains(Constants.OBJECT_NOT_FOUND_ERROR_RESPONSE)) {
+                    throw new UnknownUidException(error);
+                }
+                else {
+                    throw new ConnectorException("Error executing SSH command: " + error);
+                }
             }
         } catch (IOException e) {
             throw new ConnectorIOException("Error reading output of SSH command: "+e.getMessage(), e);
