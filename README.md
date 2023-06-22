@@ -14,7 +14,7 @@
   ### ssh-connector
   Standalone SSH Connector for midPoint IDM customised for Microsoft Exchange provisioning
 
-version 1.0-beta
+version 0.1.0.0
 # Capabilities and Features
 
 - Schema: YES - dynamic
@@ -27,7 +27,7 @@ version 1.0-beta
 ## Set PowerShell as default shell on Windows
 Make sure that the powershell is default shell,
 otherwise this will not work due to style of argument passing between cmd and powershell
-because midPoint will sent them as for powershell like "$name = value;" and this will result in error in cmd
+because midPoint will send them as for powershell like "$name = value;" and this will result in error in cmd
 ### PowerShell command:
 ```powershell
 New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -PropertyType String -Force
@@ -39,16 +39,17 @@ More info: https://github.com/PowerShell/Win32-OpenSSH/wiki/DefaultShell
 - Schema File should be properly secured and protected with appropriate permissions
 - Schema supports arbitrary number of ObjectClasses and their attributes
 - **Any modifications of schemaFile need to be carefully planned and tested, before any modification of schemaFile resource should be put into maintenance mode.**
+- script Paths containg white space need to be properly escaped 'with single quotes ' otherwise powershell reads them till first white space -> "C:\\Users\\**' PS Scripts'**\searchScript.ps1"
 - Every ObjectClass defined in schemaConfig.json must have the following parameters:
 ```
     {
       "icfsName": "anyicfsName",
       "icfsUid": "anyicfsUid",
       "objectClass": "user",
-      "createScript": "path\to\script\createScript.ps1",
-      "updateScript": "path\to\script\updateScript.ps1",
-      "deleteScript": "path\to\script\deleteScript.ps1",
-      "searchScript": "path\to\script\searchScript.ps1",
+      "createScript": "path\\to\\script\\createScript.ps1",
+      "updateScript": "path\\to\\'script folder'\\updateScript.ps1",
+      "deleteScript": "path\\to\'script folder'\\deleteScript.ps1",
+      "searchScript": "path\\to\\'script folder'\\searchScript.ps1",
       "attributes": [
         { // secondary attributes are optional
           "anyAttribute": {
@@ -57,11 +58,10 @@ More info: https://github.com/PowerShell/Win32-OpenSSH/wiki/DefaultShell
             "updateable": true,
             "dataType": "String",
             "multivalued": false
-          }
-        },"anyAttribute2":{
+          },
+          "anyAttribute2":{
             ...},
-            ...
-        {
+          ...
         }
       ]
     }
@@ -124,7 +124,7 @@ example:
   Import-PSSession $Session -CommandName $commandsToImport -AllowClobber > $null
 ``` 
 ### Configuration
-- TODO
+- Set the usual username, password, and host address, also specify absolute file path for the schemaFile
 ### Connector Operations
 * Each operation is designed in a way to work with predefined Script input/output
 
@@ -133,14 +133,16 @@ example:
 - ### Create Operation
   - createOp expects attributes provided by midpoint based on mappings in resource, CreateScript should return uniqueID|uniqueName or just uniqueId it depends on script and schemaConfig.json design
   - for mapping special attributes from midpoint for example \_\_NAME\_\_ or \_\_PASSWORD\_\_ to target system need to be specified in Constants and mapped with name that corresponds with expected script input parameter
+  - for createOp it is recommended to define Constant that should be present in response when objectAlreadyExists occurs
 
 - ### UpdateDelta operation
   - updateDelta process attributes, and multivalued attributes which are formatted in a way that remote powershell script know how to handle them based on Constant Prefix ADD:somevalue,REMOVE:somevalue2
   - Script is expected to return ""  if execution of script was successful any other output is considered as error message
-
+  
 - ### Delete operation
   - deleteOp expects Uid which is then passed into powershell script
   - Script is expected to return "" if execution of script was successful any other output is considered as error message
+  - for deleteOp it is recommended to define Constant that should be present in response when objectNotFound occurs
 
 ## Customisation
 - Ssh Response column separator  and new line separator can be changed in class utils/Constants
