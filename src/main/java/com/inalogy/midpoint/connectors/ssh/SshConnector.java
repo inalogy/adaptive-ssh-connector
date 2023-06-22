@@ -169,7 +169,6 @@ public class SshConnector implements
         String sshRawResponse = commandProcessor.processAndExecuteCommand(createAttributes, Constants.CREATE_OPERATION, schemaType);
         Uid uid = new SshResponseHandler(schemaType, sshRawResponse).parseCreateOperation();
         return uid;
-        //TODO add error handling if uid||name already exists
     }
 
 
