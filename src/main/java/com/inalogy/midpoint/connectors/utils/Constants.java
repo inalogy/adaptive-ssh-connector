@@ -48,7 +48,8 @@ public class Constants {
      * This constant should be returned by remote script if updateDelta or Delete() operation were successfully executed
      */
     public static final String MICROSOFT_EXCHANGE_RESPONSE_SUCCESS_SYMBOL = "";
-
+    public static final String ALREADY_EXISTS_ERROR_RESPONSE = "ADObjectAlreadyExistsException";
+    public static final String OBJECT_NOT_FOUND_ERROR_RESPONSE = "ManagementObjectNotFoundException";
     public static final int SSH_RESPONSE_TIMEOUT = 15;
     /**
      * How often SshClient send keep alive packet
