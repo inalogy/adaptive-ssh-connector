@@ -33,14 +33,14 @@ public class Constants {
     /**
      * Value of this constant depends on the implementation of remote script.
      */
-    public static final String MICROSOFT_EXCHANGE_NAME_FLAG = "name";
-    public static final String MICROSOFT_EXCHANGE_EMAIL_FLAG = "email";
+    public static final String MICROSOFT_EXCHANGE_NAME_FLAG = "Name";
+    public static final String MICROSOFT_EXCHANGE_EMAIL_FLAG = "Email";
     public static final String MICROSOFT_EXCHANGE_PASSWORD_FLAG = "password";
 
     /**
      * By default, Microsoft Exchange returns multivalued attribute separated by " "
      */
-    public static final String MICROSOFT_EXCHANGE_RESPONSE_MULTIVALUED_SEPARATOR = " ";
+    public static final String MICROSOFT_EXCHANGE_RESPONSE_MULTIVALUED_SEPARATOR = "~";
     public static final String MICROSOFT_EXCHANGE_ADD_UPDATEDELTA = "ADD:";
     public static final String MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA = "REMOVE:";
 
