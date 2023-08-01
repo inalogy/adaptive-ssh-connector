@@ -70,6 +70,13 @@ public class CommandProcessor {
         switch (configuration.getShellType()) {
             case Constants.TYPE_SHELL:
                 return "sh " + scriptPath;
+            case Constants.TYPE_CSH_SHELL:
+                return "csh " + scriptPath;
+            case Constants.TYPE_KORN_SHELL:
+                return "ksh " + scriptPath;
+            case Constants.TYPE_BASH_SHELL:
+                return "bash " + scriptPath;
+
             case Constants.TYPE_POWERSHELL:
                 return scriptPath;
             default:
