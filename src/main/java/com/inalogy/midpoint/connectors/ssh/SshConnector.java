@@ -142,6 +142,10 @@ public class SshConnector implements
             queryAttribute.add(attribute);
 
             String sshRawResponse = commandProcessor.processAndExecuteCommand(queryAttribute, Constants.SEARCH_OPERATION, schemaType);
+            if (sshRawResponse.equals("")){
+                //handle situation if no objects are present
+                return;
+            }
             Set<Map<String, String>> parsedResponse = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation();
             Map<String, String> singleLine = parsedResponse.iterator().next(); // search result for single user/object should always return single object
             ConnectorObject connectorObject = UniversalObjectsHandler.convertObjectToConnectorObject(schemaType, singleLine);
