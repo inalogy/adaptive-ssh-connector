@@ -131,24 +131,28 @@ public class CommandProcessor {
     }
 
     private @NotNull String quoteDouble(@NotNull Object value) {
-        return '"' + value.toString().replaceAll("\"", "\"\"") + '"';
+        String val = value.toString();
+        if (this.configuration.getReplaceWhiteSpaceCharacterWith() != null){
+            val = val.replace(" ", this.configuration.getReplaceWhiteSpaceCharacterWith());
+        }
+        return '"' + val.replaceAll("\"", "\"\"") + '"';
     }
 
     /**
-     * Transform __NAME__ || __PASSWORD__ sent by midpoint to corresponding flags that are defined in constants
+     * Transform __NAME__ || __PASSWORD__ || __UID__ sent by midpoint to corresponding flags that are defined in resource configuration
      * @param specialAttribute __NAME__ || __PASSWORD__
-     * @return constant e.g. __NAME__ -> {@link Constants#MICROSOFT_EXCHANGE_NAME_FLAG}
+     * @return corresponding flag from resource configuration e.g. __NAME__ -> name
      */
-    private String transformSpecialAttributes(String specialAttribute){
-
-        if (specialAttribute.equals(Constants.SPECIAL_CONNID_NAME)){
-            return Constants.MICROSOFT_EXCHANGE_NAME_FLAG;
-        } else if (specialAttribute.equals(Constants.SPECIAL_CONNID_PASSWORD)) {
-            return Constants.MICROSOFT_EXCHANGE_PASSWORD_FLAG;
-
-        }
-        else {
-            return specialAttribute;
+    private String transformSpecialAttributes(String specialAttribute) {
+        switch (specialAttribute) {
+            case Constants.SPECIAL_CONNID_NAME:
+                return configuration.getIcfsNameFlagEquivalent();
+            case Constants.SPECIAL_CONNID_UID:
+                return configuration.getIcfsUidFlagEquivalent();
+            case Constants.SPECIAL_CONNID_PASSWORD:
+                return configuration.getIcfsPasswordFlagEquivalent();
+            default:
+                return specialAttribute;
         }
     }
 
