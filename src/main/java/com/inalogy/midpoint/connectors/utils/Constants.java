@@ -15,6 +15,11 @@ public class Constants {
     public static final String UPDATE_OPERATION = "updateOperation";
     public static final String CREATE_OPERATION = "createOperation";
     public static final String DELETE_OPERATION = "deleteOperation";
+
+    public static final String SPECIAL_CONNID_NAME = "__NAME__";
+    public static final String SPECIAL_CONNID_UID = "__UID__";
+    public static final String SPECIAL_CONNID_PASSWORD = "__PASSWORD__";
+
     public static final int SSH_RESPONSE_TIMEOUT = 15;
     /**
      * How often SshClient send keep alive packet
