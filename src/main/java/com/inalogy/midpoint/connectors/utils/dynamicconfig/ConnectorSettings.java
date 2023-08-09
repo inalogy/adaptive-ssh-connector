@@ -12,7 +12,7 @@ public class ConnectorSettings {
         return replaceWhiteSpaceCharacterInAttributeValues;
     }
 
-    public void setReplaceWhiteSpaceCharacterInAttributeValues(FlagSettings replaceWhiteSpaceCharacterInAttributeValues) {
+    protected void setReplaceWhiteSpaceCharacterInAttributeValues(FlagSettings replaceWhiteSpaceCharacterInAttributeValues) {
         this.replaceWhiteSpaceCharacterInAttributeValues = replaceWhiteSpaceCharacterInAttributeValues;
     }
 
@@ -20,7 +20,7 @@ public class ConnectorSettings {
         return addSudoExecution;
     }
 
-    public void setAddSudoExecution(FlagSettings addSudoExecution) {
+    protected void setAddSudoExecution(FlagSettings addSudoExecution) {
         this.addSudoExecution = addSudoExecution;
     }
 
@@ -28,7 +28,7 @@ public class ConnectorSettings {
         return icfsPasswordFlagEquivalent;
     }
 
-    public void setIcfsPasswordFlagEquivalent(FlagSettings icfsPasswordFlagEquivalent) {
+    protected void setIcfsPasswordFlagEquivalent(FlagSettings icfsPasswordFlagEquivalent) {
         this.icfsPasswordFlagEquivalent = icfsPasswordFlagEquivalent;
     }
 
@@ -36,7 +36,7 @@ public class ConnectorSettings {
         return icfsUidFlagEquivalent;
     }
 
-    public void setIcfsUidFlagEquivalent(FlagSettings icfsUidFlagEquivalent) {
+    protected void setIcfsUidFlagEquivalent(FlagSettings icfsUidFlagEquivalent) {
         this.icfsUidFlagEquivalent = icfsUidFlagEquivalent;
     }
 
@@ -44,7 +44,7 @@ public class ConnectorSettings {
         return icfsNameFlagEquivalent;
     }
 
-    public void setIcfsNameFlagEquivalent(FlagSettings icfsNameFlagEquivalent) {
+    protected void setIcfsNameFlagEquivalent(FlagSettings icfsNameFlagEquivalent) {
         this.icfsNameFlagEquivalent = icfsNameFlagEquivalent;
     }
 

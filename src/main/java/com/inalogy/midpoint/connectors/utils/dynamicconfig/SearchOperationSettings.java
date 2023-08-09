@@ -10,7 +10,7 @@ public class SearchOperationSettings {
         return noResultSuccessMessage;
     }
 
-    public void setNoResultSuccessMessage(String noResultSuccessMessage) {
+    protected void setNoResultSuccessMessage(String noResultSuccessMessage) {
         this.noResultSuccessMessage = noResultSuccessMessage;
     }
 }

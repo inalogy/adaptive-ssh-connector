@@ -12,7 +12,7 @@ public class FlagSettings {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
+    protected void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
@@ -20,7 +20,7 @@ public class FlagSettings {
         return value;
     }
 
-    public void setValue(String value) {
+    protected void setValue(String value) {
         this.value = value;
     }
 }

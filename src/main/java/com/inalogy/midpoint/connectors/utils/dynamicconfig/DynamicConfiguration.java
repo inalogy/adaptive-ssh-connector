@@ -66,7 +66,7 @@ public class DynamicConfiguration {
         return settings;
     }
 
-    public void setSettings(Settings settings) {
+    protected void setSettings(Settings settings) {
         this.settings = settings;
     }
 
@@ -74,7 +74,7 @@ public class DynamicConfiguration {
         return configName;
     }
 
-    public void setConfigName(String configName) {
+    protected void setConfigName(String configName) {
         this.configName = configName;
     }
 }

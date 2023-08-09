@@ -11,7 +11,7 @@ public class ScriptResponseSettings {
         return scriptEmptyAttribute;
     }
 
-    public void setScriptEmptyAttribute(String scriptEmptyAttribute) {
+    protected void setScriptEmptyAttribute(String scriptEmptyAttribute) {
         this.scriptEmptyAttribute = scriptEmptyAttribute;
     }
 
@@ -19,7 +19,7 @@ public class ScriptResponseSettings {
         return multiValuedAttributeSeparator;
     }
 
-    public void setMultiValuedAttributeSeparator(String multiValuedAttributeSeparator) {
+    protected void setMultiValuedAttributeSeparator(String multiValuedAttributeSeparator) {
         this.multiValuedAttributeSeparator = multiValuedAttributeSeparator;
     }
 
@@ -27,7 +27,7 @@ public class ScriptResponseSettings {
         return responseNewLineSeparator;
     }
 
-    public void setResponseNewLineSeparator(String responseNewLineSeparator) {
+    protected void setResponseNewLineSeparator(String responseNewLineSeparator) {
         this.responseNewLineSeparator = responseNewLineSeparator;
     }
 
@@ -35,7 +35,7 @@ public class ScriptResponseSettings {
         return responseColumnSeparator;
     }
 
-    public void setResponseColumnSeparator(String responseColumnSeparator) {
+    protected void setResponseColumnSeparator(String responseColumnSeparator) {
         this.responseColumnSeparator = responseColumnSeparator;
     }
 

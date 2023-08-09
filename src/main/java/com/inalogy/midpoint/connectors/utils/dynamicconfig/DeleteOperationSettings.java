@@ -11,7 +11,7 @@ public class DeleteOperationSettings {
         return deleteSuccessResponse;
     }
 
-    public void setDeleteSuccessResponse(String deleteSuccessResponse) {
+    protected void setDeleteSuccessResponse(String deleteSuccessResponse) {
         this.deleteSuccessResponse = deleteSuccessResponse;
     }
 }

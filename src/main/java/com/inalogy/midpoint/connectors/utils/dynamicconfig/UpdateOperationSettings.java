@@ -13,14 +13,14 @@ public class UpdateOperationSettings {
         return unknownUidException;
     }
 
-    public void setUnknownUidException(String unknownUidException) {
+    protected void setUnknownUidException(String unknownUidException) {
         this.unknownUidException = unknownUidException;
     }
     public String getUpdateDeltaAddParameter() {
         return updateDeltaAddParameter;
     }
 
-    public void setUpdateDeltaAddParameter(String updateDeltaAddParameter) {
+    protected void setUpdateDeltaAddParameter(String updateDeltaAddParameter) {
         this.updateDeltaAddParameter = updateDeltaAddParameter;
     }
 
@@ -28,7 +28,7 @@ public class UpdateOperationSettings {
         return updateDeltaRemoveParameter;
     }
 
-    public void setUpdateDeltaRemoveParameter(String updateDeltaRemoveParameter) {
+    protected void setUpdateDeltaRemoveParameter(String updateDeltaRemoveParameter) {
         this.updateDeltaRemoveParameter = updateDeltaRemoveParameter;
     }
 
@@ -36,7 +36,7 @@ public class UpdateOperationSettings {
         return updateSuccessResponse;
     }
 
-    public void setUpdateSuccessResponse(String updateSuccessResponse) {
+    protected void setUpdateSuccessResponse(String updateSuccessResponse) {
         this.updateSuccessResponse = updateSuccessResponse;
     }
 }

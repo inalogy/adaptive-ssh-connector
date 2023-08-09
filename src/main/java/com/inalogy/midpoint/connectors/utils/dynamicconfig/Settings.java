@@ -12,7 +12,7 @@ public class Settings {
         return scriptResponseSettings;
     }
 
-    public void setScriptResponseSettings(ScriptResponseSettings scriptResponseSettings) {
+    protected void setScriptResponseSettings(ScriptResponseSettings scriptResponseSettings) {
         this.scriptResponseSettings = scriptResponseSettings;
     }
 
@@ -20,7 +20,7 @@ public class Settings {
         return connectorSettings;
     }
 
-    public void setConnectorSettings(ConnectorSettings connectorSettings) {
+    protected void setConnectorSettings(ConnectorSettings connectorSettings) {
         this.connectorSettings = connectorSettings;
     }
 
@@ -28,7 +28,7 @@ public class Settings {
         return createOperationSettings;
     }
 
-    public void setCreateOperationSettings(CreateOperationSettings createOperationSettings) {
+    protected void setCreateOperationSettings(CreateOperationSettings createOperationSettings) {
         this.createOperationSettings = createOperationSettings;
     }
 
@@ -36,7 +36,7 @@ public class Settings {
         return updateOperationSettings;
     }
 
-    public void setUpdateOperationSettings(UpdateOperationSettings updateOperationSettings) {
+    protected void setUpdateOperationSettings(UpdateOperationSettings updateOperationSettings) {
         this.updateOperationSettings = updateOperationSettings;
     }
 
@@ -44,7 +44,7 @@ public class Settings {
         return deleteOperationSettings;
     }
 
-    public void setDeleteOperationSettings(DeleteOperationSettings deleteOperationSettings) {
+    protected void setDeleteOperationSettings(DeleteOperationSettings deleteOperationSettings) {
         this.deleteOperationSettings = deleteOperationSettings;
     }
 
@@ -52,7 +52,7 @@ public class Settings {
         return searchOperationSettings;
     }
 
-    public void setSearchOperationSettings(SearchOperationSettings searchOperationSettings) {
+    protected void setSearchOperationSettings(SearchOperationSettings searchOperationSettings) {
         this.searchOperationSettings = searchOperationSettings;
     }
 

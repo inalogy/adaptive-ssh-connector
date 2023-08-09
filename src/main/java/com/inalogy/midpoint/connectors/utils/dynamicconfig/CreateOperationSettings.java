@@ -10,7 +10,7 @@ public class CreateOperationSettings {
         return alreadyExistsErrorParameter;
     }
 
-    public void setAlreadyExistsErrorParameter(String alreadyExistsErrorParameter) {
+    protected void setAlreadyExistsErrorParameter(String alreadyExistsErrorParameter) {
         this.alreadyExistsErrorParameter = alreadyExistsErrorParameter;
     }
 
@@ -18,7 +18,7 @@ public class CreateOperationSettings {
         return successStatusMessage;
     }
 
-    public void setSuccessStatusMessage(String successStatusMessage) {
+    protected void setSuccessStatusMessage(String successStatusMessage) {
         this.successStatusMessage = successStatusMessage;
     }
 }
