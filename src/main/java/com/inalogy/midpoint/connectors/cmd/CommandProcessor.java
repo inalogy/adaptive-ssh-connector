@@ -73,15 +73,20 @@ public class CommandProcessor {
      * @param scriptPath which is defined in SchemaType for particular object
      */
     private String buildCommand(String scriptPath) {
+        ConnectorSettings sudoSettings = dynamicConfiguration.getSettings().getConnectorSettings();
+        String sudoCommand = "";
+        if (sudoSettings.getAddSudoExecution().isEnabled()){
+            sudoCommand = sudoSettings.getAddSudoExecution().getValue() + " ";
+        }
         switch (configuration.getShellType()) {
             case Constants.TYPE_SHELL:
-                return "sh " + scriptPath;
+                return sudoCommand + "sh " + scriptPath;
             case Constants.TYPE_CSH_SHELL:
-                return "csh " + scriptPath;
+                return sudoCommand + "csh " + scriptPath;
             case Constants.TYPE_KORN_SHELL:
-                return "ksh " + scriptPath;
+                return sudoCommand + "ksh " + scriptPath;
             case Constants.TYPE_BASH_SHELL:
-                return "bash " + scriptPath;
+                return sudoCommand + "bash " + scriptPath;
 
             case Constants.TYPE_POWERSHELL:
                 return scriptPath;
