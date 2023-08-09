@@ -17,6 +17,7 @@ import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConfigurationException;
 import org.identityconnectors.framework.common.objects.Attribute;
 
+import org.identityconnectors.framework.spi.Connector;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -100,11 +101,12 @@ public class CommandProcessor {
      * Each attribute name represent flag that should be accepted by remote script
      * Each attribute value define value of attribute associated with name
      * Multivalued attributes are separated by "," .
-     * Special attribute names are handled in this method, if midpoint send __NAME__ it gets matched to appropriate flag defined in constants.
+     * Special attribute names are handled in this method, if midpoint send __NAME__ it gets matched to appropriate flag defined in dynamicConfiguration.
      */
     private String encodeArgumentsAndCommandToString(String command, Set<Attribute> attributes, String paramPrefix) {
         StringBuilder commandLineBuilder = new StringBuilder();
         commandLineBuilder.append(command);
+        ConnectorSettings passwordConfiguration = this.dynamicConfiguration.getSettings().getConnectorSettings();
 
         for (Attribute attribute : attributes) {
             List<Object> values = attribute.getValue();
@@ -127,11 +129,13 @@ public class CommandProcessor {
                 commandLineBuilder.append(" ");
                 // check for special attributes
                 String attributeName  = transformSpecialAttributes(attribute.getName());
-//                if (attributeName.equals(this.connector))
                 // impossible to map same attribute from midpoint to script
                 commandLineBuilder.append(paramPrefix).append(attributeName);
                 commandLineBuilder.append(" ");
                 for (Object value : values) {
+                    if (passwordConfiguration.getIcfsPasswordFlagEquivalent().isEnabled() && attributeName.equals(passwordConfiguration.getIcfsPasswordFlagEquivalent().getValue())){
+                        value = passwordAccessor((GuardedString) value);
+                    }
                     commandLineBuilder.append(quoteDouble(value)).append(",");
                 }
                 // delete the last "," at the end
@@ -141,6 +145,8 @@ public class CommandProcessor {
 
         return commandLineBuilder.toString();
     }
+
+
 
     private String passwordAccessor(GuardedString guardedPassword) {
 
@@ -176,11 +182,11 @@ public class CommandProcessor {
     private String transformSpecialAttributes(String specialAttribute) {
         ConnectorSettings connectorSettings = this.dynamicConfiguration.getSettings().getConnectorSettings();
 
-        if (connectorSettings.getIcfsNameFlagEquivalent().isEnabled() && specialAttribute.equals(connectorSettings.getIcfsNameFlagEquivalent().getValue())) {
+        if (connectorSettings.getIcfsNameFlagEquivalent().isEnabled() && specialAttribute.equals(Constants.SPECIAL_CONNID_NAME)) {
             return connectorSettings.getIcfsNameFlagEquivalent().getValue();
-        } else if (connectorSettings.getIcfsUidFlagEquivalent().isEnabled() && specialAttribute.equals(connectorSettings.getIcfsUidFlagEquivalent().getValue())) {
+        } else if (connectorSettings.getIcfsUidFlagEquivalent().isEnabled() && specialAttribute.equals(Constants.SPECIAL_CONNID_UID)) {
             return connectorSettings.getIcfsUidFlagEquivalent().getValue();
-        } else if (connectorSettings.getIcfsPasswordFlagEquivalent().isEnabled() && specialAttribute.equals(connectorSettings.getIcfsPasswordFlagEquivalent().getValue())) {
+        } else if (connectorSettings.getIcfsPasswordFlagEquivalent().isEnabled() && specialAttribute.equals(Constants.SPECIAL_CONNID_PASSWORD)) {
             return connectorSettings.getIcfsPasswordFlagEquivalent().getValue();
         }
 
