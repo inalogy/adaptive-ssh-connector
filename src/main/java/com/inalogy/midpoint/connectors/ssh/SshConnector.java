@@ -245,7 +245,7 @@ public class SshConnector implements
     }
 
     public void getSchemaHandler(){
-        if (this.dynamicConfiguration == null){
+        if (this.dynamicConfiguration.getSettings() == null){
             this.dynamicConfiguration.init(this.configuration.getDynamicConfigurationFilePath());
         }
         if (SshConnector.schema == null){
