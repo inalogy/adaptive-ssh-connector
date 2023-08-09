@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import com.inalogy.midpoint.connectors.schema.SchemaType;
 import com.inalogy.midpoint.connectors.schema.SchemaTypeAttribute;
 import com.inalogy.midpoint.connectors.utils.Constants;
+import com.inalogy.midpoint.connectors.utils.dynamicconfig.DynamicConfiguration;
 
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.objects.Attribute;
@@ -91,7 +92,8 @@ public class UniversalObjectsHandler {
      * @param attributes Map of strings representing currently processed object
      * @return ConnectorObject
      */
-    public static ConnectorObject convertObjectToConnectorObject(SchemaType schemaType, Map<String, String> attributes) {
+    public static ConnectorObject convertObjectToConnectorObject(SchemaType schemaType, Map<String, String> attributes,DynamicConfiguration dynamicConfiguration) {
+        String RESPONSE_MULTIVALUED_SEPARATOR  = dynamicConfiguration.getSettings().getScriptResponseSettings().getMultiValuedAttributeSeparator();
         ConnectorObjectBuilder builder = new ConnectorObjectBuilder();
         ObjectClass objectClass = new ObjectClass(schemaType.getObjectClassName());
         builder.setObjectClass(objectClass);
@@ -111,7 +113,7 @@ public class UniversalObjectsHandler {
                     .orElse(false);
             if (multivaluedAttribute) {
                 LOG.ok("converting multivalued attribute {0}", attribute.getKey());
-                String[] values = attribute.getValue().split(Pattern.quote(Constants.MICROSOFT_EXCHANGE_RESPONSE_MULTIVALUED_SEPARATOR));
+                String[] values = attribute.getValue().split(Pattern.quote(RESPONSE_MULTIVALUED_SEPARATOR));
                 builder.addAttribute(AttributeBuilder.build(attribute.getKey(), values));
             } else {
                 // Attribute is not multiValued. Add it as a single value.
@@ -127,19 +129,22 @@ public class UniversalObjectsHandler {
      * and adds them to ArrayList, finally, it executes SSH request.
      * @param attributeDelta of currently processed modification
      */
-    public static Set<Attribute> formatMultiValuedAttribute(AttributeDelta attributeDelta){
+    public static Set<Attribute> formatMultiValuedAttribute(AttributeDelta attributeDelta, DynamicConfiguration dynamicConfiguration){
+        String ADD_UPDATEDELTA_PREFIX = dynamicConfiguration.getSettings().getUpdateOperationSettings().getUpdateDeltaAddParameter();
+        String REMOVE_UPDATEDELTA_PREFIX = dynamicConfiguration.getSettings().getUpdateOperationSettings().getUpdateDeltaRemoveParameter();
+
         Set<Attribute> attributeSet = new HashSet<>();
         ArrayList<String> multivaluedAttributes = new ArrayList<>();
 
         if (attributeDelta.getValuesToAdd() != null) {
             for (Object value : attributeDelta.getValuesToAdd()) {
-                String attributeValue = Constants.MICROSOFT_EXCHANGE_ADD_UPDATEDELTA + value;
+                String attributeValue = ADD_UPDATEDELTA_PREFIX + value;
                 multivaluedAttributes.add(attributeValue);
             }
         }
         if (attributeDelta.getValuesToRemove() != null) {
             for (Object value : attributeDelta.getValuesToRemove()) {
-                String attributeValue =  Constants.MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA + value;
+                String attributeValue =  REMOVE_UPDATEDELTA_PREFIX + value;
                 multivaluedAttributes.add(attributeValue);
             }
         }

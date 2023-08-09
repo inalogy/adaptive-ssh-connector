@@ -111,7 +111,7 @@ public class UniversalSchemaHandler {
             throw new RuntimeException("An error occurred while SchemaFile: " + e);
         }
     }
-    private static Map<String, Object> readJsonFileAsMap(String filePath) throws IOException {
+    public static Map<String, Object> readJsonFileAsMap(String filePath) throws IOException {
         Map<String, Object> resultMap = new HashMap<>();
         try (FileReader fileReader = new FileReader(filePath);
              JsonReader jsonReader = Json.createReader(fileReader)) {

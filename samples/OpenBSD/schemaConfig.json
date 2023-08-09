@@ -1,0 +1,45 @@
+{
+  "objects":[
+    {
+      "icfsName": "uid",
+      "icfsUid": "uid",
+      "objectClass": "user",
+      "createScript": "/home/svc-midpoint/createScript.sh",
+      "updateScript": "/home/svc-midpoint/updateScript.sh",
+      "deleteScript": "/home/svc-midpoint/deleteScript.sh",
+      "searchScript": "/home/svc-midpoint/searchScript.sh",
+      "attributes": [
+        {
+          "login": {
+            "required": true,
+            "creatable": true,
+            "updateable": false,
+            "dataType": "String",
+            "multivalued": false
+          },
+          "password": {
+            "required": true,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false
+          },
+          "fullName": {
+            "required": true,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false
+          },
+          "groups": {
+            "required": true,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": true
+          }
+        }
+      ]
+    }
+  ]
+}

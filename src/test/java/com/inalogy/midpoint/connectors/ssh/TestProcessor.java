@@ -1,6 +1,7 @@
 package com.inalogy.midpoint.connectors.ssh;
 
 
+import com.inalogy.midpoint.connectors.utils.dynamicconfig.DynamicConfiguration;
 import org.identityconnectors.common.security.GuardedString;
 
 import java.io.IOException;
@@ -11,6 +12,8 @@ public class TestProcessor {
     private SshConfiguration configuration;
     private SshConnector connector;
     private final Properties properties = new Properties();
+
+    protected final DynamicConfiguration dynamicConfiguration = DynamicConfiguration.getInstance();
 
     protected TestProcessor() {
         try {
@@ -43,6 +46,10 @@ public class TestProcessor {
         String relativeSchemaFilePath = properties.getProperty("schemaFilePath");
         String absoluteSchemaFilePath = System.getProperty("user.dir") + "/"+ relativeSchemaFilePath;
         configuration.setSchemaFilePath(absoluteSchemaFilePath);
+        configuration.setDynamicConfigurationFilePath("/Users/patrikrovnak/IdeaProjects/ssh-connector/samples/OpenBSD/connectorConfig.json");
+        dynamicConfiguration.init(this.configuration.getDynamicConfigurationFilePath());
+        //init dynamicConfiguration aswell
+
     }
 
     private void initConnector() {

@@ -14,6 +14,7 @@ import com.inalogy.midpoint.connectors.schema.SchemaType;
 import com.inalogy.midpoint.connectors.schema.UniversalSchemaHandler;
 import com.inalogy.midpoint.connectors.utils.FileHashCalculator;
 import com.inalogy.midpoint.connectors.utils.SshResponseHandler;
+import com.inalogy.midpoint.connectors.utils.dynamicconfig.DynamicConfiguration;
 
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
@@ -47,6 +48,7 @@ public class SshConnector implements
     //Ssh Connector schema cache
     private static UniversalSchemaHandler schema = null;
     private static final Log LOG = Log.getLog(SshConnector.class);
+    private final DynamicConfiguration dynamicConfiguration = DynamicConfiguration.getInstance();
 
     @Override
     public Configuration getConfiguration() {
@@ -59,7 +61,8 @@ public class SshConnector implements
         this.configuration.validate();
         this.sshManager = new SessionManager((SshConfiguration) configuration);
         this.sshManager.initSshClient();
-        this.commandProcessor = new CommandProcessor((SshConfiguration) configuration, this.sshManager);
+        this.dynamicConfiguration.init(this.configuration.getDynamicConfigurationFilePath());
+        this.commandProcessor = new CommandProcessor((SshConfiguration) configuration, this.sshManager, this.dynamicConfiguration);
     }
 
     @Override
@@ -137,26 +140,27 @@ public class SshConnector implements
         }
         if (query != null && query.byUid != null){
             //build single object query byUid and create corresponding shell command
+            String NO_RESULT_OPERATION_SUCCESS = this.dynamicConfiguration.getSettings().getSearchOperationSettings().getNoResultSuccessMessage();
             Set<Attribute> queryAttribute = new HashSet<>();
             Attribute attribute = AttributeBuilder.build(schemaType.getIcfsUid(), query.byUid);
             queryAttribute.add(attribute);
 
             String sshRawResponse = commandProcessor.processAndExecuteCommand(queryAttribute, Constants.SEARCH_OPERATION, schemaType);
-            if (sshRawResponse.equals("")){
+            if (sshRawResponse.equals(NO_RESULT_OPERATION_SUCCESS)){
                 //handle situation if no objects are present
                 return;
             }
-            Set<Map<String, String>> parsedResponse = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation();
+            Set<Map<String, String>> parsedResponse = new SshResponseHandler(schemaType, sshRawResponse, this.dynamicConfiguration).parseSearchOperation();
             Map<String, String> singleLine = parsedResponse.iterator().next(); // search result for single user/object should always return single object
-            ConnectorObject connectorObject = UniversalObjectsHandler.convertObjectToConnectorObject(schemaType, singleLine);
+            ConnectorObject connectorObject = UniversalObjectsHandler.convertObjectToConnectorObject(schemaType, singleLine, this.dynamicConfiguration);
             handler.handle(connectorObject);
 
         }
         else {
             String sshRawResponse = commandProcessor.processAndExecuteCommand(null, Constants.SEARCH_OPERATION, schemaType);
-            Set<Map<String, String>> parsedResponse  = new SshResponseHandler(schemaType, sshRawResponse).parseSearchOperation();
+            Set<Map<String, String>> parsedResponse  = new SshResponseHandler(schemaType, sshRawResponse, this.dynamicConfiguration).parseSearchOperation();
             for (Map<String, String> parsedResponseLine: parsedResponse){
-                ConnectorObject connectorObject = UniversalObjectsHandler.convertObjectToConnectorObject(schemaType, parsedResponseLine);
+                ConnectorObject connectorObject = UniversalObjectsHandler.convertObjectToConnectorObject(schemaType, parsedResponseLine, this.dynamicConfiguration);
                 handler.handle(connectorObject);
             }
         }
@@ -171,7 +175,7 @@ public class SshConnector implements
         getSchemaHandler();
         SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
         String sshRawResponse = commandProcessor.processAndExecuteCommand(createAttributes, Constants.CREATE_OPERATION, schemaType);
-        Uid uid = new SshResponseHandler(schemaType, sshRawResponse).parseCreateOperation();
+        Uid uid = new SshResponseHandler(schemaType, sshRawResponse, this.dynamicConfiguration).parseCreateOperation();
         return uid;
     }
 
@@ -180,7 +184,7 @@ public class SshConnector implements
      * Process modifications sent from midpoint and transform them based on modification type.
      * Single value is processed without much overhead, however multivalued attribute need to be formatted in a way that
      * remote script understand which attribute add and which to remove
-     * for that we use {@link Constants#MICROSOFT_EXCHANGE_ADD_UPDATEDELTA} and {@link Constants#MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA}
+     * for that we use  settings from DynamicConnector configuration file: updateOperationSettings}
      *
      */
     @Override
@@ -195,7 +199,7 @@ public class SshConnector implements
         for (AttributeDelta attributeDelta: modifications){
             //handle multivalued operations for ADD and REMOVE separately
             if (attributeDelta.getValuesToAdd() != null || attributeDelta.getValuesToRemove() != null){
-                Set<Attribute> formattedAttributes = UniversalObjectsHandler.formatMultiValuedAttribute(attributeDelta);
+                Set<Attribute> formattedAttributes = UniversalObjectsHandler.formatMultiValuedAttribute(attributeDelta, this.dynamicConfiguration);
                 attributeSet.addAll(formattedAttributes);
 
             } else {
@@ -211,7 +215,7 @@ public class SshConnector implements
         }
 
         String sshRawResponse = commandProcessor.processAndExecuteCommand(attributeSet, Constants.UPDATE_OPERATION, schemaType);
-        String response = new SshResponseHandler(schemaType, sshRawResponse).HandleUpdateOrDeleteResponse();
+        String response = new SshResponseHandler(schemaType, sshRawResponse, this.dynamicConfiguration).HandleUpdateOrDeleteResponse();
         if (response != null){
             LOG.error("Error occurred while updating entity: {0}", sshRawResponse);
             throw new RuntimeException("Error occurred while updating entity: " + sshRawResponse);
@@ -233,7 +237,7 @@ public class SshConnector implements
         Attribute attribute = AttributeBuilder.build(schemaType.getIcfsUid(), uid.getValue());
         attributeSet.add(attribute);
         String sshRawResponse = commandProcessor.processAndExecuteCommand(attributeSet, Constants.DELETE_OPERATION, schemaType);
-        String deleteResponse = new SshResponseHandler(schemaType, sshRawResponse).HandleUpdateOrDeleteResponse();
+        String deleteResponse = new SshResponseHandler(schemaType, sshRawResponse, this.dynamicConfiguration).HandleUpdateOrDeleteResponse();
         if (deleteResponse != null){
             LOG.error("Error occured while deleting entity: {0}", deleteResponse);
             throw new RuntimeException("Error occured while deleting entity: " + deleteResponse);
@@ -241,6 +245,9 @@ public class SshConnector implements
     }
 
     public void getSchemaHandler(){
+        if (this.dynamicConfiguration == null){
+            this.dynamicConfiguration.init(this.configuration.getDynamicConfigurationFilePath());
+        }
         if (SshConnector.schema == null){
             schema();
 

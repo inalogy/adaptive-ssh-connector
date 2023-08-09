@@ -1,0 +1,172 @@
+<resource xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+          xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+          xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"
+          xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3"
+          xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3"
+          xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
+          xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          oid="ab3f5f4d-e5c0-4332-a224-ed3cecb32e64">
+    <name>SSH-OPENBSD</name>
+    <connectorRef relation="org:default" type="c:ConnectorType">
+        <filter>
+            <q:equal>
+                <q:path>c:connectorType</q:path>
+                <q:value>com.inalogy.midpoint.connectors.ssh.SshConnector</q:value>
+            </q:equal>
+        </filter>
+    </connectorRef>
+    <connectorConfiguration xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3"
+                            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                            xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+                            xsi:type="c:ConnectorConfigurationType">
+        <icfc:configurationProperties xmlns:gen556="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/com.inalogy.midpoint.connectors.ssh/com.inalogy.midpoint.connectors.ssh.SshConnector">
+            <gen556:schemaFilePath>$(ssh-openbsd-schemaFilepath)</gen556:schemaFilePath>
+            <gen556:host>$(ssh-openbsd.host)</gen556:host>
+            <gen556:shellType>$(ssh-openbsd.shellType)</gen556:shellType>
+            <gen556:port>22</gen556:port>
+            <gen556:username>$(ssh-openbsd.username)</gen556:username>
+            <gen556:replaceWhiteSpaceCharacterWith>~</gen556:replaceWhiteSpaceCharacterWith>
+            <gen556:password>
+                <clearValue>$(ssh-openbsd.password)</clearValue>
+            </gen556:password>
+        </icfc:configurationProperties>
+    </connectorConfiguration>
+    <schemaHandling>
+        <objectType>
+            <kind>account</kind>
+            <displayName>User</displayName>
+            <default>true</default>
+            <delineation>
+                <objectClass>ri:user</objectClass>
+            </delineation>
+            <focus>
+                <type>UserType</type>
+            </focus>
+
+            <attribute>
+                <ref>ri:login</ref>
+                <outbound>
+                    <source>
+                        <path>name</path>
+                    </source>
+                </outbound>
+            </attribute>
+            <attribute>
+                <!--      temporary solution for setting initial password        -->
+                <ref>ri:password</ref>
+                <limitations>
+                    <layer>presentation</layer>
+                    <access>
+                        <read>false</read>
+                        <add>false</add>
+                        <modify>false</modify>
+                    </access>
+                </limitations>
+                <outbound>
+                    <strength>weak</strength>
+                    <expression>
+                        <value>xxx</value>
+                    </expression>
+                </outbound>
+            </attribute>
+
+
+            <attribute>
+                <ref>ri:fullName</ref>
+                <outbound>
+                    <source>
+                        <path>givenName</path>
+                    </source>
+                    <source>
+                        <path>familyName</path>
+                    </source>
+                    <expression>
+                        <script>
+                            <code>
+                                return givenName + " " + familyName
+                            </code>
+                        </script>
+                    </expression>
+                </outbound>
+            </attribute>
+
+            <!--            <attribute>-->
+            <!--                <ref>ri:groups</ref>-->
+            <!--                <outbound>-->
+            <!--                    <source>-->
+            <!--                        <path>organizationalUnit</path>-->
+            <!--                    </source>-->
+            <!--                </outbound>-->
+            <!--            </attribute>-->
+
+            <activation>
+                <!-- weak existence -->
+                <existence>
+                    <outbound>
+                        <name>Never try to delete</name>
+                        <strength>weak</strength>
+                        <expression>
+                            <value>true</value>
+                        </expression>
+                    </outbound>
+                </existence>
+            </activation>
+
+            <correlation>
+                <correlators>
+                    <filter>
+                        <ownerFilter>
+                            <q:equal>
+                                <q:path>name</q:path>
+                                <q:value>$shadow/attributes/login</q:value>
+                            </q:equal>
+                        </ownerFilter>
+                    </filter>
+                </correlators>
+            </correlation>
+
+            <synchronization>
+                <reaction>
+                    <name>deleted -> unlink focus</name>
+                    <situation>deleted</situation>
+                    <actions>
+                        <unlink/>
+                    </actions>
+                </reaction>
+                <reaction>
+                    <name>unlinked -> link</name>
+                    <situation>unlinked</situation>
+                    <actions>
+                        <link/>
+                    </actions>
+                </reaction>
+                <reaction>
+                    <name>unmatched -> do nothing</name>
+                    <situation>unmatched</situation>
+                </reaction>
+            </synchronization>
+        </objectType>
+    </schemaHandling>
+
+    <capabilities>
+        <native xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3">
+            <cap:schema/>
+            <cap:create/>
+            <cap:read>
+                <cap:returnDefaultAttributesOption>false</cap:returnDefaultAttributesOption>
+            </cap:read>
+            <cap:update>
+                <cap:delta>true</cap:delta>
+                <cap:addRemoveAttributeValues>true</cap:addRemoveAttributeValues>
+            </cap:update>
+            <cap:delete/>
+            <cap:testConnection/>
+            <cap:script>
+                <cap:host>
+                    <cap:type>connector</cap:type>
+                </cap:host>
+            </cap:script>
+        </native>
+    </capabilities>
+</resource>

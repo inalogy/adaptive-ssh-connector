@@ -1,0 +1,26 @@
+package com.inalogy.midpoint.connectors.utils.dynamicconfig;
+
+public class FlagSettings {
+
+    private boolean enabled;
+    private String value;
+
+    public FlagSettings(){}
+
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+}

@@ -1,5 +1,6 @@
 package com.inalogy.midpoint.connectors.cmd;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -8,7 +9,10 @@ import java.util.stream.Stream;
 import com.inalogy.midpoint.connectors.schema.SchemaType;
 import com.inalogy.midpoint.connectors.ssh.SshConfiguration;
 import com.inalogy.midpoint.connectors.utils.Constants;
+import com.inalogy.midpoint.connectors.utils.dynamicconfig.ConnectorSettings;
+import com.inalogy.midpoint.connectors.utils.dynamicconfig.DynamicConfiguration;
 
+import org.identityconnectors.common.security.GuardedString;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConfigurationException;
 import org.identityconnectors.framework.common.objects.Attribute;
@@ -26,10 +30,12 @@ public class CommandProcessor {
     private static final Log LOG = Log.getLog(CommandProcessor.class);
     private final SessionManager sshManager;
     private final SshConfiguration configuration;
+    private DynamicConfiguration dynamicConfiguration;
 
-    public CommandProcessor(SshConfiguration configuration, SessionManager sshManager) {
+    public CommandProcessor(SshConfiguration configuration, SessionManager sshManager, DynamicConfiguration dynamicConfiguration) {
         this.configuration = configuration;
         this.sshManager = sshManager;
+        this.dynamicConfiguration = dynamicConfiguration;
     }
 
     /**
@@ -116,6 +122,7 @@ public class CommandProcessor {
                 commandLineBuilder.append(" ");
                 // check for special attributes
                 String attributeName  = transformSpecialAttributes(attribute.getName());
+//                if (attributeName.equals(this.connector))
                 // impossible to map same attribute from midpoint to script
                 commandLineBuilder.append(paramPrefix).append(attributeName);
                 commandLineBuilder.append(" ");
@@ -130,10 +137,28 @@ public class CommandProcessor {
         return commandLineBuilder.toString();
     }
 
+    private String passwordAccessor(GuardedString guardedPassword) {
+
+        List<String> passwordList = new ArrayList<>(1);
+        if (guardedPassword != null) {
+            guardedPassword.access(new GuardedString.Accessor() {
+                @Override
+                public void access(char[] chars) {
+                    passwordList.add(new String(chars));
+                }
+            });
+//            return passwordList.get(0);
+        }
+        if (!passwordList.isEmpty()) {
+            return passwordList.get(0);
+        }
+        return null;
+    }
+
     private @NotNull String quoteDouble(@NotNull Object value) {
         String val = value.toString();
-        if (this.configuration.getReplaceWhiteSpaceCharacterWith() != null){
-            val = val.replace(" ", this.configuration.getReplaceWhiteSpaceCharacterWith());
+        if (this.dynamicConfiguration.isReplaceWhiteSpaceEnabled() && val.contains(" ")){
+            val = val.replace(" ", this.dynamicConfiguration.getReplaceWhiteSpaceValue());
         }
         return '"' + val.replaceAll("\"", "\"\"") + '"';
     }
@@ -144,17 +169,19 @@ public class CommandProcessor {
      * @return corresponding flag from resource configuration e.g. __NAME__ -> name
      */
     private String transformSpecialAttributes(String specialAttribute) {
-        switch (specialAttribute) {
-            case Constants.SPECIAL_CONNID_NAME:
-                return configuration.getIcfsNameFlagEquivalent();
-            case Constants.SPECIAL_CONNID_UID:
-                return configuration.getIcfsUidFlagEquivalent();
-            case Constants.SPECIAL_CONNID_PASSWORD:
-                return configuration.getIcfsPasswordFlagEquivalent();
-            default:
-                return specialAttribute;
+        ConnectorSettings connectorSettings = this.dynamicConfiguration.getSettings().getConnectorSettings();
+
+        if (connectorSettings.getIcfsNameFlagEquivalent().isEnabled() && specialAttribute.equals(connectorSettings.getIcfsNameFlagEquivalent().getValue())) {
+            return connectorSettings.getIcfsNameFlagEquivalent().getValue();
+        } else if (connectorSettings.getIcfsUidFlagEquivalent().isEnabled() && specialAttribute.equals(connectorSettings.getIcfsUidFlagEquivalent().getValue())) {
+            return connectorSettings.getIcfsUidFlagEquivalent().getValue();
+        } else if (connectorSettings.getIcfsPasswordFlagEquivalent().isEnabled() && specialAttribute.equals(connectorSettings.getIcfsPasswordFlagEquivalent().getValue())) {
+            return connectorSettings.getIcfsPasswordFlagEquivalent().getValue();
         }
+
+        return specialAttribute;
     }
+
 
     /**
      *

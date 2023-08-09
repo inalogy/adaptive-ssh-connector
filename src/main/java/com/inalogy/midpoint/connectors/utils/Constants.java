@@ -15,44 +15,6 @@ public class Constants {
     public static final String UPDATE_OPERATION = "updateOperation";
     public static final String CREATE_OPERATION = "createOperation";
     public static final String DELETE_OPERATION = "deleteOperation";
-    /**
-     * Separator that should be returned by remote Script. It should never match RESPONSE_NEW_LINE_SEPARATOR
-     */
-    public static final String RESPONSE_COLUMN_SEPARATOR = "|";
-    /**
-     * Each line represent single object for processing, e.g. user,group.
-     */
-    public static final String RESPONSE_NEW_LINE_SEPARATOR = "\n";
-
-    /**
-     * remote script is supposed to return this Constant that represent empty attribute
-     */
-    public static final String RESPONSE_EMPTY_ATTRIBUTE_SYMBOL = "null";
-
-    public static final String SPECIAL_CONNID_NAME = "__NAME__";
-    public static final String SPECIAL_CONNID_UID = "__UID__";
-    public static final String SPECIAL_CONNID_PASSWORD = "__PASSWORD__";
-
-    /**
-     * Value of this constant depends on the implementation of remote script.
-     */
-    public static final String MICROSOFT_EXCHANGE_NAME_FLAG = "Name";
-    public static final String MICROSOFT_EXCHANGE_EMAIL_FLAG = "Email";
-    public static final String MICROSOFT_EXCHANGE_PASSWORD_FLAG = "password";
-
-    /**
-     * By default, Microsoft Exchange returns multivalued attribute separated by " "
-     */
-    public static final String MICROSOFT_EXCHANGE_RESPONSE_MULTIVALUED_SEPARATOR = "~";
-    public static final String MICROSOFT_EXCHANGE_ADD_UPDATEDELTA = "ADD:";
-    public static final String MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA = "REMOVE:";
-
-    /**
-     * This constant should be returned by remote script if updateDelta or Delete() operation were successfully executed
-     */
-    public static final String MICROSOFT_EXCHANGE_RESPONSE_SUCCESS_SYMBOL = "";
-    public static final String ALREADY_EXISTS_ERROR_RESPONSE = "ADObjectAlreadyExistsException";
-    public static final String OBJECT_NOT_FOUND_ERROR_RESPONSE = "ManagementObjectNotFoundException";
     public static final int SSH_RESPONSE_TIMEOUT = 15;
     /**
      * How often SshClient send keep alive packet

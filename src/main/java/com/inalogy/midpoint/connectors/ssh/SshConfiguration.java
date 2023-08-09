@@ -73,7 +73,7 @@ public class SshConfiguration extends AbstractConfiguration implements StatefulC
 
     public String schemaFilePath;
 
-    public String icfsNameFlagEquivalent;
+    public String dynamicConfigurationFilePath;
     public String icfsUidFlagEquivalent;
 
     public String icfsPasswordFlagEquivalent;
@@ -194,19 +194,13 @@ public class SshConfiguration extends AbstractConfiguration implements StatefulC
     public String getSchemaFilePath() {return schemaFilePath;}
     public void setSchemaFilePath(String schemaFilePath){this.schemaFilePath = schemaFilePath;}
 
-    @ConfigurationProperty(order = 140, displayMessageKey = "icfsNameFlagEquivalent.display", helpMessageKey = "icfsNameFlagEquivalent.help")
-    public String getIcfsNameFlagEquivalent() {return icfsNameFlagEquivalent;}
+    @ConfigurationProperty(
+            displayMessageKey = "dynamicConfiguration.file.path"
+    )
+    public String getDynamicConfigurationFilePath() {return dynamicConfigurationFilePath;}
 
-    public void setIcfsNameFlagEquivalent(String icfsNameFlagEquivalent){this.icfsNameFlagEquivalent = icfsNameFlagEquivalent;}
+    public void setDynamicConfigurationFilePath(String dynamicConfigurationFilePath){this.dynamicConfigurationFilePath = dynamicConfigurationFilePath;}
 
-    public String getIcfsUidFlagEquivalent() {return icfsUidFlagEquivalent;}
-    public void setIcfsUidFlagEquivalent(String icfsUidFlagEquivalent){this.icfsUidFlagEquivalent = icfsUidFlagEquivalent;}
-
-    public String getIcfsPasswordFlagEquivalent() {return icfsPasswordFlagEquivalent;}
-    public void setIcfsPasswordFlagEquivalent(String icfsPasswordFlagEquivalent){this.icfsPasswordFlagEquivalent = icfsPasswordFlagEquivalent;}
-
-    public String getReplaceWhiteSpaceCharacterWith(){ return replaceWhiteSpaceCharacterWith;}
-    public void setReplaceWhiteSpaceCharacterWith(String replaceWhiteSpaceCharacterWith){this.replaceWhiteSpaceCharacterWith = replaceWhiteSpaceCharacterWith;}
     @Override
     public void release() {
 

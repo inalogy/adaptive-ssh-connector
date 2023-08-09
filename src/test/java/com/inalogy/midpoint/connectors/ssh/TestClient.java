@@ -4,6 +4,7 @@ package com.inalogy.midpoint.connectors.ssh;
 import com.inalogy.midpoint.connectors.cmd.CommandProcessor;
 import com.inalogy.midpoint.connectors.cmd.SessionManager;
 
+import com.inalogy.midpoint.connectors.utils.dynamicconfig.DynamicConfiguration;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.testng.annotations.Test;
 
@@ -11,6 +12,7 @@ import java.util.Set;
 
 public class TestClient {
     private TestProcessor testProcessor;
+
 
     private void init() {
         testProcessor = new TestProcessor();
@@ -20,7 +22,7 @@ public class TestClient {
     public void testExec1() {
         init();
         SessionManager session = new SessionManager(testProcessor.getConfiguration());
-        CommandProcessor cmd = new CommandProcessor(testProcessor.getConfiguration(), session);
+        CommandProcessor cmd = new CommandProcessor(testProcessor.getConfiguration(), session, DynamicConfiguration.getInstance());
 
         Set<Attribute> attributes = AttributeProcessor.getTestAttributeSet1();
 
@@ -38,7 +40,7 @@ public class TestClient {
     public void testExec2() {
         init();
         SessionManager session = new SessionManager(testProcessor.getConfiguration());
-        CommandProcessor cmd = new CommandProcessor(testProcessor.getConfiguration(), session);
+        CommandProcessor cmd = new CommandProcessor(testProcessor.getConfiguration(),session, testProcessor.dynamicConfiguration);
 
         Set<Attribute> attributes = AttributeProcessor.getTestAttributeSet2();
 

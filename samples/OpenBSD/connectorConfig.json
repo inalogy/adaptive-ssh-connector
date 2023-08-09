@@ -1,0 +1,55 @@
+{
+  "configName": "Configuration for OPENBSD v0.1.0.3",
+  "settings": {
+
+    "scriptResponseSettings": {
+      "scriptEmptyAttribute": "null",
+      "multiValuedAttributeSeparator": "~",
+      "responseNewLineSeparator": "\n",
+      "responseColumnSeparator": "|"
+    },
+
+    "connectorSettings": {
+      "replaceWhiteSpaceCharacterInAttributeValues": {
+        "enabled": true,
+        "value": "~"
+      },
+      "addSudoExecution": {
+        "enabled": false,
+        "value": "doas"
+      },
+
+      "icfsPasswordFlagEquivalent": {
+        "enabled": true,
+        "value": "password"
+      },
+
+      "icfsUidFlagEquivalent": {
+        "enabled": false,
+        "value": ""
+      },
+
+      "icfsNameFlagEquivalent": {
+        "enabled": false,
+        "value": ""
+      }
+    },
+
+    "createOperationSettings": {
+      "alreadyExistsErrorParameter": "ObjectAlreadyExists",
+      "successStatusMessage": ""
+    },
+    "updateOperationSettings": {
+      "unknownUidException": "UnknownUid",
+      "updateDeltaAddParameter": "ADD:",
+      "updateDeltaRemoveParameter": "REMOVE:",
+      "updateSuccessResponse": ""
+    },
+    "deleteOperationSettings": {
+      "deleteSuccessResponse": ""
+    },
+    "searchOperationSettings": {
+      "noResultSuccessMessage": ""
+    }
+  }
+}

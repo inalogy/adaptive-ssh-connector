@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import com.inalogy.midpoint.connectors.schema.SchemaType;
 import com.inalogy.midpoint.connectors.schema.SchemaTypeAttribute;
+import com.inalogy.midpoint.connectors.utils.dynamicconfig.DynamicConfiguration;
 
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
@@ -24,6 +25,7 @@ public class SshResponseHandler {
     private static final Log LOG = Log.getLog(SshResponseHandler.class);
     private final String rawResponse;
     private final SchemaType schemaType;
+    private final DynamicConfiguration dynamicConfiguration;
 
     /**
      * Constructs a new SshResponseHandler.
@@ -31,9 +33,10 @@ public class SshResponseHandler {
      * @param schemaType The schema type associated with the operation.
      * @param rawResponse The raw response returned by the SSH server.
      */
-    public SshResponseHandler(SchemaType schemaType, String rawResponse) {
+    public SshResponseHandler(SchemaType schemaType, String rawResponse, DynamicConfiguration dynamicConfiguration) {
         this.schemaType = schemaType;
         this.rawResponse = rawResponse;
+        this.dynamicConfiguration = dynamicConfiguration;
     }
 
     /**
@@ -42,12 +45,14 @@ public class SshResponseHandler {
      * @return A set of maps where each map represents an individual result from the search operation. The keys of the map are attribute names and the values are the corresponding attribute values.
      */
     public Set<Map<String, String>> parseSearchOperation() {
-        String[] lines = this.rawResponse.split(Constants.RESPONSE_NEW_LINE_SEPARATOR);
+        String RESPONSE_NEW_LINE_SEPARATOR = this.dynamicConfiguration.getSettings().getScriptResponseSettings().getResponseNewLineSeparator();
+        String RESPONSE_COLUMN_SEPARATOR = this.dynamicConfiguration.getSettings().getScriptResponseSettings().getResponseColumnSeparator();
+        String[] lines = this.rawResponse.split(RESPONSE_NEW_LINE_SEPARATOR);
         Set<Map<String, String>> parsedResult = new HashSet<>();
         // read first line that always contains attr names
-        String[] attributeNames = lines[0].split(Pattern.quote(Constants.RESPONSE_COLUMN_SEPARATOR));
+        String[] attributeNames = lines[0].split(Pattern.quote(RESPONSE_COLUMN_SEPARATOR));
         for (int i = 1; i <lines.length; i++) {
-            String[] attributeValues = lines[i].split(Pattern.quote(Constants.RESPONSE_COLUMN_SEPARATOR));
+            String[] attributeValues = lines[i].split(Pattern.quote(RESPONSE_COLUMN_SEPARATOR));
             Map<String,String> validAttributes = parseAttributes(attributeNames, attributeValues);
             parsedResult.add(validAttributes);
 
@@ -73,6 +78,7 @@ public class SshResponseHandler {
      *
      */
     private Map<String, String> parseAttributes(String[] attributeNames, String[] attributeValues) {
+        String RESPONSE_EMPTY_ATTRIBUTE_SYMBOL = this.dynamicConfiguration.getSettings().getScriptResponseSettings().getScriptEmptyAttribute();
         Map<String, String> validAttributes = new HashMap<>();
         if (attributeNames.length == attributeValues.length) {
             for (int i = 0; i < attributeNames.length; i++) {
@@ -91,7 +97,7 @@ public class SshResponseHandler {
                     if(schemaType.getAttributes() !=null) {
                         for (SchemaTypeAttribute sta : this.schemaType.getAttributes()) {
                             if (sta.getAttributeName().equals(attributeName)) {
-                                if (attributeValue.equals(Constants.RESPONSE_EMPTY_ATTRIBUTE_SYMBOL)) {
+                                if (attributeValue.equals(RESPONSE_EMPTY_ATTRIBUTE_SYMBOL)) {
                                     validAttributes.put(attributeName, "");
                                     break;
                                 }
@@ -104,7 +110,7 @@ public class SshResponseHandler {
             }
         } else {
             LOG.error("Fatal error: The number of attribute names does not match the number of attribute values " +
-                    "Possible cause: Bad script design, empty attributes should be defined as: " + Constants.RESPONSE_EMPTY_ATTRIBUTE_SYMBOL);
+                    "Possible cause: Bad script design, empty attributes should be defined as: " + RESPONSE_EMPTY_ATTRIBUTE_SYMBOL);
             throw new ConnectorException("the number of attribute names does not match the number of attribute values.");
         }
         return validAttributes;
@@ -115,8 +121,12 @@ public class SshResponseHandler {
      * @return null if updateOperation or deleteOperation was successful otherwise return error message
      */
     public String HandleUpdateOrDeleteResponse() {
-
-        if (this.rawResponse.equals(Constants.MICROSOFT_EXCHANGE_RESPONSE_SUCCESS_SYMBOL)){
+        String UPDATE_SUCCESS_RESPONSE = this.dynamicConfiguration.getSettings().getUpdateOperationSettings().getUpdateSuccessResponse();
+        if (this.rawResponse.equals(UPDATE_SUCCESS_RESPONSE)){
+            return null;
+        }
+        // FIXME: make distinction between update and deleteOp
+        else if (this.rawResponse.equals(UPDATE_SUCCESS_RESPONSE)){
             return null;
         }
         return this.rawResponse;
@@ -130,11 +140,12 @@ public class SshResponseHandler {
      * The Uid is extracted from the parsed attributes in the raw response.
      */
     public Uid parseCreateOperation() {
-        String[] lines = this.rawResponse.split(Constants.RESPONSE_NEW_LINE_SEPARATOR);
+        String RESPONSE_COLUMN_SEPARATOR = this.dynamicConfiguration.getSettings().getScriptResponseSettings().getResponseColumnSeparator();
+        String[] lines = this.rawResponse.split(this.dynamicConfiguration.getSettings().getScriptResponseSettings().getResponseNewLineSeparator());
 
         // read first line that always contains attr names
-        String[] attributeNames = lines[0].split(Pattern.quote(Constants.RESPONSE_COLUMN_SEPARATOR));
-        String[] attributeValues = lines[1].split(Pattern.quote(Constants.RESPONSE_COLUMN_SEPARATOR));
+        String[] attributeNames = lines[0].split(Pattern.quote(RESPONSE_COLUMN_SEPARATOR));
+        String[] attributeValues = lines[1].split(Pattern.quote(RESPONSE_COLUMN_SEPARATOR));
         Map<String,String> validAttributes = parseAttributes(attributeNames, attributeValues);
         return parseUid(validAttributes);
     }
