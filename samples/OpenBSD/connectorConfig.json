@@ -20,7 +20,7 @@
       },
 
       "icfsPasswordFlagEquivalent": {
-        "enabled": true,
+        "enabled": false,
         "value": "password"
       },
 

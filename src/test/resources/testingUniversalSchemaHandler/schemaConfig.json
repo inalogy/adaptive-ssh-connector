@@ -64,6 +64,61 @@
       "updateScript": "updateScript.ps3",
       "deleteScript": "deleteScript.ps4",
       "searchScript": "searchScript.ps5"
+    },
+    {
+      "icfsName": "DistinguishedName",
+      "icfsUid": "ExchangeGuid",
+      "objectClass": "sharedMailbox",
+      "createScript": "C:\\Users\\inaadm\\Desktop\\sk-script\\Add-SharedMailbox.ps1",
+      "updateScript": "C:\\Users\\inaadm\\Desktop\\sk-script\\Update-SharedMailbox.ps1",
+      "deleteScript": "C:\\Users\\inaadm\\Desktop\\sk-script\\Remove-SharedMailbox.ps1",
+      "searchScript": "C:\\Users\\inaadm\\Desktop\\sk-script\\Search-SharedMailbox.ps1",
+      "attributes": [
+        {
+          "Name": {
+            "required": true,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false
+          },
+          "DisplayName": {
+            "required": true,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false
+          },
+          "SamAccountName": {
+            "required": true,
+            "creatable": true,
+            "updateable": false,
+            "dataType": "String",
+            "multivalued": false
+          },
+          "Alias": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": true
+          },
+          "AccessRights":{
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "multivalued": true,
+            "dataType": "String"
+          },
+          "UserPrincipalName":{
+            "required": false,
+            "creatable": true,
+            "updateable": false,
+            "multivalued": false,
+            "dataType": "String"
+          }
+        }
+      ]
     }
   ]
 }
