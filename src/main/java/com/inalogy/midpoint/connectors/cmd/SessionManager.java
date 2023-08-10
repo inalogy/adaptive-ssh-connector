@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import com.inalogy.midpoint.connectors.ssh.SshConfiguration;
 import com.inalogy.midpoint.connectors.utils.Constants;
 
+import com.inalogy.midpoint.connectors.utils.dynamicconfig.DynamicConfiguration;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.AlreadyExistsException;
 import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
@@ -33,11 +34,14 @@ public class SessionManager {
     private final HostKeyVerifier hostKeyVerifier;
     private final AuthenticationManager authManager;
     private static final Log LOG = Log.getLog(SessionManager.class);
+    private DynamicConfiguration dynamicConfiguration;
 
-    public SessionManager(SshConfiguration configuration) {
+    public SessionManager(SshConfiguration configuration, DynamicConfiguration dynamicConfiguration) {
         this.configuration = configuration;
         this.hostKeyVerifier = new ConnectorKnownHostsVerifier().parse(this.configuration.getKnownHosts());
         this.authManager = new AuthenticationManager(this.configuration);
+        this.dynamicConfiguration = dynamicConfiguration;
+
     }
 
     /**
@@ -81,15 +85,8 @@ public class SessionManager {
                 LOG.error("-- command exitStatus: {0}", cmd.getExitStatus());
                 LOG.error("-- command exitSignal: {0}", cmd.getExitSignal());
                 LOG.error("--------------------------------------");
-                //FIXME: error handling
-//                if (error.contains(Constants.ALREADY_EXISTS_ERROR_RESPONSE)){
-//                    throw new AlreadyExistsException(error);
-//                } else if (error.contains(Constants.OBJECT_NOT_FOUND_ERROR_RESPONSE)) {
-//                    throw new UnknownUidException(error);
-//                }
-//                else {
-//                    throw new ConnectorException("Error executing SSH command: " + error);
-//                }
+                handleErrors(error);
+                throw new ConnectorException("Error executing SSH command: " + error);
             }
         } catch (IOException e) {
             throw new ConnectorIOException("Error reading output of SSH command: "+e.getMessage(), e);
@@ -103,6 +100,7 @@ public class SessionManager {
 
         LOG.info("SSH command exit status: {0}", cmd.getExitStatus());
         closeSession();
+        handleErrors(output);
         return output;
     }
 
@@ -136,6 +134,18 @@ public class SessionManager {
         else {
             LOG.ok("reusing Ssh client");
         }
+    }
+
+    public void handleErrors(String rawOutput){
+        String ALREADY_EXISTS_ERROR_RESPONSE = this.dynamicConfiguration.getSettings().getCreateOperationSettings().getAlreadyExistsErrorParameter();
+        String OBJECT_NOT_FOUND_ERROR_RESPONSE = this.dynamicConfiguration.getSettings().getUpdateOperationSettings().getUnknownUidException();
+
+        if (rawOutput.contains(ALREADY_EXISTS_ERROR_RESPONSE)){
+            throw new AlreadyExistsException(rawOutput);
+        } else if (rawOutput.contains(OBJECT_NOT_FOUND_ERROR_RESPONSE)) {
+            throw new UnknownUidException(rawOutput);
+        }
+
     }
 
     public boolean isConnectionAlive(){

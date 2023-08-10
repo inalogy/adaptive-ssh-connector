@@ -1,5 +1,6 @@
 package com.inalogy.midpoint.connectors.utils.dynamicconfig;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,8 +8,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class DynamicConfiguration {
+    //FIXME: Implement hash checking of dynamicConfiguration file
 
     // Static instance of the class
     private static DynamicConfiguration instance;

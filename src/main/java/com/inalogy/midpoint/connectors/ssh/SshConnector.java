@@ -59,7 +59,7 @@ public class SshConnector implements
     public void init(Configuration configuration) {
         this.configuration = (SshConfiguration) configuration;
         this.configuration.validate();
-        this.sshManager = new SessionManager((SshConfiguration) configuration);
+        this.sshManager = new SessionManager((SshConfiguration) configuration, this.dynamicConfiguration);
         this.sshManager.initSshClient();
         this.dynamicConfiguration.init(this.configuration.getDynamicConfigurationFilePath());
         this.commandProcessor = new CommandProcessor((SshConfiguration) configuration, this.sshManager, this.dynamicConfiguration);
