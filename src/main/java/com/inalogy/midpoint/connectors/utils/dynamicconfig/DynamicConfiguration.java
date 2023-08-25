@@ -1,7 +1,8 @@
 package com.inalogy.midpoint.connectors.utils.dynamicconfig;
 
+import org.identityconnectors.common.logging.Log;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -12,6 +13,7 @@ import java.io.IOException;
 public class DynamicConfiguration {
     //FIXME: Implement hash checking of dynamicConfiguration file
 
+    private static final Log LOG = Log.getLog(DynamicConfiguration.class);
     // Static instance of the class
     private static DynamicConfiguration instance;
     private boolean isInitialized = false;
@@ -33,6 +35,7 @@ public class DynamicConfiguration {
     }
     // Initialization method
     public void init(String externalConfigurationPath) {
+        LOG.info("initializing dynamic configuration");
         if (externalConfigurationPath == null) {
             return;  // Do nothing if path is null
         }
@@ -43,6 +46,8 @@ public class DynamicConfiguration {
             this.settings = config.getSettings();
             this.configName = config.getConfigName();
             isInitialized = true;  // Set the flag
+            LOG.info("{0} configuration successfully initialized", this.configName);
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
