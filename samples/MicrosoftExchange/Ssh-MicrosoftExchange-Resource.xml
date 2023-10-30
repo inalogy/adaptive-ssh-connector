@@ -4,7 +4,6 @@
           xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3"
           xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3"
           xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
-          xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           oid="c7d7ad50-ef91-4174-87c3-a3d84d1c317c">
     <name>SshMicrosoftExchange</name>
@@ -118,11 +117,6 @@
             </cap:update>
             <cap:delete/>
             <cap:testConnection/>
-            <cap:script>
-                <cap:host>
-                    <cap:type>connector</cap:type>
-                </cap:host>
-            </cap:script>
         </native>
     </capabilities>
 </resource>

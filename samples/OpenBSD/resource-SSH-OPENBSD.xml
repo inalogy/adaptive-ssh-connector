@@ -6,14 +6,25 @@
           xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
           xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          oid="ab3f5f4d-e5c0-4332-a224-ed3cecb32e64">
-    <name>SSH-OPENBSD</name>
+          oid="950f276e-edb9-49b6-a0e4-b3a378a66918">
+
+    <name>OpenBSD</name>
+
+    <description>Resource OpenBSD umožňuje vzdialenú správu používateľov a skupín v systéme OpenBSD prostredníctvom SSH. Poskytuje funkcie na vytváranie, aktualizáciu a správu používateľských účtov vrátane pridávania používateľov do špecifických skupín.</description>
+    <lifecycleState>active</lifecycleState>
     <connectorRef relation="org:default" type="c:ConnectorType">
+
         <filter>
-            <q:equal>
-                <q:path>c:connectorType</q:path>
-                <q:value>com.inalogy.midpoint.connectors.ssh.SshConnector</q:value>
-            </q:equal>
+            <q:and>
+                <q:equal>
+                    <q:path>c:connectorType</q:path>
+                    <q:value>com.inalogy.midpoint.connectors.ssh.SshConnector</q:value>
+                </q:equal>
+                <q:equal>
+                    <q:path>c:connectorVersion</q:path>
+                    <q:value>0.1.0.3</q:value>
+                </q:equal>
+            </q:and>
         </filter>
     </connectorRef>
     <connectorConfiguration xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3"
@@ -24,9 +35,9 @@
             <gen556:schemaFilePath>$(ssh-openbsd-schemaFilepath)</gen556:schemaFilePath>
             <gen556:host>$(ssh-openbsd.host)</gen556:host>
             <gen556:shellType>$(ssh-openbsd.shellType)</gen556:shellType>
+            <gen556:dynamicConfigurationFilePath>$(ssh-openbsd-ConnectorConfigFilePath)</gen556:dynamicConfigurationFilePath>
             <gen556:port>22</gen556:port>
             <gen556:username>$(ssh-openbsd.username)</gen556:username>
-            <gen556:replaceWhiteSpaceCharacterWith>~</gen556:replaceWhiteSpaceCharacterWith>
             <gen556:password>
                 <clearValue>$(ssh-openbsd.password)</clearValue>
             </gen556:password>
@@ -34,8 +45,12 @@
     </connectorConfiguration>
     <schemaHandling>
         <objectType>
-            <kind>account</kind>
             <displayName>User</displayName>
+
+            <description>Objektová trieda reprezentuje používateľa v systéme OpenBSD, ktorý je spravovaný cez konektor pripojený cez SSH.</description>
+            <documentation>Táto objektová trieda je špecifická pre reprezentáciu používateľov v OpenBSD, a je použitá na identifikáciu a manipuláciu účtov.</documentation>
+            <intent>user</intent>
+            <kind>account</kind>
             <default>true</default>
             <delineation>
                 <objectClass>ri:user</objectClass>
@@ -45,6 +60,50 @@
             </focus>
 
             <attribute>
+                <ref>ri:type</ref>
+
+                <description>Atribút, ktorý reprezentuje typ účtu</description>
+                <documentation>Toto mapovanie definuje typ používateľa, buď ako "staff" alebo "student". V závislosti od splnenej podmienky priradí príslušnú hodnotu. Toto mapovanie sa používa iba pri operácii createOp.</documentation>
+
+                <limitations>
+                    <layer>presentation</layer>
+                    <access>
+                        <read>false</read>
+                        <add>false</add>
+                        <modify>false</modify>
+                    </access>
+                </limitations>
+                <!--            FIXME: make mapping condition which determinate if staff or student this mapping should be used only in createOp    -->
+                <outbound>
+                    <strength>weak</strength>
+                    <expression>
+                        <value>student</value>
+                    </expression>
+                    <condition>
+                        <script>
+                            <code>
+                                //hack determinate if shadow exists if not send initial mappings
+                                if (shadow?.oid){
+                                return false
+                                }
+                                return true
+                            </code>
+                        </script>
+                    </condition>
+                </outbound>
+            </attribute>
+
+            <attribute>
+                <ref>icfs:name</ref>
+                <outbound>
+                    <strength>weak</strength>
+                    <source>
+                        <path>name</path>
+                    </source>
+                </outbound>
+            </attribute>3
+
+            <attribute>
                 <ref>ri:login</ref>
                 <outbound>
                     <source>
@@ -52,8 +111,8 @@
                     </source>
                 </outbound>
             </attribute>
+
             <attribute>
-                <!--      temporary solution for setting initial password        -->
                 <ref>ri:password</ref>
                 <limitations>
                     <layer>presentation</layer>
@@ -68,6 +127,17 @@
                     <expression>
                         <value>xxx</value>
                     </expression>
+                    <condition>
+                        <script>
+                            <code>
+                                //hack determinate if shadow exists if not send initial mappings
+                                if (shadow?.oid){
+                                return false
+                                }
+                                return true
+                            </code>
+                        </script>
+                    </condition>
                 </outbound>
             </attribute>
 
@@ -90,16 +160,9 @@
                     </expression>
                 </outbound>
             </attribute>
-
             <!--            <attribute>-->
             <!--                <ref>ri:groups</ref>-->
-            <!--                <outbound>-->
-            <!--                    <source>-->
-            <!--                        <path>organizationalUnit</path>-->
-            <!--                    </source>-->
-            <!--                </outbound>-->
             <!--            </attribute>-->
-
             <activation>
                 <!-- weak existence -->
                 <existence>
@@ -119,7 +182,9 @@
                         <ownerFilter>
                             <q:equal>
                                 <q:path>name</q:path>
-                                <q:value>$shadow/attributes/login</q:value>
+                                <expression>
+                                    <path>$shadow/attributes/icfs:name</path>
+                                </expression>
                             </q:equal>
                         </ownerFilter>
                     </filter>
@@ -148,7 +213,6 @@
             </synchronization>
         </objectType>
     </schemaHandling>
-
     <capabilities>
         <native xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3">
             <cap:schema/>
@@ -162,11 +226,12 @@
             </cap:update>
             <cap:delete/>
             <cap:testConnection/>
-            <cap:script>
-                <cap:host>
-                    <cap:type>connector</cap:type>
-                </cap:host>
-            </cap:script>
         </native>
     </capabilities>
+    <projection>
+        <assignmentPolicyEnforcement>full</assignmentPolicyEnforcement>
+    </projection>
+    <consistency>
+        <deadShadowRetentionPeriod>PT1S</deadShadowRetentionPeriod>
+    </consistency>
 </resource>
