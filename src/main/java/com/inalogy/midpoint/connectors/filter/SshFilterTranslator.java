@@ -23,6 +23,12 @@ public class SshFilterTranslator extends AbstractFilterTranslator<SshFilter> {
             SshFilter lookingFor = new SshFilter();
             lookingFor.byUid = String.valueOf(attr.getValue().get(0));
             return lookingFor;
+        } else if (Name.NAME.equals(attr.getName())) {
+            if (attr.getValue() != null && attr.getValue().get(0) != null) {
+                SshFilter lookingFor = new SshFilter();
+                lookingFor.byUid = String.valueOf(attr.getValue().get(0)); // FIXME: opravit, bude fungovat iba ak icfsuid == icfsname
+                return lookingFor;
+            }
         }
         return null;            // not supported
     }

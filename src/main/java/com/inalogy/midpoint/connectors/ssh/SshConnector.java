@@ -112,7 +112,7 @@ public class SshConnector implements
             SshConnector.schema = new UniversalSchemaHandler(this.configuration.getSchemaFilePath());
         }
         for (SchemaType schemaType: SshConnector.schema.getSchemaTypes().values()){
-            UniversalObjectsHandler.buildObjectClass(schemaBuilder, schemaType);
+            UniversalObjectsHandler.buildObjectClass(schemaBuilder, schemaType, this.dynamicConfiguration);
         }
         return schemaBuilder.build();
     }

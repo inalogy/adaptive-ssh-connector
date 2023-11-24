@@ -20,6 +20,7 @@ import org.identityconnectors.framework.common.objects.ConnectorObject;
 import org.identityconnectors.framework.common.objects.ConnectorObjectBuilder;
 import org.identityconnectors.framework.common.objects.ObjectClass;
 import org.identityconnectors.framework.common.objects.ObjectClassInfoBuilder;
+import org.identityconnectors.framework.common.objects.OperationalAttributeInfos;
 import org.identityconnectors.framework.common.objects.SchemaBuilder;
 import org.identityconnectors.framework.common.objects.Uid;
 import org.identityconnectors.framework.common.objects.Name;
@@ -46,14 +47,26 @@ public class UniversalObjectsHandler {
      * @param schemaBuilder  the SchemaBuilder instance to which the built object class is to be added.
      * @param schemaType     the SchemaType that is used to build the object class.
      */
-    public static void buildObjectClass(SchemaBuilder schemaBuilder, SchemaType schemaType){
+    public static void buildObjectClass(SchemaBuilder schemaBuilder, SchemaType schemaType, DynamicConfiguration dynamicConfiguration){
         ObjectClassInfoBuilder objClassBuilder = new ObjectClassInfoBuilder();
         objClassBuilder.setType(schemaType.getObjectClassName());
         String icfsName = schemaType.getIcfsName();
         String icfsUid = schemaType.getIcfsUid();
+        boolean isOperationalAttributePasswordEnabled = dynamicConfiguration.getSettings().getConnectorSettings().getIcfsPasswordFlagEquivalent().isEnabled();
+        String OperationalPasswordAttributeName = null;
+        if (isOperationalAttributePasswordEnabled){
+            OperationalPasswordAttributeName = dynamicConfiguration.getSettings().getConnectorSettings().getIcfsPasswordFlagEquivalent().getValue();
+        }
 
         if (schemaType.getAttributes() != null || !schemaType.getAttributes().isEmpty()) {
             for (SchemaTypeAttribute attribute : schemaType.getAttributes()) {
+
+                //handle operationalAttribute password if its defined in connectorConfig.json And it must be defined in schemaConfig they must have same names look /samples/
+                if (isOperationalAttributePasswordEnabled && attribute.getAttributeName().equals(OperationalPasswordAttributeName)){
+                    objClassBuilder.addAttributeInfo(OperationalAttributeInfos.PASSWORD);
+                    continue;
+                }
+
                 AttributeInfoBuilder attrInfoBuilder = new AttributeInfoBuilder(attribute.getAttributeName(), attribute.getDataType());
                 attrInfoBuilder.setRequired(attribute.isRequired());
                 attrInfoBuilder.setCreateable(attribute.isCreatable());
