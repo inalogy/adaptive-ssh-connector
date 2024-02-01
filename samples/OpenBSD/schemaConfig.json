@@ -15,28 +15,32 @@
             "creatable": true,
             "updateable": false,
             "dataType": "String",
-            "multivalued": false
+            "multivalued": false,
+            "returnedByDefault": false
           },
           "password": {
             "required": true,
             "creatable": true,
             "updateable": true,
             "dataType": "String",
-            "multivalued": false
+            "multivalued": false,
+            "returnedByDefault": false
           },
           "fullName": {
             "required": true,
             "creatable": true,
             "updateable": true,
             "dataType": "String",
-            "multivalued": false
+            "multivalued": false,
+            "returnedByDefault": false
           },
           "groups": {
             "required": true,
             "creatable": true,
             "updateable": true,
             "dataType": "String",
-            "multivalued": true
+            "multivalued": true,
+            "returnedByDefault": false
           }
         }
       ]

@@ -1,8 +1,9 @@
  param(
     [string]$ExchangeGuid,
-    [string]$email,
+    [string]$Email,
     [string[]]$EmailAddresses
 )
+
 $commandsToImport = "Set-Mailbox", "Get-Mailbox"
 $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://PowershellServerAddr -Authentication Kerberos
 Import-PSSession $Session -CommandName $commandsToImport -AllowClobber > $null

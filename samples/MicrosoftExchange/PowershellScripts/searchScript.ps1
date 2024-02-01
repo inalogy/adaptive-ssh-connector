@@ -3,7 +3,7 @@ param(
 
 # searchScript.ps1 must always return all attributes defined in schema for particular objectClass
 
-$columnsHeaderDefinition= "ExchangeGuid|UserPrincipalName|email|EmailAddresses" # this must match the schema! Also, separator must match Constants.RESPONSE_COLUMN_SEPARATOR -> default |
+$columnsHeaderDefinition= "ExchangeGuid|UserPrincipalName|Email|EmailAddresses"
 $commandsToImport= "Get-Mailbox"
 
 $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ExchangeServerAddr -Authentication Kerberos

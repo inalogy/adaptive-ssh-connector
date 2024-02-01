@@ -18,7 +18,7 @@
             <q:and>
                 <q:equal>
                     <q:path>c:connectorType</q:path>
-                    <q:value>com.inalogy.midpoint.connectors.ssh.SshConnector</q:value>
+                    <q:value>com.inalogy.midpoint.connector.ssh.SshConnector</q:value>
                 </q:equal>
                 <q:equal>
                     <q:path>c:connectorVersion</q:path>
@@ -31,7 +31,7 @@
                             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                             xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
                             xsi:type="c:ConnectorConfigurationType">
-        <icfc:configurationProperties xmlns:gen556="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/com.inalogy.midpoint.connectors.ssh/com.inalogy.midpoint.connectors.ssh.SshConnector">
+        <icfc:configurationProperties xmlns:gen556="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/com.inalogy.midpoint.connector.ssh/com.inalogy.midpoint.connector.ssh.SshConnector">
             <gen556:schemaFilePath>$(ssh-openbsd-schemaFilepath)</gen556:schemaFilePath>
             <gen556:host>$(ssh-openbsd.host)</gen556:host>
             <gen556:shellType>$(ssh-openbsd.shellType)</gen556:shellType>
