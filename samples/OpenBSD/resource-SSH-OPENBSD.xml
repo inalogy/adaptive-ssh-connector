@@ -20,27 +20,21 @@
                     <q:path>c:connectorType</q:path>
                     <q:value>com.inalogy.midpoint.connector.ssh.SshConnector</q:value>
                 </q:equal>
-                <q:equal>
-                    <q:path>c:connectorVersion</q:path>
-                    <q:value>0.1.0.3</q:value>
-                </q:equal>
             </q:and>
         </filter>
     </connectorRef>
-    <connectorConfiguration xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3"
-                            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                            xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
-                            xsi:type="c:ConnectorConfigurationType">
-        <icfc:configurationProperties xmlns:gen556="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/com.inalogy.midpoint.connector.ssh/com.inalogy.midpoint.connector.ssh.SshConnector">
-            <gen556:schemaFilePath>$(ssh-openbsd-schemaFilepath)</gen556:schemaFilePath>
-            <gen556:host>$(ssh-openbsd.host)</gen556:host>
-            <gen556:shellType>$(ssh-openbsd.shellType)</gen556:shellType>
-            <gen556:dynamicConfigurationFilePath>$(ssh-openbsd-ConnectorConfigFilePath)</gen556:dynamicConfigurationFilePath>
-            <gen556:port>22</gen556:port>
-            <gen556:username>$(ssh-openbsd.username)</gen556:username>
-            <gen556:password>
-                <clearValue>$(ssh-openbsd.password)</clearValue>
-            </gen556:password>
+    <connectorConfiguration xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3">
+        <icfc:configurationProperties xmlns:gen629="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/com.inalogy.midpoint.connector.ssh/com.inalogy.midpoint.connector.ssh.SshConnector">
+            <gen629:host>10.30.0.31</gen629:host>
+            <gen629:schemaFilePath>/opt/midpoint/var/ssh-schema/schemaConfig.json</gen629:schemaFilePath>
+            <gen629:dynamicConfigurationFilePath>/opt/midpoint/var/ssh-schema/connectorConfig.json</gen629:dynamicConfigurationFilePath>
+            <gen629:shellType>cshell</gen629:shellType>
+            <gen629:port>22</gen629:port>
+            <gen629:username>svc-midpoint</gen629:username>
+            <gen629:password>
+                <t:clearValue></t:clearValue>
+            </gen629:password>
+            <gen629:authenticationScheme>password</gen629:authenticationScheme>
         </icfc:configurationProperties>
     </connectorConfiguration>
     <schemaHandling>
@@ -73,7 +67,6 @@
                         <modify>false</modify>
                     </access>
                 </limitations>
-                <!--            FIXME: make mapping condition which determinate if staff or student this mapping should be used only in createOp    -->
                 <outbound>
                     <strength>weak</strength>
                     <expression>

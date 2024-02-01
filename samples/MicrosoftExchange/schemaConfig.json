@@ -15,7 +15,9 @@
             "creatable": true,
             "updateable": true,
             "dataType": "String",
-            "multivalued": false
+            "multivalued": false,
+            "returnedByDefault": false
+
           }
         }
       ]
@@ -36,14 +38,18 @@
             "creatable": true,
             "updateable": true,
             "multivalued": false,
-            "dataType": "String"
+            "dataType": "String",
+            "returnedByDefault": false
+
           },
           "members": {
             "required": true,
             "creatable": false,
             "updateable": true,
             "multivalued": true,
-            "dataType": "String"
+            "dataType": "String",
+            "returnedByDefault": false
+
           }
         }
       ]
