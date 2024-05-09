@@ -1,0 +1,5 @@
+exchangeGuid                        |mailboxName
+e7d23f0d-0796-4cf2-a91a-3ab531c2eca6|JonSnow
+3e1ab55c-6997-4448-8b78-1e3255c4b970|
+2b181fc1-329b-40bd-b052-b37b8b134e74|BrandonStark
+5c02218a-e808-4d37-b734-7e8b6a0e8777|NedStark

@@ -1,93 +1,179 @@
-# AdaptiveSSH
 
+## Table of Contents
+1. [Introduction](#introduction)
+2. [Capabilities and Features](#capabilities-and-features)
+3. [Dynamic Schema](#dynamic-schema)
+4. [Configuration](#configuration)
+5. [Script design](#script-design)
+6. [Customisation](#customisation)
+7. [JavaDoc](#javadoc)
+8. [Build](#build)
+9. [TODO](#todo)
+10. [Special Thanks](#special-thanks)
+# Introduction
+  ### ssh-connector
+  Standalone Adaptive SSH Connector for midPoint IDM customised for Microsoft Exchange provisioning
 
+version 1.0.0
+# Capabilities and Features
 
-## Getting started
+- Schema: YES - dynamic
+- Provisioning: YES
+- Live Synchronization: No
+- Password: No
+- Activation: No
+- Script execution: No
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
+## Set PowerShell as default shell on Windows
+Make sure that the powershell is default shell,
+otherwise this will not work due to style of argument passing between cmd and powershell
+because midPoint will send them as for powershell like "$name = value;" and this will result in error in cmd
+### PowerShell command:
+```powershell
+New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -PropertyType String -Force
 ```
-cd existing_repo
-git remote add origin https://gitlab.ami.cz/mzp/adaptivessh.git
-git branch -M main
-git push -uf origin main
+More info: https://github.com/PowerShell/Win32-OpenSSH/wiki/DefaultShell
+
+## Dynamic Schema
+- Schema is generated from schemaConfig.json
+- Schema File should be properly secured and protected with appropriate permissions
+- Schema supports arbitrary number of ObjectClasses and their attributes
+- **Any modifications of schemaFile need to be carefully planned and tested, before any modification of schemaFile resource should be put into maintenance mode.**
+- script Paths containg white space need to be properly escaped 'with single quotes ' otherwise powershell reads them till first white space -> "C:\\Users\\**' PS Scripts'**\searchScript.ps1"
+- Every ObjectClass defined in schemaConfig.json must have the following parameters:
+```
+    {
+      "icfsName": "anyicfsName",
+      "icfsUid": "anyicfsUid",
+      "objectClass": "user",
+      "createScript": "path\\to\\script\\createScript.ps1",
+      "updateScript": "path\\to\\'script folder'\\updateScript.ps1",
+      "deleteScript": "path\\to\'script folder'\\deleteScript.ps1",
+      "searchScript": "path\\to\\'script folder'\\searchScript.ps1",
+      "attributes": [
+        { 
+          "anyAttribute": {
+            "required": true,
+            "creatable":true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false
+          },
+          "anyAttribute2":{
+            ...},
+          ...
+        }
+      ]
+    }
+```
+- icfsName and icfsUid can point to the same value
+### Script design
+Script return values must follow this convention:
+* first line must always have column attributes that match schema -> this applies only for searchScript and createScript
+* Script needs to be designed to return scriptEmptyAttribute (defined in connectorConfig.json) -> "null" for empty attribute otherwise separator won't be able to tell if attribute is empty
+* **First Attribute must be icfsUid or icfsName If you need both unique identifiers specified, first must be icfsUid followed by icfsName that match those specified in schemaConfig.json example:**
+```
+uniqueIdentifier|UniqueName|AnyOtherAttributes
+or
+UniqueIdentifier|AnyOtherAttributes
 ```
 
-## Integrate with your tools
 
-- [ ] [Set up project integrations](https://gitlab.ami.cz/mzp/adaptivessh/-/settings/integrations)
+* if icfsName and icfsUid in schemaConfig.json point to same value, script should return only UniqueName followed by any other attributes defined in schema
+example:
+* **case1**:
+  * schemaConfig.json
+```
+    "icfsName": "smtpMail",
+    "icfsUid": "smtpMail",
+    "attributes": [
+       "smtpMailbox: {....},
+       "mailBoxNickName": {....}
+       ]
+``` 
+* SearchScript.ps1 output :
+``` 
+    smtpMail|smtpMailbox|mailBoxNickName
+    UniqIdent|exampleMail|exampleNick
+```
+* **case1:** icfsName and icfsUid will have same value that corresponds to smtpMail column
+---
+* **case2**:
+  * schemaConfig.json
+```
+    "icfsName": "smtpGuid",
+    "icfsUid": "smtpMail",
+    "attributes": [
+       "mailPrefix: {....},
+       "mailBoxNickName": {....}
+       ]
+``` 
+* SearchScript.ps1 output:
+``` 
+    smtpGuid |   smtpMail  |mailPrefix|mailBoxNickName
+    UniqIdent|uniqesmtpMail|mailPrefix|null
+```
+* **case2:** icfsName and icfsUid will have different value that corresponds to smtpGuid column and smtpMail
+### Powershell Scripts limitations
+- Powershell scripts for microsoft exchange use weird UI element when importing remote session in terminal, sshj which is responsible for executing/reading output  crash since by default sshj create connection with -T flag, so it needs to be bypassed
+- to bypass this every command should be imported separately
+- To test this simply connect to your testing server with ssh -T name@host and execute test script
+- example of Powershell script with command import:
+``` 
+  $commandsToImport = "Set-Mailbox", "Get-Mailbox", "Set-User"
+  Import-PSSession $Session -CommandName $commandsToImport -AllowClobber > $null
+``` 
+### Configuration
+- Set the usual username, password, and host address, also specify absolute file path for the schemaConfig and ConnectorConfig.
+### Connector Operations
+* Each operation is designed in a way to work with predefined Script input/output
 
-## Collaborate with your team
+- ### Search Operation
+  - For single account/object Query searchOp needs UID also operation should always return all attributes that are defined in schema for particular object
+- ### Create Operation
+  - createOp expects attributes provided by midpoint based on mappings in resource, CreateScript should return uniqueID|uniqueName or just uniqueId it depends on script and schemaConfig.json design
+  - for mapping special attributes from midpoint for example \_\_NAME\_\_ or \_\_PASSWORD\_\_ to target system need to be specified in connectorConfiguration.json and mapped with name that corresponds with expected script input parameter
+  - for createOp it is recommended to define connectorConfiguration.json -> createOperationSettings -> alreadyExistsErrorParameter that should be present in response when objectAlreadyExists occurs
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+- ### UpdateDelta operation
+  - updateDelta process attributes, and multivalued attributes which are formatted in a way that remote script know how to handle them based on Constant Prefix ADD:somevalue,REMOVE:somevalue2
+  - Script is expected to return (defined in connectorConfiguration.json) ""  if execution of script was successful any other output is considered as error message
+  
+- ### Delete operation
+  - deleteOp expects Uid which is then passed into script
+  - Script is expected to return (defined in connectorConfiguration.json) "" if execution of script was successful any other output is considered as error message
+  - for deleteOp it is recommended to define Constant that should be present in response when objectNotFound occurs
 
-## Test and Deploy
+## Customisation
+- Ssh Response column separator  and new line separator can be changed in class utils/Constants
+- Also, Ssh Response that define successful execution for updateDelta and DeleteOp are defined in ConnectorConfig.json -> default ""
+- ConnectorConfiguration.json responseColumnSeparator should never be equal to responseNewLineSeparator
 
-Use the built-in continuous integration in GitLab.
+## JavaDoc
+- JavaDoc can be generated locally by this command:
+```bash
+mvn clean javadoc:javadoc
+```
+## Build
+```
+mvn clean install
+```
+## Build without Tests
+```
+mvn clean install -DskipTests=True
+```
+After successful build, you can find ssh-v1.0-connector.jar in target directory.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+## TODO
+- Private/public key authentication
+- Response handler for different type of script output e.g. json
+- Feature that will optionally allow to store schema file within the connector jar
+- Test on Unix/Linux based systems
+- Script validator that validate SchemaFile/SchemaType obj. with script return values
+## Special Thanks
+This project is inspired by and owes a debt of gratitude to the [Evolveum SSH Connector](https://github.com/Evolveum/connector-ssh) project.
 
-***
+# Status
+Tested only on Microsoft Windows server with powershell version 5.1.17763
 
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Ssh Connector is intended for production use. Tested with MidPoint version 4.6. The connector was introduced as a contribution to midPoint project by Inalogy and is not officially supported by Evolveum. If you need support, please contact info@inalogy.com.

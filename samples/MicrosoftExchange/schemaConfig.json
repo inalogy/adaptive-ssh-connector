@@ -1,0 +1,69 @@
+{
+  "objects":[
+    {
+      "icfsName": "UserPrincipalName",
+      "icfsUid": "ExchangeGuid",
+      "objectClass": "user",
+      "createScript": "C:\\Users\\inaadm\\Desktop\\createScript.ps1",
+      "updateScript": "C:\\Users\\inaadm\\Desktop\\updateScript.ps1",
+      "deleteScript": " C:\\Users\\inaadm\\Desktop\\deleteScript.ps1",
+      "searchScript": "C:\\Users\\inaadm\\Desktop\\searchScript.ps1",
+      "attributes": [
+        {
+          "email": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": false,
+            "readable": true
+          }
+        }
+      ]
+    },
+
+    {
+      "icfsName": "someGroupName",
+      "icfsUid": "1234",
+      "objectClass":  "group",
+      "createScript": "createScript.ps2",
+      "updateScript": "updateScript.ps3",
+      "deleteScript": "deleteScript.ps4",
+      "searchScript": "searchScript.ps5",
+      "attributes":  [
+        {
+          "groupName":{
+            "required": true,
+            "creatable": true,
+            "updateable": true,
+            "multivalued": false,
+            "dataType": "String",
+            "returnedByDefault": false,
+            "readable": true
+
+          },
+          "members": {
+            "required": true,
+            "creatable": false,
+            "updateable": true,
+            "multivalued": true,
+            "dataType": "String",
+            "returnedByDefault": false,
+            "readable": true
+          }
+        }
+      ]
+    },
+
+    {
+      "icfsName": "testName",
+      "icfsUid": "12345",
+      "objectClass":  "objectWithoutAttributes",
+      "createScript": "createScript.ps2",
+      "updateScript": "updateScript.ps3",
+      "deleteScript": "deleteScript.ps4",
+      "searchScript": "searchScript.ps5"
+    }
+  ]
+}
