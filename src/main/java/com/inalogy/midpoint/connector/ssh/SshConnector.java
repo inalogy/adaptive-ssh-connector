@@ -85,7 +85,7 @@ public class SshConnector implements
      */
     @Override
     public void test() {
-        String testEcho = "echo \"Hello\"";
+        String testEcho = "echo Hello";
         String response = this.sshManager.exec(testEcho, "test").replace("\n", "").replace("\r", "");
         if (!response.equals("Hello")){
             LOG.error("Error occurred in test() method while testing Ssh connection");
