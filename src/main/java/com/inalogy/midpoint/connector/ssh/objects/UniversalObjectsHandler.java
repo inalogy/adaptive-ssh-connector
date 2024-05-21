@@ -24,6 +24,7 @@ import org.identityconnectors.framework.common.objects.OperationalAttributeInfos
 import org.identityconnectors.framework.common.objects.SchemaBuilder;
 import org.identityconnectors.framework.common.objects.Uid;
 import org.identityconnectors.framework.common.objects.Name;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A utility class responsible for the transformation and handling of object classes and connector objects.
@@ -67,12 +68,7 @@ public class UniversalObjectsHandler {
                     continue;
                 }
 
-                AttributeInfoBuilder attrInfoBuilder = new AttributeInfoBuilder(attribute.getAttributeName(), attribute.getDataType());
-                attrInfoBuilder.setRequired(attribute.isRequired());
-                attrInfoBuilder.setCreateable(attribute.isCreatable());
-                attrInfoBuilder.setUpdateable(attribute.isUpdateable());
-                attrInfoBuilder.setMultiValued(attribute.isMultivalued());
-                attrInfoBuilder.setReturnedByDefault(attribute.isReturnedByDefault());
+                AttributeInfoBuilder attrInfoBuilder = getAttributeInfoBuilder(attribute);
                 objClassBuilder.addAttributeInfo(attrInfoBuilder.build());
             }
         }
@@ -94,6 +90,18 @@ public class UniversalObjectsHandler {
         }
         LOG.ok("buildingObjectClass for: " + schemaType.getObjectClassName());
         schemaBuilder.defineObjectClass(objClassBuilder.build());
+    }
+
+    @NotNull
+    private static AttributeInfoBuilder getAttributeInfoBuilder(SchemaTypeAttribute attribute) {
+        AttributeInfoBuilder attrInfoBuilder = new AttributeInfoBuilder(attribute.getAttributeName(), attribute.getDataType());
+        attrInfoBuilder.setRequired(attribute.isRequired());
+        attrInfoBuilder.setCreateable(attribute.isCreatable());
+        attrInfoBuilder.setUpdateable(attribute.isUpdateable());
+        attrInfoBuilder.setMultiValued(attribute.isMultivalued());
+        attrInfoBuilder.setReturnedByDefault(attribute.isReturnedByDefault());
+        attrInfoBuilder.setReadable(attribute.isReadable());
+        return attrInfoBuilder;
     }
 
     /**
