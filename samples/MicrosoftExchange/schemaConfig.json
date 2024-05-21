@@ -16,8 +16,8 @@
             "updateable": true,
             "dataType": "String",
             "multivalued": false,
-            "returnedByDefault": false
-
+            "returnedByDefault": false,
+            "readable": true
           }
         }
       ]
@@ -39,7 +39,8 @@
             "updateable": true,
             "multivalued": false,
             "dataType": "String",
-            "returnedByDefault": false
+            "returnedByDefault": false,
+            "readable": true
 
           },
           "members": {
@@ -48,8 +49,8 @@
             "updateable": true,
             "multivalued": true,
             "dataType": "String",
-            "returnedByDefault": false
-
+            "returnedByDefault": false,
+            "readable": true
           }
         }
       ]
