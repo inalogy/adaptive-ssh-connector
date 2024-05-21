@@ -61,31 +61,21 @@ public class SshConfiguration extends AbstractConfiguration implements StatefulC
     // fu='foo'; bar='baz'; command $foo $bar
     public static final String ARGUMENT_STYLE_VARIABLES_BASH = "variables-bash";
 
-    /**
-     * Defines how to handle NULL value arguments.
-     * If a script argument is NULL, it can be inserted as an empty string ("asEmpty") or it can be removed from the argument list ("asGone").
-     */
-    private String handleNullValues = HANDLE_NULL_AS_GONE;
-
-    public static final String HANDLE_NULL_AS_EMPTY_STRING = "asEmptyString";
-    public static final String HANDLE_NULL_AS_GONE = "asGone";
     private String shellType = Constants.TYPE_SHELL;
 
     public String schemaFilePath;
 
     public String dynamicConfigurationFilePath;
-    public String icfsUidFlagEquivalent;
-
-    public String icfsPasswordFlagEquivalent;
-
-    public String replaceWhiteSpaceCharacterWith;
     private String[] knownHosts;
 
     @Override
     public void validate() {
 
     }
-    @ConfigurationProperty(order = 100)
+    @ConfigurationProperty(order = 100,
+            displayMessageKey = "Host.display",
+            helpMessageKey = "Host.help"
+    )
     public String getHost() {
         return host;
     }
@@ -94,7 +84,10 @@ public class SshConfiguration extends AbstractConfiguration implements StatefulC
         this.host = host;
     }
 
-    @ConfigurationProperty(order = 101)
+    @ConfigurationProperty(order = 110,
+            displayMessageKey = "Port.display",
+            helpMessageKey = "Port.help"
+    )
     public int getPort() {
         return port;
     }
@@ -103,7 +96,10 @@ public class SshConfiguration extends AbstractConfiguration implements StatefulC
         this.port = port;
     }
 
-    @ConfigurationProperty(order = 102)
+    @ConfigurationProperty(order = 130,
+            displayMessageKey = "Username.display",
+            helpMessageKey = "Username.help"
+    )
     public String getUsername() {
         return username;
     }
@@ -112,7 +108,10 @@ public class SshConfiguration extends AbstractConfiguration implements StatefulC
         this.username = username;
     }
 
-    @ConfigurationProperty(order = 103)
+    @ConfigurationProperty(order = 140,
+            displayMessageKey = "Password.display",
+            helpMessageKey = "Password.help"
+    )
     public GuardedString getPassword() {
         return password;
     }
@@ -121,7 +120,10 @@ public class SshConfiguration extends AbstractConfiguration implements StatefulC
         this.password = password;
     }
 
-    @ConfigurationProperty(order = 104)
+    @ConfigurationProperty(order = 150,
+            displayMessageKey = "PrivateKey.display",
+            helpMessageKey = "PrivateKey.help"
+    )
     public GuardedString getPrivateKey() {
         return privateKey;
     }
@@ -130,7 +132,10 @@ public class SshConfiguration extends AbstractConfiguration implements StatefulC
         this.privateKey = privateKey;
     }
 
-    @ConfigurationProperty(order = 105)
+    @ConfigurationProperty(order = 160,
+            displayMessageKey = "Passphrase.display",
+            helpMessageKey = "Passphrase.help"
+    )
     public GuardedString getPassphrase() {
         return passphrase;
     }
@@ -139,7 +144,10 @@ public class SshConfiguration extends AbstractConfiguration implements StatefulC
         this.passphrase = passphrase;
     }
 
-    @ConfigurationProperty(order = 106)
+    @ConfigurationProperty(order = 170,
+            displayMessageKey = "AuthenticationScheme.display",
+            helpMessageKey = "AuthenticationScheme.help"
+    )
     public String getAuthenticationScheme() {
         return authenticationScheme;
     }
@@ -148,7 +156,10 @@ public class SshConfiguration extends AbstractConfiguration implements StatefulC
         this.authenticationScheme = authenticationScheme;
     }
 
-    @ConfigurationProperty(order = 110)
+    @ConfigurationProperty(order = 180,
+            displayMessageKey = "KnownHosts.display",
+            helpMessageKey = "KnownHosts.help"
+    )
     public String[] getKnownHosts() {
         return knownHosts;
     }
@@ -157,7 +168,10 @@ public class SshConfiguration extends AbstractConfiguration implements StatefulC
         this.knownHosts = knownHosts;
     }
 
-    @ConfigurationProperty(order = 120)
+    @ConfigurationProperty(order = 180,
+            displayMessageKey = "ArgumentStyle.display",
+            helpMessageKey = "ArgumentStyle.help"
+    )
     public String getArgumentStyle() {
         return argumentStyle;
     }
@@ -166,20 +180,9 @@ public class SshConfiguration extends AbstractConfiguration implements StatefulC
         this.argumentStyle = argumentStyle;
     }
 
-    @ConfigurationProperty(order = 130)
-    public String getHandleNullValues() {
-        return handleNullValues;
-    }
-
-    public void setHandleNullValues(String handleNullValues) {
-        this.handleNullValues = handleNullValues;
-    }
-
-    @ConfigurationProperty(
-            order = 100,
-            displayMessageKey = "shell.type.display",
-            groupMessageKey = "basic.group",
-            helpMessageKey = "shell.type.help"
+    @ConfigurationProperty(order = 70,
+            displayMessageKey = "ShellType.display",
+            helpMessageKey = "ShellType.help"
     )
     public String getShellType() {
         return shellType;
@@ -188,14 +191,16 @@ public class SshConfiguration extends AbstractConfiguration implements StatefulC
     public void setShellType(String shellType) {
         this.shellType = shellType;
     }
-    @ConfigurationProperty(
-            displayMessageKey = "schema.file.path"
+    @ConfigurationProperty(order = 80,
+            displayMessageKey = "SchemaFilePath.display",
+            helpMessageKey = "SchemaFilePath.help"
     )
     public String getSchemaFilePath() {return schemaFilePath;}
     public void setSchemaFilePath(String schemaFilePath){this.schemaFilePath = schemaFilePath;}
 
-    @ConfigurationProperty(
-            displayMessageKey = "dynamicConfiguration.file.path"
+    @ConfigurationProperty(order = 90,
+            displayMessageKey = "DynamicConfigurationFilePath.display",
+            helpMessageKey = "DynamicConfigurationFilePath.help"
     )
     public String getDynamicConfigurationFilePath() {return dynamicConfigurationFilePath;}
 

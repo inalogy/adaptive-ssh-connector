@@ -16,6 +16,8 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
+import static com.inalogy.midpoint.connector.ssh.utils.Constants.*;
+
 
 /**
  * The UniversalSchemaHandler is responsible for parsing the schemaConfig file
@@ -78,15 +80,16 @@ public class UniversalSchemaHandler {
                             JsonObject attributeObject = attributesArray.getJsonObject(i);
                             for (String attrName : attributeObject.keySet()) {
                                 JsonObject attrDetails = attributeObject.getJsonObject(attrName);
-                                boolean required = attrDetails.getBoolean("required");
-                                boolean creatable = attrDetails.getBoolean("creatable");
-                                boolean updateable = attrDetails.getBoolean("updateable");
-                                boolean multivalued = attrDetails.getBoolean("multivalued");
-                                String dataType = attrDetails.getString("dataType");
-                                boolean returnedByDefault = attrDetails.getBoolean("returnedByDefault");
+                                boolean required = attrDetails.getBoolean(ATTR_DETAILS_REQUIRED);
+                                boolean creatable = attrDetails.getBoolean(ATTR_DETAILS_CREATABLE);
+                                boolean updateable = attrDetails.getBoolean(ATTR_DETAILS_UPDATEABLE);
+                                boolean multivalued = attrDetails.getBoolean(ATTR_DETAILS_MULTIVALUED);
+                                String dataType = attrDetails.getString(ATTR_DETAILS_DATA_TYPE);
+                                boolean returnedByDefault = attrDetails.getBoolean(ATTR_DETAILS_RETURNED_BY_DEFAULT);
+                                boolean readable = attrDetails.getBoolean(ATTR_DETAILS_READABLE);
 
                                 // Create an instance of class SchemaTypeAttribute based on json file
-                                SchemaTypeAttribute attributeType = new SchemaTypeAttribute(attrName, required, creatable, updateable, multivalued, dataType, returnedByDefault);
+                                SchemaTypeAttribute attributeType = new SchemaTypeAttribute(attrName, required, creatable, updateable, multivalued, dataType, returnedByDefault, readable);
                                 attributes.add(attributeType);
                             }
                         }

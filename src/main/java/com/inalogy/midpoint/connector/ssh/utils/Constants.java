@@ -25,4 +25,13 @@ public class Constants {
      * How often SshClient send keep alive packet
      */
     public static final int SSH_CLIENT_KEEP_ALIVE_INTERVAL = 15;
+
+    public static final String ATTR_DETAILS_CREATABLE = "creatable";
+    public static final String ATTR_DETAILS_UPDATEABLE = "updateable";
+    public static final String ATTR_DETAILS_READABLE = "readable";
+    public static final String ATTR_DETAILS_MULTIVALUED = "multivalued";
+    public static final String ATTR_DETAILS_DATA_TYPE = "dataType";
+    public static final String ATTR_DETAILS_REQUIRED = "required";
+    public static final String ATTR_DETAILS_RETURNED_BY_DEFAULT = "returnedByDefault";
+
 }
