@@ -108,38 +108,27 @@ public class CommandProcessor {
         ConnectorSettings passwordConfiguration = this.dynamicConfiguration.getSettings().getConnectorSettings();
 
         for (Attribute attribute : attributes) {
-            List<Object> values = attribute.getValue();
-            boolean insertAttribute = true;
+                List<Object> values = attribute.getValue();
 
-            if(values == null) {
-                switch (configuration.getHandleNullValues()) {
-                    case SshConfiguration.HANDLE_NULL_AS_EMPTY_STRING:
-                        values = Stream.of("").collect(Collectors.toList());
-                        break;
-                    case SshConfiguration.HANDLE_NULL_AS_GONE:
-                        insertAttribute = false;
-                        break;
-                    default:
-                        throw new ConfigurationException("Unknown value of handleNullValues: " + configuration.getHandleNullValues());
-                }
+            if(values.isEmpty()) {
+                //if midpoint sends replace attr with null we need to set corresponding constant that need to be handled by the remote script
+                values.add(this.dynamicConfiguration.getScriptEmptyAttribute());
             }
 
-            if(insertAttribute) {
-                commandLineBuilder.append(" ");
-                // check for special attributes
-                String attributeName  = transformSpecialAttributes(attribute.getName());
-                // impossible to map same attribute from midpoint to script
-                commandLineBuilder.append(paramPrefix).append(attributeName);
-                commandLineBuilder.append(" ");
-                for (Object value : values) {
-                    if (passwordConfiguration.getIcfsPasswordFlagEquivalent().isEnabled() && attributeName.equals(passwordConfiguration.getIcfsPasswordFlagEquivalent().getValue())){
-                        value = passwordAccessor((GuardedString) value);
-                    }
-                    commandLineBuilder.append(quoteDouble(value)).append(",");
+            commandLineBuilder.append(" ");
+            // check for special attributes
+            String attributeName  = transformSpecialAttributes(attribute.getName());
+            // impossible to map same attribute from midpoint to script
+            commandLineBuilder.append(paramPrefix).append(attributeName);
+            commandLineBuilder.append(" ");
+            for (Object value : values) {
+                if (passwordConfiguration.getIcfsPasswordFlagEquivalent().isEnabled() && attributeName.equals(passwordConfiguration.getIcfsPasswordFlagEquivalent().getValue())){
+                    value = passwordAccessor((GuardedString) value);
                 }
-                // delete the last "," at the end
-                commandLineBuilder.deleteCharAt(commandLineBuilder.length() - 1);
+                commandLineBuilder.append(quoteDouble(value)).append(",");
             }
+            // delete the last "," at the end
+            commandLineBuilder.deleteCharAt(commandLineBuilder.length() - 1);
         }
 
         return commandLineBuilder.toString();

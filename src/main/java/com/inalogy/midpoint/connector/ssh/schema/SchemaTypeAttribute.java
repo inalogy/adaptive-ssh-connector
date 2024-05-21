@@ -18,9 +18,9 @@ public class SchemaTypeAttribute {
     private final boolean multivalued;
     private final Class<?> dataType;
     private final boolean returnedByDefault;
+    private final boolean readable;
 
-
-    protected SchemaTypeAttribute(String attrName, boolean required, boolean creatable, boolean updateable, boolean multivalued, String dataType, boolean returnedByDefault){
+    protected SchemaTypeAttribute(String attrName, boolean required, boolean creatable, boolean updateable, boolean multivalued, String dataType, boolean returnedByDefault, boolean readable){
         this.attributeName = attrName;
         this.required = required;
         this.creatable = creatable;
@@ -28,7 +28,7 @@ public class SchemaTypeAttribute {
         this.multivalued = multivalued;
         this.dataType = defineDataType(dataType);
         this.returnedByDefault = returnedByDefault;
-
+        this.readable = readable;
     }
     public boolean isRequired() {
         return required;
@@ -55,6 +55,7 @@ public class SchemaTypeAttribute {
     }
 
     public boolean isReturnedByDefault(){return returnedByDefault;}
+    public boolean isReadable(){return readable;}
     private Class<?> defineDataType(String dataType){
         switch (dataType.toLowerCase()) {
             case "string":
