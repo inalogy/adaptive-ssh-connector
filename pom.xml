@@ -74,11 +74,6 @@
             <version>${org.testing.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jul-to-slf4j</artifactId>
-            <version>2.0.6</version>
-        </dependency>
-        <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>${org.jetbrains.version}</version>
@@ -177,7 +172,7 @@
                     <descriptors>
                         <descriptor>${assembly.path}</descriptor>
                     </descriptors>
-                    <finalName>${project.artifactId}-connector-${project.version}</finalName>
+                    <finalName>connector-adaptive-${project.artifactId}-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
