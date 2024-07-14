@@ -6,12 +6,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.regex.Pattern;
 
+import com.inalogy.midpoint.connector.ssh.exceptions.InvalidCreateScriptOutputException;
+import com.inalogy.midpoint.connector.ssh.exceptions.NoCreateScriptResponseException;
 import com.inalogy.midpoint.connector.ssh.schema.SchemaType;
 import com.inalogy.midpoint.connector.ssh.schema.SchemaTypeAttribute;
 import com.inalogy.midpoint.connector.ssh.utils.dynamicconfig.DynamicConfiguration;
 
 import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.exceptions.AlreadyExistsException;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
+import org.identityconnectors.framework.common.exceptions.UnknownUidException;
 import org.identityconnectors.framework.common.objects.Uid;
 
 /**
@@ -140,6 +144,7 @@ public class SshResponseHandler {
      * The Uid is extracted from the parsed attributes in the raw response.
      */
     public Uid parseCreateOperation() {
+        handleCreateOperationErrors();
         String RESPONSE_COLUMN_SEPARATOR = this.dynamicConfiguration.getSettings().getScriptResponseSettings().getResponseColumnSeparator();
         String[] lines = this.rawResponse.split(this.dynamicConfiguration.getSettings().getScriptResponseSettings().getResponseNewLineSeparator());
 
@@ -171,6 +176,23 @@ public class SshResponseHandler {
         else {
             LOG.error("Fatal Error: Cannot find: " + this.schemaType.getIcfsUid() + " " + this.schemaType.getIcfsName());
             throw new ConnectorException("Fatal Error: Cannot find: " + this.schemaType.getIcfsUid() + " " + this.schemaType.getIcfsName());
+        }
+    }
+
+    private void handleCreateOperationErrors(){
+        String ALREADY_EXISTS_ERROR_RESPONSE = this.dynamicConfiguration.getSettings().getCreateOperationSettings().getAlreadyExistsErrorParameter();
+        String OBJECT_NOT_FOUND_ERROR_RESPONSE = this.dynamicConfiguration.getSettings().getUpdateOperationSettings().getUnknownUidException();
+
+        if (this.rawResponse.contains(ALREADY_EXISTS_ERROR_RESPONSE)){
+            throw new AlreadyExistsException(this.rawResponse);
+        } else if (this.rawResponse.contains(OBJECT_NOT_FOUND_ERROR_RESPONSE)) {
+            throw new UnknownUidException(this.rawResponse);
+        }
+        if (this.rawResponse.isEmpty()){
+            throw new NoCreateScriptResponseException();
+        }
+        if (!this.rawResponse.contains(this.schemaType.getIcfsName()) || !this.rawResponse.contains(this.schemaType.getIcfsUid())){
+            throw new InvalidCreateScriptOutputException(this.rawResponse);
         }
     }
 }

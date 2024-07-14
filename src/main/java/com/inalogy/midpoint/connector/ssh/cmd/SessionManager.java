@@ -85,7 +85,6 @@ public class SessionManager {
                 LOG.error("-- command exitStatus: {0}", cmd.getExitStatus());
                 LOG.error("-- command exitSignal: {0}", cmd.getExitSignal());
                 LOG.error("--------------------------------------");
-                handleErrors(error);
                 throw new ConnectorException("Error executing SSH command: " + error);
             }
         } catch (IOException e) {
@@ -100,7 +99,6 @@ public class SessionManager {
 
         LOG.ok("SSH command exit status: {0}", cmd.getExitStatus());
         closeSession();
-        handleErrors(output);
         return output;
     }
 
@@ -136,17 +134,6 @@ public class SessionManager {
         }
     }
 
-    public void handleErrors(String rawOutput){
-        String ALREADY_EXISTS_ERROR_RESPONSE = this.dynamicConfiguration.getSettings().getCreateOperationSettings().getAlreadyExistsErrorParameter();
-        String OBJECT_NOT_FOUND_ERROR_RESPONSE = this.dynamicConfiguration.getSettings().getUpdateOperationSettings().getUnknownUidException();
-
-        if (rawOutput.contains(ALREADY_EXISTS_ERROR_RESPONSE)){
-            throw new AlreadyExistsException(rawOutput);
-        } else if (rawOutput.contains(OBJECT_NOT_FOUND_ERROR_RESPONSE)) {
-            throw new UnknownUidException(rawOutput);
-        }
-
-    }
 
     public boolean isConnectionAlive(){
         return ssh != null && ssh.isConnected();
