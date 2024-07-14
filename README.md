@@ -14,7 +14,7 @@
   ### ssh-connector
   Standalone SSH Connector for midPoint IDM customised for Microsoft Exchange provisioning
 
-version 0.1.0.1
+version 1.1.0
 # Capabilities and Features
 
 - Schema: YES - dynamic

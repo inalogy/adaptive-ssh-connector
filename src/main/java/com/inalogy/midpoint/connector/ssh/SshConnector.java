@@ -138,12 +138,18 @@ public class SshConnector implements
             LOG.error("Unsupported ObjectClass: " + objectClass);
             throw new IllegalArgumentException("Unsupported ObjectClass: " + objectClass);
         }
-        if (query != null && query.byUid != null){
-            //build single object query byUid and create corresponding shell command
+        if (query != null && (query.byUid != null || query.byName != null)){
+            //build single object query byUid or byName and create corresponding shell command
             String NO_RESULT_OPERATION_SUCCESS = this.dynamicConfiguration.getSettings().getSearchOperationSettings().getNoResultSuccessMessage();
             Set<Attribute> queryAttribute = new HashSet<>();
-            Attribute attribute = AttributeBuilder.build(schemaType.getIcfsUid(), query.byUid);
-            queryAttribute.add(attribute);
+            Attribute attribute;
+            if (query.byUid != null) {
+                attribute = AttributeBuilder.build(schemaType.getIcfsUid(), query.byUid);
+                queryAttribute.add(attribute);
+            } else if (query.byName != null) {
+                attribute = AttributeBuilder.build(schemaType.getIcfsName(), query.byName);
+                queryAttribute.add(attribute);
+            }
 
             String sshRawResponse = commandProcessor.processAndExecuteCommand(queryAttribute, Constants.SEARCH_OPERATION, schemaType);
             if (sshRawResponse.equals(NO_RESULT_OPERATION_SUCCESS)){
