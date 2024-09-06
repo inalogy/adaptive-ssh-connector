@@ -19,6 +19,7 @@ import com.inalogy.midpoint.connector.ssh.utils.SshResponseHandler;
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
+import org.identityconnectors.framework.common.exceptions.UnknownUidException;
 import org.identityconnectors.framework.common.objects.*;
 import org.identityconnectors.framework.common.objects.filter.FilterTranslator;
 import org.identityconnectors.framework.spi.Configuration;
@@ -140,7 +141,7 @@ public class SshConnector implements
         }
         if (query != null && (query.byUid != null || query.byName != null)){
             //build single object query byUid or byName and create corresponding shell command
-            String NO_RESULT_OPERATION_SUCCESS = this.dynamicConfiguration.getSettings().getSearchOperationSettings().getNoResultSuccessMessage();
+            String unknownUidFlag = this.dynamicConfiguration.getSettings().getUpdateOperationSettings().getUnknownUidException();
             Set<Attribute> queryAttribute = new HashSet<>();
             Attribute attribute;
             if (query.byUid != null) {
@@ -152,10 +153,10 @@ public class SshConnector implements
             }
 
             String sshRawResponse = commandProcessor.processAndExecuteCommand(queryAttribute, Constants.SEARCH_OPERATION, schemaType);
-            if (sshRawResponse.equals(NO_RESULT_OPERATION_SUCCESS)){
-                //handle situation if no objects are present
-                return;
+            if (sshRawResponse.equals(unknownUidFlag)){
+                throw new UnknownUidException(sshRawResponse);
             }
+
             Set<Map<String, String>> parsedResponse = new SshResponseHandler(schemaType, sshRawResponse, this.dynamicConfiguration).parseSearchOperation();
             Map<String, String> singleLine = parsedResponse.iterator().next(); // search result for single user/object should always return single object
             ConnectorObject connectorObject = UniversalObjectsHandler.convertObjectToConnectorObject(schemaType, singleLine, this.dynamicConfiguration);
@@ -164,6 +165,12 @@ public class SshConnector implements
         }
         else {
             String sshRawResponse = commandProcessor.processAndExecuteCommand(null, Constants.SEARCH_OPERATION, schemaType);
+            String NO_RESULT_OPERATION_SUCCESS = this.dynamicConfiguration.getSettings().getSearchOperationSettings().getNoResultSuccessMessage();
+            if (sshRawResponse.equals(NO_RESULT_OPERATION_SUCCESS)){
+                //handles situation if no objects are present
+                return;
+            }
+
             Set<Map<String, String>> parsedResponse  = new SshResponseHandler(schemaType, sshRawResponse, this.dynamicConfiguration).parseSearchOperation();
             for (Map<String, String> parsedResponseLine: parsedResponse){
                 ConnectorObject connectorObject = UniversalObjectsHandler.convertObjectToConnectorObject(schemaType, parsedResponseLine, this.dynamicConfiguration);
@@ -198,6 +205,7 @@ public class SshConnector implements
         LOG.ok("objectClass : {0} uid: {1} modifications: {2} operationOptions: {3}", objectClass, uid.getValue(), modifications, options);
         getSchemaHandler();
         SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
+        String emptyValue = this.dynamicConfiguration.getSettings().getScriptResponseSettings().getScriptEmptyAttribute();
         Set<Attribute> attributeSet = new HashSet<>();
         Attribute icfsAttribute = AttributeBuilder.build(schemaType.getIcfsUid(), uid.getValue());
         attributeSet.add(icfsAttribute);
@@ -212,6 +220,9 @@ public class SshConnector implements
                 //handle replace single value
                 if (attributeDelta.getValuesToReplace() != null){
                     for (Object value: attributeDelta.getValuesToReplace()){
+                        if (value == null){
+                            value = emptyValue;
+                        }
                         Attribute attribute = AttributeBuilder.build(attributeDelta.getName(), value);
                         attributeSet.add(attribute);
                     }

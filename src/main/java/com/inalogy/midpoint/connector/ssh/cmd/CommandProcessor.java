@@ -3,8 +3,6 @@ package com.inalogy.midpoint.connector.ssh.cmd;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.inalogy.midpoint.connector.ssh.SshConfiguration;
 import com.inalogy.midpoint.connector.ssh.utils.dynamicconfig.ConnectorSettings;
@@ -163,18 +161,13 @@ public class CommandProcessor {
     }
 
     /**
-     * Transform __NAME__ || __PASSWORD__ || __UID__ sent by midpoint to corresponding flags that are defined in resource configuration
-     * @param specialAttribute __NAME__ || __PASSWORD__
+     * Transform __PASSWORD__ sent by midpoint to corresponding flags that are defined in resource configuration
+     * @param specialAttribute  __PASSWORD__
      * @return corresponding flag from resource configuration e.g. __NAME__ -> name
      */
     private String transformSpecialAttributes(String specialAttribute) {
         ConnectorSettings connectorSettings = this.dynamicConfiguration.getSettings().getConnectorSettings();
-
-        if (connectorSettings.getIcfsNameFlagEquivalent().isEnabled() && specialAttribute.equals(Constants.SPECIAL_CONNID_NAME)) {
-            return connectorSettings.getIcfsNameFlagEquivalent().getValue();
-        } else if (connectorSettings.getIcfsUidFlagEquivalent().isEnabled() && specialAttribute.equals(Constants.SPECIAL_CONNID_UID)) {
-            return connectorSettings.getIcfsUidFlagEquivalent().getValue();
-        } else if (connectorSettings.getIcfsPasswordFlagEquivalent().isEnabled() && specialAttribute.equals(Constants.SPECIAL_CONNID_PASSWORD)) {
+         if (connectorSettings.getIcfsPasswordFlagEquivalent().isEnabled() && specialAttribute.equals(Constants.SPECIAL_CONNID_PASSWORD)) {
             return connectorSettings.getIcfsPasswordFlagEquivalent().getValue();
         }
 
