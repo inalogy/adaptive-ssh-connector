@@ -125,7 +125,6 @@ public class SshResponseHandler {
      * @return null if updateOperation or deleteOperation was successful otherwise return error message
      */
     public String HandleUpdateOrDeleteResponse() {
-        handleUnknownUidError();
         String UPDATE_SUCCESS_RESPONSE = this.dynamicConfiguration.getSettings().getUpdateOperationSettings().getUpdateSuccessResponse();
         if (this.rawResponse.equals(UPDATE_SUCCESS_RESPONSE)){
             return null;
@@ -180,19 +179,14 @@ public class SshResponseHandler {
         }
     }
 
-    private void handleUnknownUidError(){
-        String OBJECT_NOT_FOUND_ERROR_RESPONSE = this.dynamicConfiguration.getSettings().getUpdateOperationSettings().getUnknownUidException();
-        if (this.rawResponse.contains(OBJECT_NOT_FOUND_ERROR_RESPONSE)) {
-            throw new UnknownUidException(this.rawResponse);
-        }
-    }
-
     private void handleCreateOperationErrors(){
-        handleUnknownUidError();
         String ALREADY_EXISTS_ERROR_RESPONSE = this.dynamicConfiguration.getSettings().getCreateOperationSettings().getAlreadyExistsErrorParameter();
+        String OBJECT_NOT_FOUND_ERROR_RESPONSE = this.dynamicConfiguration.getSettings().getUpdateOperationSettings().getUnknownUidException();
 
         if (this.rawResponse.contains(ALREADY_EXISTS_ERROR_RESPONSE)){
             throw new AlreadyExistsException(this.rawResponse);
+        } else if (this.rawResponse.contains(OBJECT_NOT_FOUND_ERROR_RESPONSE)) {
+            throw new UnknownUidException(this.rawResponse);
         }
         if (this.rawResponse.isEmpty()){
             throw new NoCreateScriptResponseException();

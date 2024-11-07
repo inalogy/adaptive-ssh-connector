@@ -22,6 +22,16 @@
       "icfsPasswordFlagEquivalent": {
         "enabled": false,
         "value": "password"
+      },
+
+      "icfsUidFlagEquivalent": {
+        "enabled": false,
+        "value": ""
+      },
+
+      "icfsNameFlagEquivalent": {
+        "enabled": true,
+        "value": "name"
       }
     },
 
