@@ -15,6 +15,7 @@ import com.inalogy.midpoint.connector.ssh.utils.dynamicconfig.DynamicConfigurati
 import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.AlreadyExistsException;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
+import org.identityconnectors.framework.common.exceptions.InvalidAttributeValueException;
 import org.identityconnectors.framework.common.exceptions.UnknownUidException;
 import org.identityconnectors.framework.common.objects.Uid;
 
@@ -56,7 +57,7 @@ public class SshResponseHandler {
         // read first line that always contains attr names
         String[] attributeNames = lines[0].split(Pattern.quote(RESPONSE_COLUMN_SEPARATOR));
         for (int i = 1; i <lines.length; i++) {
-            String[] attributeValues = lines[i].split(Pattern.quote(RESPONSE_COLUMN_SEPARATOR));
+            String[] attributeValues = lines[i].split(Pattern.quote(RESPONSE_COLUMN_SEPARATOR), -1);
             Map<String,String> validAttributes = parseAttributes(attributeNames, attributeValues);
             parsedResult.add(validAttributes);
 
@@ -117,6 +118,12 @@ public class SshResponseHandler {
                     "Possible cause: Bad script design, empty attributes should be defined as: " + RESPONSE_EMPTY_ATTRIBUTE_SYMBOL);
             throw new ConnectorException("the number of attribute names does not match the number of attribute values.");
         }
+        //validate if icfsUid and name are not empty strings
+        if (validAttributes.get("icfsName").isEmpty() || validAttributes.get("icfsUid").isEmpty()){
+            LOG.error("Parsing Search Result returned empty icfsName or icfsUid, please validate scripts");
+            throw new InvalidAttributeValueException("Parsing Search Result returned empty icfsName or icfsUid, please validate scripts");
+        }
+
         return validAttributes;
     }
 
