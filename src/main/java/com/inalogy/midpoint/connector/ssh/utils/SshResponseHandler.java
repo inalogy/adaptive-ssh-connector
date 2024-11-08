@@ -102,8 +102,8 @@ public class SshResponseHandler {
                     if(schemaType.getAttributes() !=null) {
                         for (SchemaTypeAttribute sta : this.schemaType.getAttributes()) {
                             if (sta.getAttributeName().equals(attributeName)) {
-                                if (attributeValue.equals(RESPONSE_EMPTY_ATTRIBUTE_SYMBOL)) {
-                                    validAttributes.put(attributeName, "");
+                                if (attributeValue.equals(RESPONSE_EMPTY_ATTRIBUTE_SYMBOL) || attributeValue.isEmpty()) {
+                                    validAttributes.put(attributeName, null);
                                     break;
                                 }
                                 validAttributes.put(attributeName, attributeValue);
