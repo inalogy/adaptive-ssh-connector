@@ -133,11 +133,11 @@ public class SshResponseHandler {
      */
     public String HandleUpdateOrDeleteResponse() {
         String UPDATE_SUCCESS_RESPONSE = this.dynamicConfiguration.getSettings().getUpdateOperationSettings().getUpdateSuccessResponse();
+        String DELETE_SUCCESS_RESPONSE = this.dynamicConfiguration.getSettings().getDeleteOperationSettings().getDeleteSuccessResponse();
         if (this.rawResponse.equals(UPDATE_SUCCESS_RESPONSE)){
             return null;
         }
-        // FIXME: make distinction between update and deleteOp
-        else if (this.rawResponse.equals(UPDATE_SUCCESS_RESPONSE)){
+        else if (this.rawResponse.equals(DELETE_SUCCESS_RESPONSE)){
             return null;
         }
         return this.rawResponse;
