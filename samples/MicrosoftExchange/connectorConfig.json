@@ -1,22 +1,22 @@
 {
-  "configName": "Configuration for Microsoft Exchange v1.0",
+  "configName": "Configuration for Microsoft Exchange v1.1.0",
   "settings": {
 
     "scriptResponseSettings": {
       "scriptEmptyAttribute": "null",
       "multiValuedAttributeSeparator": "~",
       "responseNewLineSeparator": "\n",
-      "responseColumnSeparator": "|"
+      "responseColumnSeparator": "||"
     },
 
     "connectorSettings": {
       "replaceWhiteSpaceCharacterInAttributeValues": {
         "enabled": false,
-        "value": "~"
+        "value": "---"
       },
       "addSudoExecution": {
         "enabled": false,
-        "value": ""
+        "value": "sudo"
       },
 
       "icfsPasswordFlagEquivalent": {

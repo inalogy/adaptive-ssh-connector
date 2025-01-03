@@ -147,7 +147,7 @@ public class UniversalObjectsHandler {
     /**
      * Process the provided attributeDelta to prepare for an SSH request.
      * Extracts all values from the attributeDelta, formats them for compatibility with
-     * the remote script using {@link Constants#MICROSOFT_EXCHANGE_ADD_UPDATEDELTA} or {@link Constants#MICROSOFT_EXCHANGE_REMOVE_UPDATEDELTA},
+     * the remote script using Constants defined in connectorConfig.json,
      * and adds them to ArrayList, finally, it executes SSH request.
      * @param attributeDelta of currently processed modification
      */

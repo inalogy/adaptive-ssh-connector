@@ -1,7 +1,7 @@
 #!/bin/csh
 
 # example: csh /home/svc-midpoint/deleteScript.sh -uid "5001"
-#FIXME: ONLY FOR TESTING PURPOSES DO NOT USE IN PRODUCTION
+
 # Get UID from the command-line arguments
 set uid = "$argv[2]"
 

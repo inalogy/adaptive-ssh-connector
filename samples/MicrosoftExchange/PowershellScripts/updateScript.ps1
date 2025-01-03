@@ -22,10 +22,7 @@ if($EmailAddresses){
 
 # Loop through the operations
 foreach($operation in $operations){
-    # Get the current mailbox
     $mailbox = Get-Mailbox -Identity $ExchangeGuid
-    #Write-Host "operation"
-
     # Split each operation into action (ADD or REMOVE) and emailaddress
     $action, $emailaddress = $operation -split ':', 2
 
