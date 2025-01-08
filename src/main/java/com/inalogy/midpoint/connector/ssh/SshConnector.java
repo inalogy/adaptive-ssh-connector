@@ -106,7 +106,7 @@ public class SshConnector implements
             LOG.ok("Creating universalSchemaHandler schemaConfigFilePath:" + this.configuration.getSchemaFilePath());
 
         }
-        else if (schema != null && currentFileSha256 != null && !schema.getFileSha256().equals(currentFileSha256)){
+        else if (currentFileSha256 != null && !schema.getFileSha256().equals(currentFileSha256)){
             // if sha256 of schemaFile is unchanged we don't need to fetch it again
             LOG.ok("Change in schemaConfigFile detected");
             SshConnector.schema = new UniversalSchemaHandler(this.configuration.getSchemaFilePath());
