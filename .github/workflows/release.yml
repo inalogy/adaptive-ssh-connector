@@ -25,7 +25,7 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'oracle'
       - name: Build project # This would actually build your project, using zip for an example artifact
         run: mvn --batch-mode clean install -DskipTests=true
@@ -33,7 +33,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Ssh Connector
-          path: ./target/connector-adaptive-ssh-1.0.0.jar
+          path: ./target/connector-adaptive-ssh-1.2.0.jar
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -52,6 +52,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ./target/connector-adaptive-ssh-1.0.0.jar
-          asset_name: connector-adaptive-ssh-1.0.0.jar
+          asset_path: ./target/connector-adaptive-ssh-1.2.0.jar
+          asset_name: connector-adaptive-ssh-1.2.0.jar
           asset_content_type: application/java-archive
