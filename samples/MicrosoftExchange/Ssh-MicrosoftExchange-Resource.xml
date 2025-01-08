@@ -46,18 +46,30 @@
             <attribute>
                 <ref>icfs:name</ref>
                 <displayName>Name</displayName>
-                <inbound>
+                <outbound>
                     <strength>strong</strength>
-                    <target>
+                    <source>
                         <path>name</path>
-                    </target>
-                </inbound>
-                <inbound>
-                    <target>
-                        <path>emailAddress</path>
-                    </target>
-                </inbound>
+                    </source>
+                </outbound>
             </attribute>
+            <attribute>
+                <ref>ri:email</ref>
+                <displayName>Email Address</displayName>
+                <outbound>
+                    <strength>strong</strength>
+                    <source>
+                        <path>emailAddress</path>
+                    </source>
+                </outbound>
+            </attribute>
+            <credentials>
+                <password>
+                    <outbound>
+                        <strength>normal</strength>
+                    </outbound>
+                </password>
+            </credentials>
             <correlation>
                 <correlators>
                     <filter>
