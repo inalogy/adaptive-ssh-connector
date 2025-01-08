@@ -11,7 +11,6 @@ import java.io.IOException;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class DynamicConfiguration {
-    //FIXME: Implement hash checking of dynamicConfiguration file
 
     private static final Log LOG = Log.getLog(DynamicConfiguration.class);
     // Static instance of the class

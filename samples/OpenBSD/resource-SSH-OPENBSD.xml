@@ -10,7 +10,6 @@
 
     <name>OpenBSD</name>
 
-    <description>Resource OpenBSD umožňuje vzdialenú správu používateľov a skupín v systéme OpenBSD prostredníctvom SSH. Poskytuje funkcie na vytváranie, aktualizáciu a správu používateľských účtov vrátane pridávania používateľov do špecifických skupín.</description>
     <lifecycleState>active</lifecycleState>
     <connectorRef relation="org:default" type="c:ConnectorType">
 
@@ -25,12 +24,12 @@
     </connectorRef>
     <connectorConfiguration xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3">
         <icfc:configurationProperties xmlns:gen629="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/com.inalogy.midpoint.connector.ssh/com.inalogy.midpoint.connector.ssh.SshConnector">
-            <gen629:host>10.30.0.31</gen629:host>
+            <gen629:host>10.20.0.99</gen629:host>
             <gen629:schemaFilePath>/opt/midpoint/var/ssh-schema/schemaConfig.json</gen629:schemaFilePath>
             <gen629:dynamicConfigurationFilePath>/opt/midpoint/var/ssh-schema/connectorConfig.json</gen629:dynamicConfigurationFilePath>
             <gen629:shellType>cshell</gen629:shellType>
             <gen629:port>22</gen629:port>
-            <gen629:username>svc-midpoint</gen629:username>
+            <gen629:username>svc-mp</gen629:username>
             <gen629:password>
                 <t:clearValue></t:clearValue>
             </gen629:password>
@@ -41,8 +40,6 @@
         <objectType>
             <displayName>User</displayName>
 
-            <description>Objektová trieda reprezentuje používateľa v systéme OpenBSD, ktorý je spravovaný cez konektor pripojený cez SSH.</description>
-            <documentation>Táto objektová trieda je špecifická pre reprezentáciu používateľov v OpenBSD, a je použitá na identifikáciu a manipuláciu účtov.</documentation>
             <intent>user</intent>
             <kind>account</kind>
             <default>true</default>
@@ -55,18 +52,6 @@
 
             <attribute>
                 <ref>ri:type</ref>
-
-                <description>Atribút, ktorý reprezentuje typ účtu</description>
-                <documentation>Toto mapovanie definuje typ používateľa, buď ako "staff" alebo "student". V závislosti od splnenej podmienky priradí príslušnú hodnotu. Toto mapovanie sa používa iba pri operácii createOp.</documentation>
-
-                <limitations>
-                    <layer>presentation</layer>
-                    <access>
-                        <read>false</read>
-                        <add>false</add>
-                        <modify>false</modify>
-                    </access>
-                </limitations>
                 <outbound>
                     <strength>weak</strength>
                     <expression>
@@ -75,7 +60,6 @@
                     <condition>
                         <script>
                             <code>
-                                //hack determinate if shadow exists if not send initial mappings
                                 if (shadow?.oid){
                                 return false
                                 }
@@ -94,7 +78,7 @@
                         <path>name</path>
                     </source>
                 </outbound>
-            </attribute>3
+            </attribute>
 
             <attribute>
                 <ref>ri:login</ref>
@@ -106,56 +90,13 @@
             </attribute>
 
             <attribute>
-                <ref>ri:password</ref>
-                <limitations>
-                    <layer>presentation</layer>
-                    <access>
-                        <read>false</read>
-                        <add>false</add>
-                        <modify>false</modify>
-                    </access>
-                </limitations>
-                <outbound>
-                    <strength>weak</strength>
-                    <expression>
-                        <value>xxx</value>
-                    </expression>
-                    <condition>
-                        <script>
-                            <code>
-                                //hack determinate if shadow exists if not send initial mappings
-                                if (shadow?.oid){
-                                return false
-                                }
-                                return true
-                            </code>
-                        </script>
-                    </condition>
-                </outbound>
-            </attribute>
-
-
-            <attribute>
                 <ref>ri:fullName</ref>
                 <outbound>
                     <source>
-                        <path>givenName</path>
+                        <path>fullName</path>
                     </source>
-                    <source>
-                        <path>familyName</path>
-                    </source>
-                    <expression>
-                        <script>
-                            <code>
-                                return givenName + " " + familyName
-                            </code>
-                        </script>
-                    </expression>
                 </outbound>
             </attribute>
-            <!--            <attribute>-->
-            <!--                <ref>ri:groups</ref>-->
-            <!--            </attribute>-->
             <activation>
                 <!-- weak existence -->
                 <existence>
