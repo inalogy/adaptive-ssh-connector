@@ -5,22 +5,22 @@
 3. [Dynamic Schema](#dynamic-schema)
 4. [Configuration](#configuration)
 5. [Script design](#script-design)
-6. [Customisation](#customisation)
+6. [Dynamic Connector Configuration](#dynamic-connector-configuration)
 7. [JavaDoc](#javadoc)
 8. [Build](#build)
 9. [TODO](#todo)
 10. [Special Thanks](#special-thanks)
 # Introduction
   ### ssh-connector
-  Standalone SSH Connector for midPoint IDM customised for Microsoft Exchange provisioning
+  Standalone Adaptive SSH Connector for midPoint IDM customised for Microsoft Exchange or any other shell like system.
 
-version 0.1.0.1
+version 1.2.0
 # Capabilities and Features
 
 - Schema: YES - dynamic
 - Provisioning: YES
 - Live Synchronization: No
-- Password: No
+- Password: YES
 - Activation: No
 - Script execution: No
 
@@ -38,7 +38,7 @@ More info: https://github.com/PowerShell/Win32-OpenSSH/wiki/DefaultShell
 - Schema is generated from schemaConfig.json
 - Schema File should be properly secured and protected with appropriate permissions
 - Schema supports arbitrary number of ObjectClasses and their attributes
-- **Any modifications of schemaFile need to be carefully planned and tested, before any modification of schemaFile resource should be put into maintenance mode.**
+- **Any modifications of schemaConfig.json or connectorConfig.json need to be carefully planned and tested, before any modification resource should be put into maintenance mode.**
 - script Paths containg white space need to be properly escaped 'with single quotes ' otherwise powershell reads them till first white space -> "C:\\Users\\**' PS Scripts'**\searchScript.ps1"
 - Every ObjectClass defined in schemaConfig.json must have the following parameters:
 ```
@@ -51,7 +51,7 @@ More info: https://github.com/PowerShell/Win32-OpenSSH/wiki/DefaultShell
       "deleteScript": "path\\to\'script folder'\\deleteScript.ps1",
       "searchScript": "path\\to\\'script folder'\\searchScript.ps1",
       "attributes": [
-        { // secondary attributes are optional
+        { 
           "anyAttribute": {
             "required": true,
             "creatable":true,
@@ -78,6 +78,7 @@ or
 UniqueIdentifier|AnyOtherAttributes
 ```
 
+<br>
 
 * if icfsName and icfsUid in schemaConfig.json point to same value, script should return only UniqueName followed by any other attributes defined in schema
 example:
@@ -132,25 +133,65 @@ example:
   - For single account/object Query searchOp needs UID also operation should always return all attributes that are defined in schema for particular object
 - ### Create Operation
   - createOp expects attributes provided by midpoint based on mappings in resource, CreateScript should return uniqueID|uniqueName or just uniqueId it depends on script and schemaConfig.json design
-  - for mapping special attributes from midpoint for example \_\_NAME\_\_ or \_\_PASSWORD\_\_ to target system need to be specified in Constants and mapped with name that corresponds with expected script input parameter
   - for createOp it is recommended to define Constant that should be present in response when objectAlreadyExists occurs
 
 - ### UpdateDelta operation
-  - updateDelta process attributes, and multivalued attributes which are formatted in a way that remote powershell script know how to handle them based on Constant Prefix ADD:somevalue,REMOVE:somevalue2
+  - updateDelta process attributes, and multivalued attributes which are formatted in a way that remote powershell/shell script know how to handle them based on Constant Prefix ADD:somevalue,REMOVE:somevalue2
   - Script is expected to return ""  if execution of script was successful any other output is considered as error message
   
 - ### Delete operation
-  - deleteOp expects Uid which is then passed into powershell script
+  - deleteOp expects Uid which is then passed into shell script
   - Script is expected to return "" if execution of script was successful any other output is considered as error message
   - for deleteOp it is recommended to define Constant that should be present in response when objectNotFound occurs
 
-## Customisation
-- Ssh Response column separator  and new line separator can be changed in class utils/Constants
-- Also, Ssh Response that define successful execution for updateDelta and DeleteOp are defined in utils/Constants -> default empty string
-- RESPONSE_COLUMN_SEPARATOR should never be equal to RESPONSE_NEW_LINE_SEPARATOR
+## Dynamic Connector Configuration
+#### Connector Configuration File: `connectorConfig.json`
+
+The `connectorConfig.json` file serves as a centralized, flexible configuration hub for the adaptive SSH connector. This file decouples logic and behavior from hardcoding, enabling easier customization and maintenance. Below is a detailed explanation of its structure:
+
+
+### 1. **scriptResponseSettings**
+Defines the formatting rules for processing responses from executed scripts:
+- **`scriptEmptyAttribute`**: Placeholder for empty attributes (default: `"null"`) also valid option is `""`.
+- **`multiValuedAttributeSeparator`**: Delimiter for multi-valued attributes.
+- **`responseNewLineSeparator`**: Separator for new lines in script responses.
+- **`responseColumnSeparator`**: Delimiter for columns in response output.
+
+### 2. **connectorSettings**
+Manages connector-specific behaviors and transformations:
+- **`replaceWhiteSpaceCharacterInAttributeValues`**: Replaces spaces in attribute values with a custom character if enabled. If used remote script must handle replacing them back to spaces.
+- **`addSudoExecution`**: Enables or customizes sudo command execution for operations.
+- **`icfsPasswordFlagEquivalent`**: Maps the ICF `Password` flag to a custom equivalent parameter.
+- **`icfsUidFlagEquivalent`**: Maps the ICF `UID` flag to a custom equivalent parameter.
+- **`icfsNameFlagEquivalent`**: Maps the ICF `Name` flag to a custom equivalent parameter.
+
+### 3. **createOperationSettings**
+Handles configuration for `CREATE` operations:
+- **`alreadyExistsErrorParameter`**: Expected error message when an object already exists.
+- **`successStatusMessage`**: Custom message for successful creation.
+
+### 4. **updateOperationSettings**
+Configures `UPDATE` operations:
+- **`unknownUidException`**: Exception to identify unknown UIDs during updates.
+- **`updateDeltaAddParameter`**: Prefix for addition operations (e.g., `ADD:`).
+- **`updateDeltaRemoveParameter`**: Prefix for removal operations (e.g., `REMOVE:`).
+- **`updateSuccessResponse`**: Custom response for successful updates.
+
+### 5. **deleteOperationSettings**
+Customizes `DELETE` operations:
+- **`deleteSuccessResponse`**: Custom message upon successful deletion.
+
+### 6. **searchOperationSettings**
+Adjusts `SEARCH` operation responses:
+- **`noResultSuccessMessage`**: Custom message when no search results are found.
+
+---
+
+This JSON-based configuration simplifies the customization of the connector's behavior, reducing the need for hardcoded logic.
+
 
 ## JavaDoc
-- JavaDoc can be generated locally by this command:
+- JavaDoc can be generated locally:
 ```bash
 mvn clean javadoc:javadoc
 ```
@@ -165,6 +206,7 @@ mvn clean install -DskipTests=True
 After successful build, you can find ssh-v1.0-connector.jar in target directory.
 
 ## TODO
+- Proper tests
 - Private/public key authentication
 - Response handler for different type of script output e.g. json
 - Feature that will optionally allow to store schema file within the connector jar
@@ -175,5 +217,7 @@ This project is inspired by and owes a debt of gratitude to the [Evolveum SSH Co
 
 # Status
 Tested only on Microsoft Windows server with powershell version 5.1.17763
+
+The scripts and configuration files included in this project are for informational purposes only. They must be perfectly tailored for specific environments.
 
 Ssh Connector is intended for production use. Tested with MidPoint version 4.6. The connector was introduced as a contribution to midPoint project by Inalogy and is not officially supported by Evolveum. If you need support, please contact info@inalogy.com.

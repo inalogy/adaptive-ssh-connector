@@ -110,7 +110,6 @@ public class AuthenticationManager {
 
     protected String getHostDesc() {
         if (hostDesc == null) {
-            // TODO: port
             hostDesc = configuration.getHost();
         }
         return hostDesc;

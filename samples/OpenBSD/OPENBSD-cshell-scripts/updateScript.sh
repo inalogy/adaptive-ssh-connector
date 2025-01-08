@@ -1,6 +1,6 @@
 #!/bin/csh
 
-# example: csh /home/svc-midpoint/updateScript.sh -uid "5001" -groups "ADD:group2","ADD:group3","REMOVE:unixgroup" -fullName "Blazej Hruskai"
+# example: csh /home/svc-midpoint/updateScript.sh -uid "5001" -groups "ADD:group2","ADD:group3","REMOVE:unixgroup" -fullName "Blazej~Hruskai"
 
 set uid = ""
 set fullName = ""
@@ -40,14 +40,6 @@ end
 # Finding username by UID
 set username = `awk -F: -v uid="$uid" '$3 == uid { print $1 }' /etc/passwd`
 
-#test
-#echo "groupsToRemove" $groupsToRemove
-#echo "groupsToAdd" $groupsToAdd
-#echo "fullName" $fullName
-#exit 1
-
-
-#
 ## Updating the groups
 if ("$groupsToRemove" != "") then
   set groupsToRemoveList = `echo $groupsToRemove | tr ' ' '\n'`

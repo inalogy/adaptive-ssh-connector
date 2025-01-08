@@ -6,6 +6,7 @@ import org.identityconnectors.common.security.GuardedString;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.Properties;
 
 public class TestProcessor {
@@ -36,6 +37,7 @@ public class TestProcessor {
     }
 
     private void initConfiguration() {
+        validateMandatoryAttributes();
         configuration = new SshConfiguration();
         configuration.setUsername(properties.getProperty("username"));
         configuration.setPassword(new GuardedString(properties.getProperty("password").toCharArray()));
@@ -46,12 +48,20 @@ public class TestProcessor {
         String relativeSchemaFilePath = properties.getProperty("schemaFilePath");
         String absoluteSchemaFilePath = System.getProperty("user.dir") + "/"+ relativeSchemaFilePath;
         configuration.setSchemaFilePath(absoluteSchemaFilePath);
-        configuration.setDynamicConfigurationFilePath("/Users/patrikrovnak/IdeaProjects/ssh-connector/samples/OpenBSD/connectorConfig.json");
+        String relativeConfigFilePath = properties.getProperty("dynamicConfigFilePath");
+        String absoluteConfigFilePath = System.getProperty("user.dir") + "/"+ relativeConfigFilePath;
+        configuration.setDynamicConfigurationFilePath(absoluteConfigFilePath);
         dynamicConfiguration.init(this.configuration.getDynamicConfigurationFilePath());
-        //init dynamicConfiguration aswell
-
     }
 
+    private void validateMandatoryAttributes(){
+        if (Objects.equals(properties.getProperty("username"), "")){
+            throw new RuntimeException("Username is mandatory for running tests, please fill it in test.properties, or use -DskipTests=true");
+        }
+        if (Objects.equals(properties.getProperty("password"), "")){
+            throw new RuntimeException("Password is mandatory for running tests, please fill it in test.properties, or use -DskipTests=true");
+        }
+    }
     private void initConnector() {
         connector = new SshConnector();
         connector.init(configuration);

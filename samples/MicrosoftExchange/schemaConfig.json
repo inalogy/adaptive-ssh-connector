@@ -4,10 +4,10 @@
       "icfsName": "UserPrincipalName",
       "icfsUid": "ExchangeGuid",
       "objectClass": "user",
-      "createScript": "C:\\Users\\inaadm\\Desktop\\createScript.ps1",
-      "updateScript": "C:\\Users\\inaadm\\Desktop\\updateScript.ps1",
-      "deleteScript": " C:\\Users\\inaadm\\Desktop\\deleteScript.ps1",
-      "searchScript": "C:\\Users\\inaadm\\Desktop\\searchScript.ps1",
+      "createScript": "C:\\Users\\inaadm\\ex\\usr\\createScript.ps1",
+      "updateScript": "C:\\Users\\inaadm\\ex\\usr\\updateScript.ps1",
+      "deleteScript": "C:\\Users\\inaadm\\ex\\usr\\deleteScript.ps1",
+      "searchScript": "C:\\Users\\inaadm\\ex\\usr\\searchScript.ps1",
       "attributes": [
         {
           "email": {
@@ -16,30 +16,48 @@
             "updateable": true,
             "dataType": "String",
             "multivalued": false,
-            "returnedByDefault": false,
+            "returnedByDefault": true,
             "readable": true
+          },
+          "emailAddresses": {
+            "required": false,
+            "creatable": false,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": true,
+            "returnedByDefault": true,
+            "readable": true
+          },
+          "password": {
+            "required": true,
+            "creatable": true,
+            "updateable": false,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": false,
+            "readable": false
           }
         }
       ]
     },
 
     {
-      "icfsName": "someGroupName",
-      "icfsUid": "1234",
+      "icfsName": "icfsName",
+      "icfsUid": "uid",
       "objectClass":  "group",
-      "createScript": "createScript.ps2",
-      "updateScript": "updateScript.ps3",
-      "deleteScript": "deleteScript.ps4",
-      "searchScript": "searchScript.ps5",
+      "createScript": "C:\\Users\\inaadm\\ex\\groups\\createScript.ps1",
+      "updateScript": "C:\\Users\\inaadm\\ex\\groups\\updateScript.ps1",
+      "deleteScript": "C:\\Users\\inaadm\\ex\\groups\\deleteScript.ps1",
+      "searchScript": "C:\\Users\\inaadm\\ex\\groups\\searchScript.ps1",
       "attributes":  [
         {
-          "groupName":{
+          "groupName": {
             "required": true,
             "creatable": true,
             "updateable": true,
             "multivalued": false,
             "dataType": "String",
-            "returnedByDefault": false,
+            "returnedByDefault": true,
             "readable": true
 
           },
@@ -49,21 +67,11 @@
             "updateable": true,
             "multivalued": true,
             "dataType": "String",
-            "returnedByDefault": false,
+            "returnedByDefault": true,
             "readable": true
           }
         }
       ]
-    },
-
-    {
-      "icfsName": "testName",
-      "icfsUid": "12345",
-      "objectClass":  "objectWithoutAttributes",
-      "createScript": "createScript.ps2",
-      "updateScript": "updateScript.ps3",
-      "deleteScript": "deleteScript.ps4",
-      "searchScript": "searchScript.ps5"
     }
   ]
 }

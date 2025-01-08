@@ -5,7 +5,7 @@
 )
 
 # example of powershell script for creating mailbox
-$columnsHeaderDefinition = "ExchangeGuid|UserPrincipalName"
+$columnsHeaderDefinition = "ExchangeGuid||UserPrincipalName"
 $commandsToImport = "New-Mailbox"
 
 $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ExchangeServerAddr -Authentication Kerberos
@@ -19,7 +19,7 @@ $mailboxName = $mailbox.UserPrincipalName
 $guid = $mailbox.ExchangeGuid
 
 Write-Host $columnsHeaderDefinition
-Write-Host "$guid|$mailboxName"
+Write-Host "$guid||$mailboxName"
 
 Remove-PSSession $Session > $null
 

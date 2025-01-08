@@ -1,5 +1,5 @@
 {
-  "configName": "Configuration for OPENBSD v0.1.0.3",
+  "configName": "Configuration for OPENBSD v1.1.0",
   "settings": {
 
     "scriptResponseSettings": {
@@ -12,7 +12,7 @@
     "connectorSettings": {
       "replaceWhiteSpaceCharacterInAttributeValues": {
         "enabled": true,
-        "value": "~"
+        "value": "---"
       },
       "addSudoExecution": {
         "enabled": false,
@@ -30,8 +30,8 @@
       },
 
       "icfsNameFlagEquivalent": {
-        "enabled": false,
-        "value": ""
+        "enabled": true,
+        "value": "name"
       }
     },
 

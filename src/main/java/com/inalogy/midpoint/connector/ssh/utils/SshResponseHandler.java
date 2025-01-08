@@ -6,12 +6,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.regex.Pattern;
 
+import com.inalogy.midpoint.connector.ssh.exceptions.InvalidCreateScriptOutputException;
+import com.inalogy.midpoint.connector.ssh.exceptions.NoCreateScriptResponseException;
 import com.inalogy.midpoint.connector.ssh.schema.SchemaType;
 import com.inalogy.midpoint.connector.ssh.schema.SchemaTypeAttribute;
 import com.inalogy.midpoint.connector.ssh.utils.dynamicconfig.DynamicConfiguration;
 
 import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.exceptions.AlreadyExistsException;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
+import org.identityconnectors.framework.common.exceptions.InvalidAttributeValueException;
+import org.identityconnectors.framework.common.exceptions.UnknownUidException;
 import org.identityconnectors.framework.common.objects.Uid;
 
 /**
@@ -52,7 +57,7 @@ public class SshResponseHandler {
         // read first line that always contains attr names
         String[] attributeNames = lines[0].split(Pattern.quote(RESPONSE_COLUMN_SEPARATOR));
         for (int i = 1; i <lines.length; i++) {
-            String[] attributeValues = lines[i].split(Pattern.quote(RESPONSE_COLUMN_SEPARATOR));
+            String[] attributeValues = lines[i].split(Pattern.quote(RESPONSE_COLUMN_SEPARATOR), -1);
             Map<String,String> validAttributes = parseAttributes(attributeNames, attributeValues);
             parsedResult.add(validAttributes);
 
@@ -97,8 +102,8 @@ public class SshResponseHandler {
                     if(schemaType.getAttributes() !=null) {
                         for (SchemaTypeAttribute sta : this.schemaType.getAttributes()) {
                             if (sta.getAttributeName().equals(attributeName)) {
-                                if (attributeValue.equals(RESPONSE_EMPTY_ATTRIBUTE_SYMBOL)) {
-                                    validAttributes.put(attributeName, "");
+                                if (attributeValue.equals(RESPONSE_EMPTY_ATTRIBUTE_SYMBOL) || attributeValue.isEmpty()) {
+                                    validAttributes.put(attributeName, null);
                                     break;
                                 }
                                 validAttributes.put(attributeName, attributeValue);
@@ -113,6 +118,12 @@ public class SshResponseHandler {
                     "Possible cause: Bad script design, empty attributes should be defined as: " + RESPONSE_EMPTY_ATTRIBUTE_SYMBOL);
             throw new ConnectorException("the number of attribute names does not match the number of attribute values.");
         }
+        //validate if icfsUid and name are not empty strings
+        if (validAttributes.get("icfsName").isEmpty() || validAttributes.get("icfsUid").isEmpty()){
+            LOG.error("Parsing Search Result returned empty icfsName or icfsUid, please validate scripts");
+            throw new InvalidAttributeValueException("Parsing Search Result returned empty icfsName or icfsUid, please validate scripts");
+        }
+
         return validAttributes;
     }
 
@@ -122,11 +133,11 @@ public class SshResponseHandler {
      */
     public String HandleUpdateOrDeleteResponse() {
         String UPDATE_SUCCESS_RESPONSE = this.dynamicConfiguration.getSettings().getUpdateOperationSettings().getUpdateSuccessResponse();
+        String DELETE_SUCCESS_RESPONSE = this.dynamicConfiguration.getSettings().getDeleteOperationSettings().getDeleteSuccessResponse();
         if (this.rawResponse.equals(UPDATE_SUCCESS_RESPONSE)){
             return null;
         }
-        // FIXME: make distinction between update and deleteOp
-        else if (this.rawResponse.equals(UPDATE_SUCCESS_RESPONSE)){
+        else if (this.rawResponse.equals(DELETE_SUCCESS_RESPONSE)){
             return null;
         }
         return this.rawResponse;
@@ -140,6 +151,7 @@ public class SshResponseHandler {
      * The Uid is extracted from the parsed attributes in the raw response.
      */
     public Uid parseCreateOperation() {
+        handleCreateOperationErrors();
         String RESPONSE_COLUMN_SEPARATOR = this.dynamicConfiguration.getSettings().getScriptResponseSettings().getResponseColumnSeparator();
         String[] lines = this.rawResponse.split(this.dynamicConfiguration.getSettings().getScriptResponseSettings().getResponseNewLineSeparator());
 
@@ -171,6 +183,23 @@ public class SshResponseHandler {
         else {
             LOG.error("Fatal Error: Cannot find: " + this.schemaType.getIcfsUid() + " " + this.schemaType.getIcfsName());
             throw new ConnectorException("Fatal Error: Cannot find: " + this.schemaType.getIcfsUid() + " " + this.schemaType.getIcfsName());
+        }
+    }
+
+    private void handleCreateOperationErrors(){
+        String ALREADY_EXISTS_ERROR_RESPONSE = this.dynamicConfiguration.getSettings().getCreateOperationSettings().getAlreadyExistsErrorParameter();
+        String OBJECT_NOT_FOUND_ERROR_RESPONSE = this.dynamicConfiguration.getSettings().getUpdateOperationSettings().getUnknownUidException();
+
+        if (this.rawResponse.contains(ALREADY_EXISTS_ERROR_RESPONSE)){
+            throw new AlreadyExistsException(this.rawResponse);
+        } else if (this.rawResponse.contains(OBJECT_NOT_FOUND_ERROR_RESPONSE)) {
+            throw new UnknownUidException(this.rawResponse);
+        }
+        if (this.rawResponse.isEmpty()){
+            throw new NoCreateScriptResponseException();
+        }
+        if (!this.rawResponse.contains(this.schemaType.getIcfsName()) || !this.rawResponse.contains(this.schemaType.getIcfsUid())){
+            throw new InvalidCreateScriptOutputException(this.rawResponse);
         }
     }
 }
