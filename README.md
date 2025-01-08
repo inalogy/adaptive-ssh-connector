@@ -14,13 +14,13 @@
   ### ssh-connector
   Standalone Adaptive SSH Connector for midPoint IDM customised for Microsoft Exchange or any other shell like system.
 
-version 1.1.0
+version 1.2.0
 # Capabilities and Features
 
 - Schema: YES - dynamic
 - Provisioning: YES
 - Live Synchronization: No
-- Password: No
+- Password: YES
 - Activation: No
 - Script execution: No
 
@@ -206,6 +206,7 @@ mvn clean install -DskipTests=True
 After successful build, you can find ssh-v1.0-connector.jar in target directory.
 
 ## TODO
+- Proper tests
 - Private/public key authentication
 - Response handler for different type of script output e.g. json
 - Feature that will optionally allow to store schema file within the connector jar
@@ -216,5 +217,7 @@ This project is inspired by and owes a debt of gratitude to the [Evolveum SSH Co
 
 # Status
 Tested only on Microsoft Windows server with powershell version 5.1.17763
+
+The scripts and configuration files included in this project are for informational purposes only. They must be perfectly tailored for specific environments.
 
 Ssh Connector is intended for production use. Tested with MidPoint version 4.6. The connector was introduced as a contribution to midPoint project by Inalogy and is not officially supported by Evolveum. If you need support, please contact info@inalogy.com.
