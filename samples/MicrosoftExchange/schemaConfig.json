@@ -21,12 +21,21 @@
           },
           "emailAddresses": {
             "required": false,
-            "creatable": true,
+            "creatable": false,
             "updateable": true,
             "dataType": "String",
             "multivalued": true,
             "returnedByDefault": true,
             "readable": true
+          },
+          "password": {
+            "required": true,
+            "creatable": true,
+            "updateable": false,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": false,
+            "readable": false
           }
         }
       ]

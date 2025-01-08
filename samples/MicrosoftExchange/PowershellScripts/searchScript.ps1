@@ -3,7 +3,7 @@ param(
 
 # searchScript.ps1 must always return all attributes defined in schema for particular objectClass
 
-$columnsHeaderDefinition= "ExchangeGuid|UserPrincipalName|Email|EmailAddresses"
+$columnsHeaderDefinition= "ExchangeGuid||UserPrincipalName||Email||EmailAddresses"
 $commandsToImport= "Get-Mailbox"
 
 $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://ExchangeServerAddr -Authentication Kerberos
@@ -18,7 +18,7 @@ if ($ExchangeGuid){
         $mailboxUpn = $mailbox.UserPrincipalName
         $EmailAddresses = $mailbox.EmailAddresses
         Write-Host $columnsHeaderDefinition
-        Write-Host "$ExchangeGuid|$mailboxUpn|$email|$EmailAddresses"
+        Write-Host "$ExchangeGuid||$mailboxUpn||$email||$EmailAddresses"
     }
     else {
         Write-Host "Error mailBox notfound"
@@ -36,7 +36,7 @@ else {
         $EmailAddresses = $mailbox.EmailAddresses
         $mailboxUpn = $mailbox.UserPrincipalName
 
-        Write-Host "$guid|$mailboxUpn|$email|$EmailAddresses"
+        Write-Host "$guid||$mailboxUpn||$email||$EmailAddresses"
     }
 }
 
