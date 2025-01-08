@@ -1,0 +1,55 @@
+{
+  "configName": "Configuration for Microsoft Exchange v1.1.0",
+  "settings": {
+
+    "scriptResponseSettings": {
+      "scriptEmptyAttribute": "null",
+      "multiValuedAttributeSeparator": "~",
+      "responseNewLineSeparator": "\n",
+      "responseColumnSeparator": "||"
+    },
+
+    "connectorSettings": {
+      "replaceWhiteSpaceCharacterInAttributeValues": {
+        "enabled": false,
+        "value": "---"
+      },
+      "addSudoExecution": {
+        "enabled": false,
+        "value": "sudo"
+      },
+
+      "icfsPasswordFlagEquivalent": {
+        "enabled": false,
+        "value": "password"
+      },
+
+      "icfsUidFlagEquivalent": {
+        "enabled": false,
+        "value": ""
+      },
+
+      "icfsNameFlagEquivalent": {
+        "enabled": true,
+        "value": "name"
+      }
+    },
+
+    "createOperationSettings": {
+      "alreadyExistsErrorParameter": "ObjectAlreadyExists",
+      "successStatusMessage": ""
+    },
+    "updateOperationSettings": {
+      "unknownUidException": "UnknownUid",
+      "updateDeltaAddParameter": "ADD:",
+      "updateDeltaRemoveParameter": "REMOVE:",
+      "updateSuccessResponse": ""
+    },
+    "deleteOperationSettings": {
+      "deleteSuccessResponse": ""
+    },
+    "searchOperationSettings": {
+      "noResultSuccessMessage": ""
+    }
+  }
+}

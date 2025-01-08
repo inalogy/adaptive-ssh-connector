@@ -46,10 +46,10 @@ public class TestProcessor {
         String relativeSchemaFilePath = properties.getProperty("schemaFilePath");
         String absoluteSchemaFilePath = System.getProperty("user.dir") + "/"+ relativeSchemaFilePath;
         configuration.setSchemaFilePath(absoluteSchemaFilePath);
-        configuration.setDynamicConfigurationFilePath("/Users/patrikrovnak/IdeaProjects/ssh-connector/samples/OpenBSD/connectorConfig.json");
+        String relativeConfigFilePath = properties.getProperty("dynamicConfigFilePath");
+        String absoluteConfigFilePath = System.getProperty("user.dir") + "/"+ relativeConfigFilePath;
+        configuration.setDynamicConfigurationFilePath(absoluteConfigFilePath);
         dynamicConfiguration.init(this.configuration.getDynamicConfigurationFilePath());
-        //init dynamicConfiguration aswell
-
     }
 
     private void initConnector() {
