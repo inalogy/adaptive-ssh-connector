@@ -48,16 +48,18 @@ More info: https://github.com/PowerShell/Win32-OpenSSH/wiki/DefaultShell
       "objectClass": "user",
       "createScript": "path\\to\\script\\createScript.ps1",
       "updateScript": "path\\to\\'script folder'\\updateScript.ps1",
-      "deleteScript": "path\\to\'script folder'\\deleteScript.ps1",
+      "deleteScript": "path\\to\\'script folder'\\deleteScript.ps1",
       "searchScript": "path\\to\\'script folder'\\searchScript.ps1",
       "attributes": [
         { 
-          "anyAttribute": {
-            "required": true,
-            "creatable":true,
+          "someAttribute": {
+            "required": false,
+            "creatable": true,
             "updateable": true,
             "dataType": "String",
-            "multivalued": false
+            "multivalued": false,
+            "returnedByDefault": true,
+            "readable": true
           },
           "anyAttribute2":{
             ...},
