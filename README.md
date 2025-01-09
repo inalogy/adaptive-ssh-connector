@@ -11,8 +11,8 @@
 9. [TODO](#todo)
 10. [Special Thanks](#special-thanks)
 # Introduction
-  ### ssh-connector
-  Standalone Adaptive SSH Connector for midPoint IDM customised for Microsoft Exchange or any other shell like system.
+  ### adaptive-ssh-connector
+Standalone Adaptive SSH Connector for midPoint IDM, capable of managing any system or server that supports SSH and scripting, including customizations for Microsoft Exchange and other shell-based environments.
 
 version 1.2.0
 # Capabilities and Features
@@ -48,16 +48,18 @@ More info: https://github.com/PowerShell/Win32-OpenSSH/wiki/DefaultShell
       "objectClass": "user",
       "createScript": "path\\to\\script\\createScript.ps1",
       "updateScript": "path\\to\\'script folder'\\updateScript.ps1",
-      "deleteScript": "path\\to\'script folder'\\deleteScript.ps1",
+      "deleteScript": "path\\to\\'script folder'\\deleteScript.ps1",
       "searchScript": "path\\to\\'script folder'\\searchScript.ps1",
       "attributes": [
         { 
-          "anyAttribute": {
-            "required": true,
-            "creatable":true,
+          "someAttribute": {
+            "required": false,
+            "creatable": true,
             "updateable": true,
             "dataType": "String",
-            "multivalued": false
+            "multivalued": false,
+            "returnedByDefault": true,
+            "readable": true
           },
           "anyAttribute2":{
             ...},
@@ -70,7 +72,7 @@ More info: https://github.com/PowerShell/Win32-OpenSSH/wiki/DefaultShell
 ### Script design
 Script return values must follow this convention:
 * first line must always have column attributes that match schema -> this applies only for searchScript and createScript
-* Script needs to be designed to return Constants.RESPONSE_EMPTY_ATTRIBUTE_SYMBOL -> "null" for empty attribute otherwise separator won't be able to tell if attribute is empty
+* Script needs to be designed to return value defined in connectorConfig  "null" for empty attribute otherwise separator won't be able to tell if attribute is empty
 * **First Attribute must be icfsUid or icfsName If you need both unique identifiers specified, first must be icfsUid followed by icfsName that match those specified in schemaConfig.json example:**
 ```
 uniqueIdentifier|UniqueName|AnyOtherAttributes
@@ -203,7 +205,7 @@ mvn clean install
 ```
 mvn clean install -DskipTests=True
 ```
-After successful build, you can find ssh-v1.0-connector.jar in target directory.
+After successful build, you can find connector-adaptive-ssh.jar in target directory.
 
 ## TODO
 - Proper tests
