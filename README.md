@@ -205,7 +205,7 @@ mvn clean install
 ```
 mvn clean install -DskipTests=True
 ```
-After successful build, you can find connector-adaptive-ssh.jar in target directory.
+After successful build, you can find connector-adaptive-ssh-{versionNumber}.jar in target directory where versionNumber is the number of the current release.
 
 ## TODO
 - Proper tests
