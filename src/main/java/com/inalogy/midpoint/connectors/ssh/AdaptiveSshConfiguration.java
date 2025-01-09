@@ -7,7 +7,7 @@ import org.identityconnectors.framework.spi.AbstractConfiguration;
 import org.identityconnectors.framework.spi.ConfigurationProperty;
 import org.identityconnectors.framework.spi.StatefulConfiguration;
 
-public class SshConfiguration extends AbstractConfiguration implements StatefulConfiguration {
+public class AdaptiveSshConfiguration extends AbstractConfiguration implements StatefulConfiguration {
 
     /**
      * Server hostname.

@@ -52,7 +52,7 @@ public class TestUniversalSchemaHandler {
 @Test
     public void testTest(){
         init();
-        SshConnector connector = testProcessor.getConnector();
+        AdaptiveSshConnector connector = testProcessor.getConnector();
 
         connector.test();
 }

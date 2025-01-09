@@ -2,7 +2,7 @@ package com.inalogy.midpoint.connectors.ssh.cmd;
 
 import java.io.IOException;
 
-import com.inalogy.midpoint.connectors.ssh.SshConfiguration;
+import com.inalogy.midpoint.connectors.ssh.AdaptiveSshConfiguration;
 
 import com.evolveum.polygon.common.GuardedStringAccessor;
 
@@ -23,21 +23,21 @@ import org.identityconnectors.framework.common.exceptions.ConnectionFailedExcept
  */
 public class AuthenticationManager {
 
-    private final SshConfiguration configuration;
+    private final AdaptiveSshConfiguration configuration;
     private String hostDesc;
     private String connectionDesc;
     private static final Log LOG = Log.getLog(AuthenticationManager.class);
 
-    public AuthenticationManager(SshConfiguration configuration) {
+    public AuthenticationManager(AdaptiveSshConfiguration configuration) {
         this.configuration = configuration;
     }
 
     protected void authenticate(SSHClient ssh) {
         switch (configuration.getAuthenticationScheme()) {
-            case SshConfiguration.AUTHENTICATION_SCHEME_PASSWORD:
+            case AdaptiveSshConfiguration.AUTHENTICATION_SCHEME_PASSWORD:
                 authenticatePassword(ssh);
                 break;
-            case SshConfiguration.AUTHENTICATION_SCHEME_PUBLIC_KEY:
+            case AdaptiveSshConfiguration.AUTHENTICATION_SCHEME_PUBLIC_KEY:
                 authenticatePublicKey(ssh);
                 break;
             default:

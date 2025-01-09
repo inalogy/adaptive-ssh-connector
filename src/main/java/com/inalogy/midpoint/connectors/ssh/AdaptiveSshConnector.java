@@ -32,8 +32,8 @@ import org.identityconnectors.framework.spi.operations.UpdateDeltaOp;
 import org.identityconnectors.framework.spi.operations.DeleteOp;
 
 
-@ConnectorClass(displayNameKey = "ssh.connector.display", configurationClass = SshConfiguration.class)
-public class SshConnector implements
+@ConnectorClass(displayNameKey = "ssh.connector.display", configurationClass = AdaptiveSshConfiguration.class)
+public class AdaptiveSshConnector implements
         PoolableConnector,
         SchemaOp,
         TestOp,
@@ -44,10 +44,10 @@ public class SshConnector implements
 {
     private CommandProcessor commandProcessor;
     private SessionManager sshManager;
-    private SshConfiguration configuration;
+    private AdaptiveSshConfiguration configuration;
     //Ssh Connector schema cache
     private static UniversalSchemaHandler schema = null;
-    private static final Log LOG = Log.getLog(SshConnector.class);
+    private static final Log LOG = Log.getLog(AdaptiveSshConnector.class);
     private final DynamicConfiguration dynamicConfiguration = DynamicConfiguration.getInstance();
 
     @Override
@@ -57,19 +57,19 @@ public class SshConnector implements
 
     @Override
     public void init(Configuration configuration) {
-        this.configuration = (SshConfiguration) configuration;
+        this.configuration = (AdaptiveSshConfiguration) configuration;
         this.configuration.validate();
-        this.sshManager = new SessionManager((SshConfiguration) configuration, this.dynamicConfiguration);
+        this.sshManager = new SessionManager((AdaptiveSshConfiguration) configuration, this.dynamicConfiguration);
         this.sshManager.initSshClient();
         this.dynamicConfiguration.init(this.configuration.getDynamicConfigurationFilePath());
-        this.commandProcessor = new CommandProcessor((SshConfiguration) configuration, this.sshManager, this.dynamicConfiguration);
+        this.commandProcessor = new CommandProcessor((AdaptiveSshConfiguration) configuration, this.sshManager, this.dynamicConfiguration);
     }
 
     @Override
     public void dispose() {
         this.configuration = null;
-        if (SshConnector.schema != null) {
-            SshConnector.schema = null;
+        if (AdaptiveSshConnector.schema != null) {
+            AdaptiveSshConnector.schema = null;
         }
         if (this.commandProcessor != null) {
             this.commandProcessor = null;
@@ -98,20 +98,20 @@ public class SshConnector implements
      */
     @Override
     public Schema schema() {
-        SchemaBuilder schemaBuilder = new SchemaBuilder(SshConnector.class);
+        SchemaBuilder schemaBuilder = new SchemaBuilder(AdaptiveSshConnector.class);
         String currentFileSha256 = FileHashCalculator.calculateSHA256(this.configuration.getSchemaFilePath());
 
-        if (SshConnector.schema == null){
-            SshConnector.schema = new UniversalSchemaHandler(this.configuration.getSchemaFilePath());
+        if (AdaptiveSshConnector.schema == null){
+            AdaptiveSshConnector.schema = new UniversalSchemaHandler(this.configuration.getSchemaFilePath());
             LOG.ok("Creating universalSchemaHandler schemaConfigFilePath:" + this.configuration.getSchemaFilePath());
 
         }
         else if (currentFileSha256 != null && !schema.getFileSha256().equals(currentFileSha256)){
             // if sha256 of schemaFile is unchanged we don't need to fetch it again
             LOG.ok("Change in schemaConfigFile detected");
-            SshConnector.schema = new UniversalSchemaHandler(this.configuration.getSchemaFilePath());
+            AdaptiveSshConnector.schema = new UniversalSchemaHandler(this.configuration.getSchemaFilePath());
         }
-        for (SchemaType schemaType: SshConnector.schema.getSchemaTypes().values()){
+        for (SchemaType schemaType: AdaptiveSshConnector.schema.getSchemaTypes().values()){
             UniversalObjectsHandler.buildObjectClass(schemaBuilder, schemaType, this.dynamicConfiguration);
         }
         return schemaBuilder.build();
@@ -132,7 +132,7 @@ public class SshConnector implements
         LOG.ok("executeQuery on {0}, query: {1}, options: {2}", objectClass, query, options);
         getSchemaHandler();
         // choosing schema type by key value from map which corresponds to SchemaType object
-        SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
+        SchemaType schemaType = AdaptiveSshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
 
         if (schemaType == null) {
             LOG.error("Unsupported ObjectClass: " + objectClass);
@@ -179,7 +179,7 @@ public class SshConnector implements
     @Override
     public Uid create(ObjectClass objectClass, Set<Attribute> createAttributes, OperationOptions options) {
         getSchemaHandler();
-        SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
+        SchemaType schemaType = AdaptiveSshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
         String sshRawResponse = commandProcessor.processAndExecuteCommand(createAttributes, Constants.CREATE_OPERATION, schemaType);
         Uid uid = new SshResponseHandler(schemaType, sshRawResponse, this.dynamicConfiguration).parseCreateOperation();
         return uid;
@@ -197,7 +197,7 @@ public class SshConnector implements
     public Set<AttributeDelta> updateDelta(ObjectClass objectClass, Uid uid, Set<AttributeDelta> modifications, OperationOptions options) {
         LOG.ok("objectClass : {0} uid: {1} modifications: {2} operationOptions: {3}", objectClass, uid.getValue(), modifications, options);
         getSchemaHandler();
-        SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
+        SchemaType schemaType = AdaptiveSshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
         Set<Attribute> attributeSet = new HashSet<>();
         Attribute icfsAttribute = AttributeBuilder.build(schemaType.getIcfsUid(), uid.getValue());
         attributeSet.add(icfsAttribute);
@@ -238,7 +238,7 @@ public class SshConnector implements
     @Override
     public void delete(ObjectClass objectClass, Uid uid, OperationOptions options) {
         getSchemaHandler();
-        SchemaType schemaType = SshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
+        SchemaType schemaType = AdaptiveSshConnector.schema.getSchemaTypes().get(objectClass.getObjectClassValue());
         Set<Attribute> attributeSet = new HashSet<>();
         Attribute attribute = AttributeBuilder.build(schemaType.getIcfsUid(), uid.getValue());
         attributeSet.add(attribute);
@@ -254,10 +254,10 @@ public class SshConnector implements
         if (this.dynamicConfiguration.getSettings() == null){
             this.dynamicConfiguration.init(this.configuration.getDynamicConfigurationFilePath());
         }
-        if (SshConnector.schema == null){
+        if (AdaptiveSshConnector.schema == null){
             schema();
 
-        } else if (!SshConnector.schema.getFileSha256().equals(FileHashCalculator.calculateSHA256(this.configuration.getSchemaFilePath()))) {
+        } else if (!AdaptiveSshConnector.schema.getFileSha256().equals(FileHashCalculator.calculateSHA256(this.configuration.getSchemaFilePath()))) {
             LOG.warn("Change in schemaFile detected");
             schema();
         }

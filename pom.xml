@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <name>ssh-connector</name>
+    <name>adaptive-ssh-connector</name>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.inalogy.midpoint.connectors</groupId>
     <artifactId>ssh</artifactId>
@@ -16,7 +16,7 @@
 
     <properties>
         <connector.package>com.inalogy.midpoint.connectors.ssh</connector.package>
-        <connector.class>SshConnector</connector.class>
+        <connector.class>AdaptiveSshConnector</connector.class>
         <assembly.path>src/main/assembly/connector.xml</assembly.path>
         <maven.jar.plugin.version>3.4.2</maven.jar.plugin.version>
         <java.version>21</java.version>

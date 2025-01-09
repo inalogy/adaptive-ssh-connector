@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import com.inalogy.midpoint.connectors.ssh.SshConfiguration;
+import com.inalogy.midpoint.connectors.ssh.AdaptiveSshConfiguration;
 import com.inalogy.midpoint.connectors.ssh.utils.dynamicconfig.ConnectorSettings;
 import com.inalogy.midpoint.connectors.ssh.utils.dynamicconfig.DynamicConfiguration;
 import com.inalogy.midpoint.connectors.ssh.schema.SchemaType;
@@ -27,17 +27,17 @@ public class CommandProcessor {
 
     private static final Log LOG = Log.getLog(CommandProcessor.class);
     private final SessionManager sshManager;
-    private final SshConfiguration configuration;
+    private final AdaptiveSshConfiguration configuration;
     private DynamicConfiguration dynamicConfiguration;
 
-    public CommandProcessor(SshConfiguration configuration, SessionManager sshManager, DynamicConfiguration dynamicConfiguration) {
+    public CommandProcessor(AdaptiveSshConfiguration configuration, SessionManager sshManager, DynamicConfiguration dynamicConfiguration) {
         this.configuration = configuration;
         this.sshManager = sshManager;
         this.dynamicConfiguration = dynamicConfiguration;
     }
 
     /**
-     * process Attributes based on {@link SshConfiguration#getArgumentStyle()}
+     * process Attributes based on {@link AdaptiveSshConfiguration#getArgumentStyle()}
      * @param attributes set of attributes that need to be formatted with appropriate flags
      * @param scriptPath of currently processed Object
      * @return processed string with scriptPath and attributes
@@ -54,12 +54,12 @@ public class CommandProcessor {
         }
 
         switch (configuration.getArgumentStyle()) {
-            case SshConfiguration.ARGUMENT_STYLE_VARIABLES_BASH:
+            case AdaptiveSshConfiguration.ARGUMENT_STYLE_VARIABLES_BASH:
                 return encodeArgumentsAndCommandToString(command, attributes, "--");
-            case SshConfiguration.ARGUMENT_STYLE_VARIABLES_POWERSHELL:
-            case SshConfiguration.ARGUMENT_STYLE_DASH:
+            case AdaptiveSshConfiguration.ARGUMENT_STYLE_VARIABLES_POWERSHELL:
+            case AdaptiveSshConfiguration.ARGUMENT_STYLE_DASH:
                 return encodeArgumentsAndCommandToString(command, attributes, "-");
-            case SshConfiguration.ARGUMENT_STYLE_SLASH:
+            case AdaptiveSshConfiguration.ARGUMENT_STYLE_SLASH:
                 return encodeArgumentsAndCommandToString(command, attributes, "/");
             default:
                 throw new ConfigurationException("Unknown value of argument style: "+configuration.getArgumentStyle());

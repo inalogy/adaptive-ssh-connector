@@ -3,7 +3,7 @@ package com.inalogy.midpoint.connectors.ssh.cmd;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import com.inalogy.midpoint.connectors.ssh.SshConfiguration;
+import com.inalogy.midpoint.connectors.ssh.AdaptiveSshConfiguration;
 import com.inalogy.midpoint.connectors.ssh.utils.dynamicconfig.DynamicConfiguration;
 import com.inalogy.midpoint.connectors.ssh.utils.Constants;
 
@@ -26,7 +26,7 @@ import net.schmizz.sshj.transport.verification.HostKeyVerifier;
  */
 public class SessionManager {
 
-    private final SshConfiguration configuration;
+    private final AdaptiveSshConfiguration configuration;
     private SSHClient ssh;
     private Session session = null;
     private final HostKeyVerifier hostKeyVerifier;
@@ -34,7 +34,7 @@ public class SessionManager {
     private static final Log LOG = Log.getLog(SessionManager.class);
     private DynamicConfiguration dynamicConfiguration;
 
-    public SessionManager(SshConfiguration configuration, DynamicConfiguration dynamicConfiguration) {
+    public SessionManager(AdaptiveSshConfiguration configuration, DynamicConfiguration dynamicConfiguration) {
         this.configuration = configuration;
         this.hostKeyVerifier = new ConnectorKnownHostsVerifier().parse(this.configuration.getKnownHosts());
         this.authManager = new AuthenticationManager(this.configuration);

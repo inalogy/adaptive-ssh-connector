@@ -10,8 +10,8 @@ import java.util.Objects;
 import java.util.Properties;
 
 public class TestProcessor {
-    private SshConfiguration configuration;
-    private SshConnector connector;
+    private AdaptiveSshConfiguration configuration;
+    private AdaptiveSshConnector connector;
     private final Properties properties = new Properties();
 
     protected final DynamicConfiguration dynamicConfiguration = DynamicConfiguration.getInstance();
@@ -38,7 +38,7 @@ public class TestProcessor {
 
     private void initConfiguration() {
         validateMandatoryAttributes();
-        configuration = new SshConfiguration();
+        configuration = new AdaptiveSshConfiguration();
         configuration.setUsername(properties.getProperty("username"));
         configuration.setPassword(new GuardedString(properties.getProperty("password").toCharArray()));
         configuration.setHost(properties.getProperty("host"));
@@ -63,15 +63,15 @@ public class TestProcessor {
         }
     }
     private void initConnector() {
-        connector = new SshConnector();
+        connector = new AdaptiveSshConnector();
         connector.init(configuration);
     }
 
-    protected SshConnector getConnector() {
+    protected AdaptiveSshConnector getConnector() {
         return connector;
     }
 
-    protected SshConfiguration getConfiguration() {
+    protected AdaptiveSshConfiguration getConfiguration() {
         return configuration;
     }
 
