@@ -1,0 +1,135 @@
+<resource xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+          xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+          xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"
+          xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3"
+          xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3"
+          xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
+          xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          oid="c7d7ad50-ef91-4174-87c3-a3d84d1c317c">
+    <name>SshMicrosoftExchange</name>
+    <connectorRef relation="org:default" type="c:ConnectorType">
+        <filter>
+            <q:equal>
+                <q:path>c:connectorType</q:path>
+                <q:value>com.inalogy.midpoint.connectors.ssh.AdaptiveSshConnector</q:value>
+            </q:equal>
+        </filter>
+    </connectorRef>
+
+    <connectorConfiguration xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3">
+        <icfc:configurationProperties xmlns:gen629="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/com.inalogy.midpoint.connectors.ssh/com.inalogy.midpoint.connectors.ssh.AdaptiveSshConnector">
+            <gen629:host>ipAddr</gen629:host>
+            <gen629:schemaFilePath>/opt/midpoint/var/ssh-schema/schemaConfig.json</gen629:schemaFilePath>
+            <gen629:dynamicConfigurationFilePath>/opt/midpoint/var/ssh-schema/connectorConfig.json</gen629:dynamicConfigurationFilePath>
+            <gen629:shellType>powershell</gen629:shellType>
+            <gen629:port>22</gen629:port>
+            <gen629:username>svc-midpoint</gen629:username>
+            <gen629:password>
+                <t:clearValue></t:clearValue>
+            </gen629:password>
+            <gen629:authenticationScheme>password</gen629:authenticationScheme>
+        </icfc:configurationProperties>
+    </connectorConfiguration>
+    <schemaHandling>
+        <objectType>
+            <kind>account</kind>
+            <intent>user</intent>
+            <displayName>User</displayName>
+            <default>true</default>
+            <delineation>
+                <objectClass>ri:user</objectClass>
+            </delineation>
+            <focus>
+                <type>UserType</type>
+            </focus>
+            <attribute>
+                <ref>icfs:name</ref>
+                <displayName>Name</displayName>
+                <outbound>
+                    <strength>strong</strength>
+                    <source>
+                        <path>name</path>
+                    </source>
+                </outbound>
+            </attribute>
+            <attribute>
+                <ref>ri:email</ref>
+                <displayName>Email Address</displayName>
+                <outbound>
+                    <strength>strong</strength>
+                    <source>
+                        <path>emailAddress</path>
+                    </source>
+                </outbound>
+            </attribute>
+            <credentials>
+                <password>
+                    <outbound>
+                        <strength>normal</strength>
+                    </outbound>
+                </password>
+            </credentials>
+            <correlation>
+                <correlators>
+                    <filter>
+                        <ownerFilter>
+                            <q:equal>
+                                <q:path>emailAddress</q:path>
+                                <expression>
+                                    <path>$shadow/attributes/icfs:name</path>
+                                </expression>
+                            </q:equal>
+                        </ownerFilter>
+                    </filter>
+                </correlators>
+            </correlation>
+            <synchronization>
+                <reaction>
+                    <name>linked -> synchronized</name>
+                    <situation>linked</situation>
+                    <actions>
+                        <synchronize/>
+                    </actions>
+                </reaction>
+                <reaction>
+                    <name>unlinked -> link</name>
+                    <situation>unlinked</situation>
+                    <actions>
+                        <link/>
+                    </actions>
+                </reaction>
+                <reaction>
+                    <name>deleted -> unlink</name>
+                    <situation>deleted</situation>
+                    <actions>
+                        <unlink/>
+                    </actions>
+                </reaction>
+                <reaction>
+                    <name>unmatched -> disabled</name>
+                    <situation>unmatched</situation>
+                    <condition>
+                        <value>false</value>
+                    </condition>
+                </reaction>
+            </synchronization>
+        </objectType>
+    </schemaHandling>
+
+    <capabilities>
+        <native xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3">
+            <cap:schema/>
+            <cap:create/>
+            <cap:read>
+                <cap:returnDefaultAttributesOption>false</cap:returnDefaultAttributesOption>
+            </cap:read>
+            <cap:update>
+                <cap:delta>true</cap:delta>
+                <cap:addRemoveAttributeValues>true</cap:addRemoveAttributeValues>
+            </cap:update>
+            <cap:delete/>
+            <cap:testConnection/>
+        </native>
+    </capabilities>
+</resource>

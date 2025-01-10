@@ -1,0 +1,171 @@
+<resource xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+          xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+          xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"
+          xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3"
+          xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3"
+          xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
+          xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          oid="950f276e-edb9-49b6-a0e4-b3a378a66918">
+
+    <name>OpenBSD</name>
+
+    <lifecycleState>active</lifecycleState>
+    <connectorRef relation="org:default" type="c:ConnectorType">
+
+        <filter>
+            <q:and>
+                <q:equal>
+                    <q:path>c:connectorType</q:path>
+                    <q:value>com.inalogy.midpoint.connectors.ssh.AdaptiveSshConnector</q:value>
+                </q:equal>
+            </q:and>
+        </filter>
+    </connectorRef>
+    <connectorConfiguration xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3">
+        <icfc:configurationProperties xmlns:gen629="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/com.inalogy.midpoint.connectors.ssh/com.inalogy.midpoint.connectors.ssh.AdaptiveSshConnector">
+            <gen629:host>10.20.0.99</gen629:host>
+            <gen629:schemaFilePath>/opt/midpoint/var/ssh-schema/schemaConfig.json</gen629:schemaFilePath>
+            <gen629:dynamicConfigurationFilePath>/opt/midpoint/var/ssh-schema/connectorConfig.json</gen629:dynamicConfigurationFilePath>
+            <gen629:shellType>cshell</gen629:shellType>
+            <gen629:port>22</gen629:port>
+            <gen629:username>svc-mp</gen629:username>
+            <gen629:password>
+                <t:clearValue></t:clearValue>
+            </gen629:password>
+            <gen629:authenticationScheme>password</gen629:authenticationScheme>
+        </icfc:configurationProperties>
+    </connectorConfiguration>
+    <schemaHandling>
+        <objectType>
+            <displayName>User</displayName>
+
+            <intent>user</intent>
+            <kind>account</kind>
+            <default>true</default>
+            <delineation>
+                <objectClass>ri:user</objectClass>
+            </delineation>
+            <focus>
+                <type>UserType</type>
+            </focus>
+
+            <attribute>
+                <ref>ri:type</ref>
+                <outbound>
+                    <strength>weak</strength>
+                    <expression>
+                        <value>student</value>
+                    </expression>
+                    <condition>
+                        <script>
+                            <code>
+                                if (shadow?.oid){
+                                return false
+                                }
+                                return true
+                            </code>
+                        </script>
+                    </condition>
+                </outbound>
+            </attribute>
+
+            <attribute>
+                <ref>icfs:name</ref>
+                <outbound>
+                    <strength>weak</strength>
+                    <source>
+                        <path>name</path>
+                    </source>
+                </outbound>
+            </attribute>
+
+            <attribute>
+                <ref>ri:login</ref>
+                <outbound>
+                    <source>
+                        <path>name</path>
+                    </source>
+                </outbound>
+            </attribute>
+
+            <attribute>
+                <ref>ri:fullName</ref>
+                <outbound>
+                    <source>
+                        <path>fullName</path>
+                    </source>
+                </outbound>
+            </attribute>
+            <activation>
+                <!-- weak existence -->
+                <existence>
+                    <outbound>
+                        <name>Never try to delete</name>
+                        <strength>weak</strength>
+                        <expression>
+                            <value>true</value>
+                        </expression>
+                    </outbound>
+                </existence>
+            </activation>
+
+            <correlation>
+                <correlators>
+                    <filter>
+                        <ownerFilter>
+                            <q:equal>
+                                <q:path>name</q:path>
+                                <expression>
+                                    <path>$shadow/attributes/icfs:name</path>
+                                </expression>
+                            </q:equal>
+                        </ownerFilter>
+                    </filter>
+                </correlators>
+            </correlation>
+
+            <synchronization>
+                <reaction>
+                    <name>deleted -> unlink focus</name>
+                    <situation>deleted</situation>
+                    <actions>
+                        <unlink/>
+                    </actions>
+                </reaction>
+                <reaction>
+                    <name>unlinked -> link</name>
+                    <situation>unlinked</situation>
+                    <actions>
+                        <link/>
+                    </actions>
+                </reaction>
+                <reaction>
+                    <name>unmatched -> do nothing</name>
+                    <situation>unmatched</situation>
+                </reaction>
+            </synchronization>
+        </objectType>
+    </schemaHandling>
+    <capabilities>
+        <native xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3">
+            <cap:schema/>
+            <cap:create/>
+            <cap:read>
+                <cap:returnDefaultAttributesOption>false</cap:returnDefaultAttributesOption>
+            </cap:read>
+            <cap:update>
+                <cap:delta>true</cap:delta>
+                <cap:addRemoveAttributeValues>true</cap:addRemoveAttributeValues>
+            </cap:update>
+            <cap:delete/>
+            <cap:testConnection/>
+        </native>
+    </capabilities>
+    <projection>
+        <assignmentPolicyEnforcement>full</assignmentPolicyEnforcement>
+    </projection>
+    <consistency>
+        <deadShadowRetentionPeriod>PT1S</deadShadowRetentionPeriod>
+    </consistency>
+</resource>

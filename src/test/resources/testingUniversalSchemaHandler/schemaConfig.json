@@ -1,0 +1,68 @@
+{
+  "objects":[
+    {
+      "icfsName": "UserPrincipalName",
+      "icfsUid": "ExchangeGuid",
+      "objectClass": "user",
+      "createScript": "C:\\Users\\inaadm\\ex\\usr\\createScript.ps1",
+      "updateScript": "C:\\Users\\inaadm\\ex\\usr\\updateScript.ps1",
+      "deleteScript": "C:\\Users\\inaadm\\ex\\usr\\deleteScript.ps1",
+      "searchScript": "C:\\Users\\inaadm\\ex\\usr\\searchScript.ps1",
+      "attributes": [
+        {
+          "email": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": true,
+            "readable": true
+          },
+          "emailAddresses": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": true,
+            "returnedByDefault": true,
+            "readable": true
+          }
+        }
+      ]
+    },
+
+    {
+      "icfsName": "icfsName",
+      "icfsUid": "uid",
+      "objectClass":  "group",
+      "createScript": "C:\\Users\\inaadm\\ex\\groups\\createScript.ps1",
+      "updateScript": "C:\\Users\\inaadm\\ex\\groups\\updateScript.ps1",
+      "deleteScript": "C:\\Users\\inaadm\\ex\\groups\\deleteScript.ps1",
+      "searchScript": "C:\\Users\\inaadm\\ex\\groups\\searchScript.ps1",
+      "attributes":  [
+        {
+          "groupName": {
+            "required": true,
+            "creatable": true,
+            "updateable": true,
+            "multivalued": false,
+            "dataType": "String",
+            "returnedByDefault": true,
+            "readable": true
+
+          },
+          "members": {
+            "required": true,
+            "creatable": false,
+            "updateable": true,
+            "multivalued": true,
+            "dataType": "String",
+            "returnedByDefault": true,
+            "readable": true
+          }
+        }
+      ]
+    }
+  ]
+}
