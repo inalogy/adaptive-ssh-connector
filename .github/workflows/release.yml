@@ -40,12 +40,16 @@ jobs:
           cat latest_changelog.md >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
+      - name: Extract Tag Name
+        id: tag_name
+        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          release_name: Release ${{ env.TAG_NAME }}
           body: ${{ env.CHANGELOG }}
           draft: false
           prerelease: false
