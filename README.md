@@ -14,7 +14,7 @@
   ### adaptive-ssh-connector
 Standalone Adaptive SSH Connector for midPoint IDM, capable of managing any system or server that supports SSH and scripting, including customizations for Microsoft Exchange and other shell-based environments.
 
-version 1.2.0
+version 1.2.1
 # Capabilities and Features
 
 - Schema: YES - dynamic

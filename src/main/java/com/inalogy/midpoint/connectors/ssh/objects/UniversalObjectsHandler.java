@@ -134,7 +134,10 @@ public class UniversalObjectsHandler {
                     .orElse(false);
             if (multivaluedAttribute) {
                 LOG.ok("converting multivalued attribute {0}", attribute.getKey());
-                String[] values = attribute.getValue().split(Pattern.quote(RESPONSE_MULTIVALUED_SEPARATOR));
+                String[] values = null;
+                if (attribute.getValue() != null) {
+                   values = attribute.getValue().split(Pattern.quote(RESPONSE_MULTIVALUED_SEPARATOR));
+                }
                 builder.addAttribute(AttributeBuilder.build(attribute.getKey(), values));
             } else {
                 // Attribute is not multiValued. Add it as a single value.

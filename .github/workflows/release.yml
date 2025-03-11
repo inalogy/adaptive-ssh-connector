@@ -1,19 +1,9 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: Create Release
 
 on:
   push:
-    # Sequence of patterns matched against refs/tags
     tags:
-      - '*' # Push events to matching v*, i.e. v1.0, v20.15.10
-
+      - '*' # Triggers on any tag push
 
 jobs:
   build:
@@ -22,39 +12,49 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
           java-version: '21'
           distribution: 'oracle'
+
       - name: Get Maven Project Version
         id: get_version
         run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-      - name: Build project # This would actually build your project, using zip for an example artifact
+
+      - name: Build project
         run: mvn --batch-mode clean install -DskipTests=true
+
       - name: Upload Connector
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Adaptive SSH Connector
           path: ./target/connector-adaptive-ssh-${{ env.VERSION }}.jar
+
+      - name: Extract Latest Changelog Entry
+        id: changelog
+        run: |
+          awk '/^## \[/{if (p) exit; p=1} p' CHANGELOG.md > latest_changelog.md
+          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
+          cat latest_changelog.md >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Extract Tag Name
+        id: tag_name
+        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: CHANGELOG.md
+          name: Release ${{ env.TAG_NAME }}
+          body: ${{ env.CHANGELOG }}
           draft: false
           prerelease: false
+
       - name: Upload Release Asset
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ./target/connector-adaptive-ssh-${{ env.VERSION }}.jar
-          asset_name: connector-adaptive-ssh-${{ env.VERSION }}.jar
-          asset_content_type: application/java-archive
+          files: ./target/connector-adaptive-ssh-${{ env.VERSION }}.jar
