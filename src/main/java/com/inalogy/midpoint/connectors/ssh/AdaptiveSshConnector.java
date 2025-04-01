@@ -201,6 +201,7 @@ public class AdaptiveSshConnector implements
         Set<Attribute> attributeSet = new HashSet<>();
         Attribute icfsAttribute = AttributeBuilder.build(schemaType.getIcfsUid(), uid.getValue());
         attributeSet.add(icfsAttribute);
+        String emptyValue = this.dynamicConfiguration.getSettings().getScriptResponseSettings().getScriptEmptyAttribute();
 
         for (AttributeDelta attributeDelta: modifications){
             //handle multivalued operations for ADD and REMOVE separately
@@ -210,12 +211,17 @@ public class AdaptiveSshConnector implements
 
             } else {
                 //handle replace single value
-                if (attributeDelta.getValuesToReplace() != null){
-                    for (Object value: attributeDelta.getValuesToReplace()){
-                        Attribute attribute = AttributeBuilder.build(attributeDelta.getName(), value);
-                        attributeSet.add(attribute);
-                    }
+                if (attributeDelta.getValuesToReplace() != null && !attributeDelta.getValuesToReplace().isEmpty()) {
+                    String value = AttributeDeltaUtil.getStringValue(attributeDelta);
+                    Attribute attribute = AttributeBuilder.build(attributeDelta.getName(), value);
+                    attributeSet.add(attribute);
+                } else {
+                    LOG.ok("Setting nullValue for {0}  nullValueDefinition from dynamicConfiguration {1}", attributeDelta.getName(), emptyValue);
+                    //we must send some value to the Scripts itself, handling of null values must be done in scripts
+                    Attribute attribute = AttributeBuilder.build(attributeDelta.getName(), emptyValue);
+                    attributeSet.add(attribute);
                 }
+
             }
 
         }
