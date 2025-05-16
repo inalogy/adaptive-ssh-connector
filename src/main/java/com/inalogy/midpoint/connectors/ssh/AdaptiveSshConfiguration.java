@@ -19,6 +19,8 @@ public class AdaptiveSshConfiguration extends AbstractConfiguration implements S
      */
     private int port = 22;
 
+    private int sshResponseTimeout = 15;
+
     /**
      * Username of the user, used for authentication.
      */
@@ -70,12 +72,44 @@ public class AdaptiveSshConfiguration extends AbstractConfiguration implements S
 
     @Override
     public void validate() {
-
     }
+
+    @ConfigurationProperty(order = 10,
+            displayMessageKey = "SchemaFilePath.display",
+            helpMessageKey = "SchemaFilePath.help")
+    public String getSchemaFilePath() {
+        return schemaFilePath;
+    }
+
+    public void setSchemaFilePath(String schemaFilePath) {
+        this.schemaFilePath = schemaFilePath;
+    }
+
+    @ConfigurationProperty(order = 20,
+            displayMessageKey = "DynamicConfigurationFilePath.display",
+            helpMessageKey = "DynamicConfigurationFilePath.help")
+    public String getDynamicConfigurationFilePath() {
+        return dynamicConfigurationFilePath;
+    }
+
+    public void setDynamicConfigurationFilePath(String dynamicConfigurationFilePath) {
+        this.dynamicConfigurationFilePath = dynamicConfigurationFilePath;
+    }
+
+    @ConfigurationProperty(order = 70,
+            displayMessageKey = "ShellType.display",
+            helpMessageKey = "ShellType.help")
+    public String getShellType() {
+        return shellType;
+    }
+
+    public void setShellType(String shellType) {
+        this.shellType = shellType;
+    }
+
     @ConfigurationProperty(order = 100,
             displayMessageKey = "Host.display",
-            helpMessageKey = "Host.help"
-    )
+            helpMessageKey = "Host.help")
     public String getHost() {
         return host;
     }
@@ -86,8 +120,7 @@ public class AdaptiveSshConfiguration extends AbstractConfiguration implements S
 
     @ConfigurationProperty(order = 110,
             displayMessageKey = "Port.display",
-            helpMessageKey = "Port.help"
-    )
+            helpMessageKey = "Port.help")
     public int getPort() {
         return port;
     }
@@ -98,8 +131,7 @@ public class AdaptiveSshConfiguration extends AbstractConfiguration implements S
 
     @ConfigurationProperty(order = 130,
             displayMessageKey = "Username.display",
-            helpMessageKey = "Username.help"
-    )
+            helpMessageKey = "Username.help")
     public String getUsername() {
         return username;
     }
@@ -110,8 +142,7 @@ public class AdaptiveSshConfiguration extends AbstractConfiguration implements S
 
     @ConfigurationProperty(order = 140,
             displayMessageKey = "Password.display",
-            helpMessageKey = "Password.help"
-    )
+            helpMessageKey = "Password.help")
     public GuardedString getPassword() {
         return password;
     }
@@ -122,8 +153,7 @@ public class AdaptiveSshConfiguration extends AbstractConfiguration implements S
 
     @ConfigurationProperty(order = 150,
             displayMessageKey = "PrivateKey.display",
-            helpMessageKey = "PrivateKey.help"
-    )
+            helpMessageKey = "PrivateKey.help")
     public GuardedString getPrivateKey() {
         return privateKey;
     }
@@ -134,8 +164,7 @@ public class AdaptiveSshConfiguration extends AbstractConfiguration implements S
 
     @ConfigurationProperty(order = 160,
             displayMessageKey = "Passphrase.display",
-            helpMessageKey = "Passphrase.help"
-    )
+            helpMessageKey = "Passphrase.help")
     public GuardedString getPassphrase() {
         return passphrase;
     }
@@ -146,8 +175,7 @@ public class AdaptiveSshConfiguration extends AbstractConfiguration implements S
 
     @ConfigurationProperty(order = 170,
             displayMessageKey = "AuthenticationScheme.display",
-            helpMessageKey = "AuthenticationScheme.help"
-    )
+            helpMessageKey = "AuthenticationScheme.help")
     public String getAuthenticationScheme() {
         return authenticationScheme;
     }
@@ -158,8 +186,7 @@ public class AdaptiveSshConfiguration extends AbstractConfiguration implements S
 
     @ConfigurationProperty(order = 180,
             displayMessageKey = "KnownHosts.display",
-            helpMessageKey = "KnownHosts.help"
-    )
+            helpMessageKey = "KnownHosts.help")
     public String[] getKnownHosts() {
         return knownHosts;
     }
@@ -168,10 +195,9 @@ public class AdaptiveSshConfiguration extends AbstractConfiguration implements S
         this.knownHosts = knownHosts;
     }
 
-    @ConfigurationProperty(order = 180,
+    @ConfigurationProperty(order = 185,
             displayMessageKey = "ArgumentStyle.display",
-            helpMessageKey = "ArgumentStyle.help"
-    )
+            helpMessageKey = "ArgumentStyle.help")
     public String getArgumentStyle() {
         return argumentStyle;
     }
@@ -180,34 +206,19 @@ public class AdaptiveSshConfiguration extends AbstractConfiguration implements S
         this.argumentStyle = argumentStyle;
     }
 
-    @ConfigurationProperty(order = 70,
-            displayMessageKey = "ShellType.display",
-            helpMessageKey = "ShellType.help"
-    )
-    public String getShellType() {
-        return shellType;
+    @ConfigurationProperty(order = 190,
+            displayMessageKey = "SshResponseTimeout.display",
+            helpMessageKey = "SshResponseTimeout.help")
+    public int getSshResponseTimeout() {
+        return sshResponseTimeout;
     }
 
-    public void setShellType(String shellType) {
-        this.shellType = shellType;
+    public void setSshResponseTimeout(int sshResponseTimeout) {
+        this.sshResponseTimeout = sshResponseTimeout;
     }
-    @ConfigurationProperty(order = 80,
-            displayMessageKey = "SchemaFilePath.display",
-            helpMessageKey = "SchemaFilePath.help"
-    )
-    public String getSchemaFilePath() {return schemaFilePath;}
-    public void setSchemaFilePath(String schemaFilePath){this.schemaFilePath = schemaFilePath;}
-
-    @ConfigurationProperty(order = 90,
-            displayMessageKey = "DynamicConfigurationFilePath.display",
-            helpMessageKey = "DynamicConfigurationFilePath.help"
-    )
-    public String getDynamicConfigurationFilePath() {return dynamicConfigurationFilePath;}
-
-    public void setDynamicConfigurationFilePath(String dynamicConfigurationFilePath){this.dynamicConfigurationFilePath = dynamicConfigurationFilePath;}
 
     @Override
     public void release() {
-
     }
+
 }

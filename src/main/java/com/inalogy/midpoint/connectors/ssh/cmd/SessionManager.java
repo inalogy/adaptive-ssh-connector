@@ -90,7 +90,7 @@ public class SessionManager {
         }
 
         try {
-            cmd.join(Constants.SSH_RESPONSE_TIMEOUT, TimeUnit.SECONDS);
+            cmd.join(configuration.getSshResponseTimeout(), TimeUnit.SECONDS);
         } catch (ConnectionException e) {
             throw new ConnectorIOException("Error \"joining\" SSH command: "+e.getMessage(), e);
         }
