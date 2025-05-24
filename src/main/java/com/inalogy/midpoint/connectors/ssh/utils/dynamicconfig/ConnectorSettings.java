@@ -5,6 +5,7 @@ public class ConnectorSettings {
     private FlagSettings replaceWhiteSpaceCharacterInAttributeValues;
     private FlagSettings addSudoExecution;
     private FlagSettings icfsPasswordFlagEquivalent;
+    private FlagSettings preloadScript;
 
     public ConnectorSettings(){}
 
@@ -51,4 +52,12 @@ public class ConnectorSettings {
     private FlagSettings icfsUidFlagEquivalent;
     private FlagSettings icfsNameFlagEquivalent;
 
+
+    public FlagSettings getPreloadScript() {
+        return preloadScript;
+    }
+
+    protected void setPreloadScript(FlagSettings preloadScript) {
+        this.preloadScript = preloadScript;
+    }
 }
