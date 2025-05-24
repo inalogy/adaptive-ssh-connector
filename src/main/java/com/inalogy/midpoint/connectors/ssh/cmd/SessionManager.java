@@ -136,6 +136,17 @@ public class SessionManager {
         }
     }
 
+    public void handleErrors(String rawOutput){
+        String ALREADY_EXISTS_ERROR_RESPONSE = this.dynamicConfiguration.getSettings().getCreateOperationSettings().getAlreadyExistsErrorParameter();
+        String OBJECT_NOT_FOUND_ERROR_RESPONSE = this.dynamicConfiguration.getSettings().getUpdateOperationSettings().getUnknownUidException();
+
+        if (rawOutput.contains(ALREADY_EXISTS_ERROR_RESPONSE)){
+            throw new AlreadyExistsException(rawOutput);
+        } else if (rawOutput.contains(OBJECT_NOT_FOUND_ERROR_RESPONSE)) {
+            throw new UnknownUidException(rawOutput);
+        }
+
+    }
 
     public boolean isConnectionAlive(){
         return ssh != null && ssh.isConnected();
