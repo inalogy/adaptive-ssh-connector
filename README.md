@@ -208,7 +208,6 @@ After successful build, you can find connector-adaptive-ssh-{**versionNumber**}.
 
 ## TODO
 - Proper tests
-- Private/public key authentication
 - Response handler for different type of script output e.g. json
 - Feature that will optionally allow to store schema file within the connector jar
 - Test on Unix/Linux based systems

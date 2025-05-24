@@ -7,7 +7,9 @@ import com.inalogy.midpoint.connectors.ssh.AdaptiveSshConfiguration;
 import com.inalogy.midpoint.connectors.ssh.utils.dynamicconfig.DynamicConfiguration;
 import com.inalogy.midpoint.connectors.ssh.utils.Constants;
 
+import com.inalogy.midpoint.connectors.ssh.utils.dynamicconfig.FlagSettings;
 import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.exceptions.AlreadyExistsException;
 import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.common.exceptions.ConnectorIOException;
@@ -20,6 +22,7 @@ import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
+import org.identityconnectors.framework.common.exceptions.UnknownUidException;
 
 /**
  * This class is responsible for Initializing and establishing Ssh connection and Ssh session spawning, Execution of commands.
@@ -97,6 +100,7 @@ public class SessionManager {
 
         LOG.ok("SSH command exit status: {0}", cmd.getExitStatus());
         closeSession();
+        handleErrors(output);
         return output;
     }
 
@@ -132,6 +136,17 @@ public class SessionManager {
         }
     }
 
+    public void handleErrors(String rawOutput){
+        String ALREADY_EXISTS_ERROR_RESPONSE = this.dynamicConfiguration.getSettings().getCreateOperationSettings().getAlreadyExistsErrorParameter();
+        String OBJECT_NOT_FOUND_ERROR_RESPONSE = this.dynamicConfiguration.getSettings().getUpdateOperationSettings().getUnknownUidException();
+
+        if (rawOutput.contains(ALREADY_EXISTS_ERROR_RESPONSE)){
+            throw new AlreadyExistsException(rawOutput);
+        } else if (rawOutput.contains(OBJECT_NOT_FOUND_ERROR_RESPONSE)) {
+            throw new UnknownUidException(rawOutput);
+        }
+
+    }
 
     public boolean isConnectionAlive(){
         return ssh != null && ssh.isConnected();

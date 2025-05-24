@@ -3,6 +3,7 @@ package com.inalogy.midpoint.connectors.ssh.cmd;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import com.inalogy.midpoint.connectors.ssh.AdaptiveSshConfiguration;
 import com.inalogy.midpoint.connectors.ssh.utils.dynamicconfig.ConnectorSettings;
@@ -188,25 +189,23 @@ public class CommandProcessor {
      * @return String response
      */
     public String processAndExecuteCommand(Set<Attribute> attributes, String operationName, SchemaType schemaType){
-        String operationScript;
-        switch (operationName){
-            case Constants.SEARCH_OPERATION:
-                operationScript = schemaType.getSearchScript();
-                break;
-            case Constants.UPDATE_OPERATION:
-                operationScript = schemaType.getUpdateScript();
-                break;
-            case Constants.CREATE_OPERATION:
-                operationScript = schemaType.getCreateScript();
-                break;
-            case Constants.DELETE_OPERATION:
-                operationScript = schemaType.getDeleteScript();
-                break;
-            default:
+        String operationScript = switch (operationName) {
+            case Constants.SEARCH_OPERATION -> schemaType.getSearchScript();
+            case Constants.UPDATE_OPERATION -> schemaType.getUpdateScript();
+            case Constants.CREATE_OPERATION -> schemaType.getCreateScript();
+            case Constants.DELETE_OPERATION -> schemaType.getDeleteScript();
+            default -> {
                 LOG.error("Unsupported operation");
                 throw new RuntimeException("Unsupported operation");
-        }
+            }
+        };
         String sshProcessedCommand = process(attributes, operationScript);
-        return this.sshManager.exec(sshProcessedCommand);
+
+        long start = System.nanoTime();
+        String result = this.sshManager.exec(sshProcessedCommand);
+        long durationMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
+
+        LOG.ok("commandExecutionTime: [{0}] took {1} ms", operationName, durationMs);
+        return result;
     }
 }

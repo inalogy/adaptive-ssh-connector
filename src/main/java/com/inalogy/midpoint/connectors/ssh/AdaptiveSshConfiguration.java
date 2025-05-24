@@ -7,6 +7,11 @@ import org.identityconnectors.framework.spi.AbstractConfiguration;
 import org.identityconnectors.framework.spi.ConfigurationProperty;
 import org.identityconnectors.framework.spi.StatefulConfiguration;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
 public class AdaptiveSshConfiguration extends AbstractConfiguration implements StatefulConfiguration {
 
     /**
@@ -35,7 +40,7 @@ public class AdaptiveSshConfiguration extends AbstractConfiguration implements S
      * Private Key for public key authentication.
      * The format is PKCS8.
      */
-    private GuardedString privateKey = null;
+    private String privateKeyFilePath;
 
     /**
      * Passphrase for public key authentication.
@@ -72,7 +77,70 @@ public class AdaptiveSshConfiguration extends AbstractConfiguration implements S
 
     @Override
     public void validate() {
+        if (host == null || host.isBlank()) {
+            throw new IllegalArgumentException("Host must be provided.");
+        }
+
+        if (port <= 0 || port > 65535) {
+            throw new IllegalArgumentException("Port must be in range 1-65535.");
+        }
+
+        if (username == null || username.isBlank()) {
+            throw new IllegalArgumentException("Username must be provided.");
+        }
+
+        if (schemaFilePath == null || schemaFilePath.isBlank()) {
+            throw new IllegalArgumentException("Schema file path must be provided.");
+        }
+
+        File schemaFile = new File(schemaFilePath);
+        if (!schemaFile.exists() || !schemaFile.isFile()) {
+            throw new IllegalArgumentException("Schema file not found: " + schemaFile.getPath());
+        }
+
+        if (dynamicConfigurationFilePath == null || dynamicConfigurationFilePath.isBlank()) {
+            throw new IllegalArgumentException("Dynamic configuration file path must be provided.");
+        }
+
+        File configFile = new File(dynamicConfigurationFilePath);
+        if (!configFile.exists() || !configFile.isFile()) {
+            throw new IllegalArgumentException("Dynamic configuration file not found: " + configFile.getPath());
+        }
+
+        File dynamicConfig = new File(dynamicConfigurationFilePath);
+        if (!dynamicConfig.exists() || !dynamicConfig.isFile()) {
+            throw new IllegalArgumentException("Dynamic configuration file not found: " + configFile.getPath());
+        }
+
+        if (AUTHENTICATION_SCHEME_PASSWORD.equalsIgnoreCase(authenticationScheme)) {
+            if (password == null) {
+                throw new IllegalArgumentException("Password must be provided when using password authentication.");
+            }
+
+        } else if (AUTHENTICATION_SCHEME_PUBLIC_KEY.equalsIgnoreCase(authenticationScheme)) {
+            if (privateKeyFilePath == null || privateKeyFilePath.isBlank()) {
+                throw new IllegalArgumentException("Private key file path must be provided for public key authentication.");
+            }
+
+            File keyFile = new File(privateKeyFilePath);
+            if (!keyFile.exists() || !keyFile.isFile()) {
+                throw new IllegalArgumentException("Private key file not found: " + keyFile.getPath());
+            }
+
+            try (BufferedReader reader = new BufferedReader(new FileReader(keyFile))) {
+                String firstLine = reader.readLine();
+                if (firstLine == null || !firstLine.startsWith("-----BEGIN")) {
+                    throw new IllegalArgumentException("Private key file does not appear to be a valid PEM file: " + keyFile.getPath());
+                }
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Unable to read private key file: " + keyFile.getPath(), e);
+            }
+
+        } else {
+            throw new IllegalArgumentException("Unsupported authentication scheme: " + authenticationScheme);
+        }
     }
+
 
     @ConfigurationProperty(order = 10,
             displayMessageKey = "SchemaFilePath.display",
@@ -152,14 +220,14 @@ public class AdaptiveSshConfiguration extends AbstractConfiguration implements S
     }
 
     @ConfigurationProperty(order = 150,
-            displayMessageKey = "PrivateKey.display",
-            helpMessageKey = "PrivateKey.help")
-    public GuardedString getPrivateKey() {
-        return privateKey;
+            displayMessageKey = "PrivateKeyFilePath.display",
+            helpMessageKey = "PrivateKeyFilePath.help")
+    public String getPrivateKeyFilePath() {
+        return privateKeyFilePath;
     }
 
-    public void setPrivateKey(GuardedString privateKey) {
-        this.privateKey = privateKey;
+    public void setPrivateKeyFilePath(String privateKeyFilePath) {
+        this.privateKeyFilePath = privateKeyFilePath;
     }
 
     @ConfigurationProperty(order = 160,
