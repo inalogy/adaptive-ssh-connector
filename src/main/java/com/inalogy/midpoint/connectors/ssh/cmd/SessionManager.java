@@ -1,7 +1,14 @@
 package com.inalogy.midpoint.connectors.ssh.cmd;
 
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import com.inalogy.midpoint.connectors.ssh.AdaptiveSshConfiguration;
 import com.inalogy.midpoint.connectors.ssh.utils.dynamicconfig.DynamicConfiguration;
@@ -24,11 +31,10 @@ import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 import org.identityconnectors.framework.common.exceptions.UnknownUidException;
 
-/**
- * This class is responsible for Initializing and establishing Ssh connection and Ssh session spawning, Execution of commands.
- */
 public class SessionManager {
-
+    private Session.Shell shell = null;
+    private BufferedReader shellReader = null;
+    private OutputStream shellWriter = null;
     private final AdaptiveSshConfiguration configuration;
     private SSHClient ssh;
     private Session session = null;
@@ -42,15 +48,17 @@ public class SessionManager {
         this.hostKeyVerifier = new ConnectorKnownHostsVerifier().parse(this.configuration.getKnownHosts());
         this.authManager = new AuthenticationManager(this.configuration);
         this.dynamicConfiguration = dynamicConfiguration;
-
     }
 
-    /**
-     *
-     * @param processedCommand e.g. C:/Users/test/Desktop/searchScript.ps1 -ExchangeGuid "someguid"
-     * @return Response as String
-     */
     public String exec(String processedCommand) {
+        if (configuration.isUsePersistentShell()) {
+            return execViaShell(processedCommand);
+        } else {
+            return execViaExec(processedCommand);
+        }
+    }
+
+    private String execViaExec(String processedCommand) {
         startSession();
         final Session.Command cmd;
         try {
@@ -73,19 +81,7 @@ public class SessionManager {
             LOG.ok("command exitSignal: {0}", cmd.getExitSignal());
             LOG.ok("--------------------------------------");
 
-            //throwing Exception based on exitStatus (e.g. !Integer.valueOf(0).equals(cmd.getExitStatus()) ) was not feasible
-            // - calling powershell successfully returned exitCode null
-            // - there may be return codes <> 0 having empty error stream. E.g. calling grep (linux) having empty result
-            // simple solution: throw Exception if there is something in error stream
             if (!error.isEmpty()){
-                LOG.error("---- error executing ssh command ----");
-                LOG.error("-- processedCommand: {0} ", processedCommand);
-                LOG.error("-- command output: {0}", output);
-                LOG.error("-- command error: {0}", error);
-                LOG.error("-- command exitErrorMsg: {0}", cmd.getExitErrorMessage());
-                LOG.error("-- command exitStatus: {0}", cmd.getExitStatus());
-                LOG.error("-- command exitSignal: {0}", cmd.getExitSignal());
-                LOG.error("--------------------------------------");
                 throw new ConnectorException("Error executing SSH command: " + error);
             }
         } catch (IOException e) {
@@ -104,34 +100,85 @@ public class SessionManager {
         return output;
     }
 
-    /**
-     * Establish connection with remote SSH Server.
-     * Single SshClient connection can handle multiple Sessions
-     * For maximum performance we need to keep SshClient alive, so we prevent establishing connection for every request
-     */
+    private String execViaShell(String processedCommand) {
+        startSession();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        try {
+            String newLineSeparator = this.dynamicConfiguration.getSettings()
+                    .getScriptResponseSettings()
+                    .getResponseNewLineSeparator();
+
+            String uuid = UUID.randomUUID().toString();
+            String startMarker = "__COMMAND_START__" + uuid;
+            String endMarker = "__COMMAND_DONE__" + uuid;
+
+            String finalCommand = "echo " + startMarker + " ; " + processedCommand + " ; echo " + endMarker + "\r\n";
+            shellWriter.write(finalCommand.getBytes(StandardCharsets.UTF_8));
+            shellWriter.flush();
+
+            Callable<String> shellReadTask = () -> {
+                StringBuilder outputBuilder = new StringBuilder();
+                boolean insideCommandOutput = false;
+                String line;
+
+                while ((line = shellReader.readLine()) != null) {
+                    LOG.ok("SHELL LINE: {0}", line);
+
+                    if (line.contains(startMarker)) {
+                        insideCommandOutput = true;
+                        continue;
+                    }
+
+                    if (line.contains(endMarker)) {
+                        int markerIndex = line.indexOf(endMarker);
+                        outputBuilder.append(line, 0, markerIndex);
+                        break;
+                    }
+
+                    if (insideCommandOutput) {
+                        outputBuilder.append(line).append(newLineSeparator);
+                    }
+                }
+
+                return outputBuilder.toString().trim();
+            };
+
+            Future<String> future = executor.submit(shellReadTask);
+            String output = future.get(configuration.getSshResponseTimeout(), TimeUnit.SECONDS);
+
+            handleErrors(output);
+            return output;
+
+        } catch (TimeoutException e) {
+            closeSession();
+            LOG.error("SSH shell command timed out. Closing session");
+            throw new ConnectorIOException("SSH shell command timed out after "
+                    + configuration.getSshResponseTimeout() + " seconds", e);
+        } catch (Exception e) {
+            throw new ConnectorIOException("Error executing command via shell: " + e.getMessage(), e);
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+
+
+
     public void initSshClient(){
-
         if (ssh == null || !ssh.isConnected()) {
-
             DefaultConfig defaultConfig = new DefaultConfig();
             defaultConfig.setKeepAliveProvider(KeepAliveProvider.KEEP_ALIVE);
             ssh = new SSHClient(defaultConfig);
-
-            // Keep Alive must be supported by ssh server
             ssh.getConnection().getKeepAlive().setKeepAliveInterval(Constants.SSH_CLIENT_KEEP_ALIVE_INTERVAL);
-
             ssh.addHostKeyVerifier(hostKeyVerifier);
-
             try {
-                // connect should occur only once till connection is dropped
                 ssh.connect(configuration.getHost(), configuration.getPort());
                 LOG.info("Connecting to {0}", authManager.getConnectionDesc());
             } catch (IOException e) {
                 LOG.error("Error creating SSH connection to {0}: {1}", authManager.getHostDesc(), e.getMessage());
                 throw new ConnectionFailedException("Error creating SSH connection to " + authManager.getHostDesc() + ": " + e.getMessage(), e);
             }
-        }
-        else {
+        } else {
             LOG.ok("reusing Ssh client");
         }
     }
@@ -152,9 +199,6 @@ public class SessionManager {
         return ssh != null && ssh.isConnected();
     }
 
-    /**
-     * Dispose SshClient and close connection when connectors is disposed
-     */
     public void disposeSshClient(){
         if (ssh != null && ssh.isConnected()){
             try {
@@ -162,34 +206,47 @@ public class SessionManager {
                 ssh.disconnect();
             } catch (IOException e) {
                 LOG.error("Exception occurred while disposing SSHClient: " + e);
-
             }
         }
     }
 
-    /**
-     * For every request we need to create new session
-     */
     public void startSession() {
         initSshClient();
+        String preloadScriptPath = "";
+        FlagSettings preloadScriptSettings = this.dynamicConfiguration.getSettings().getConnectorSettings().getPreloadScript();
+        if (preloadScriptSettings.isEnabled()){
+            preloadScriptPath = preloadScriptSettings.getValue();
+        }
         if (ssh != null && ssh.isConnected() && !ssh.isAuthenticated()) {
             authManager.authenticate(ssh);
         }
         try {
-            if (ssh != null && ssh.isConnected()){
+            if (ssh != null && ssh.isConnected() && session == null) {
                 session = ssh.startSession();
-            }
+                if (configuration.isUsePersistentShell()) {
 
-        } catch (ConnectionException | TransportException e) {
-            LOG.error("Communication error while creating SSH session for {1} failed: {2}", authManager.getConnectionDesc(), e.getMessage());
-            throw new ConnectionFailedException("Communication error while creating SSH session for "+authManager.getConnectionDesc()+" failed: " + e.getMessage(), e);
+                    shell = session.startShell();
+                    shellWriter = shell.getOutputStream();
+                    shellReader = new BufferedReader(new InputStreamReader(shell.getInputStream()));
+
+                    if (preloadScriptPath != null && !preloadScriptPath.isEmpty()) {
+                        String command = ". '" + preloadScriptPath + "'\n";
+                        try {
+                            shellWriter.write(command.getBytes(StandardCharsets.UTF_8));
+                            shellWriter.flush();
+                            LOG.ok("Preload script executed: {0}", preloadScriptPath);
+                        } catch (IOException e) {
+                            LOG.error("Failed to execute preload script: {0} {1}", e.getMessage(), e);
+                            throw new ConnectionFailedException("Failed to execute preload script: " + e.getMessage(), e);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new ConnectionFailedException("Error starting SSH session/shell: " + e.getMessage(), e);
         }
-        LOG.ok("Session Started: {0}", authManager.getConnectionDesc());
     }
 
-    /**
-     * Every session can be used to execute only single command, after each exec we need to closeSession
-     */
     public void closeSession(){
         if (ssh.isConnected() && session.isOpen()) {
             LOG.ok("Disconnecting from {0}", authManager.getConnectionDesc());
@@ -201,5 +258,4 @@ public class SessionManager {
             LOG.ok("Connection to {0} disconnected", authManager.getConnectionDesc());
         }
     }
-
 }
