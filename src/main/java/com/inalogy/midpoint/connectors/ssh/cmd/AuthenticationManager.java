@@ -2,6 +2,8 @@ package com.inalogy.midpoint.connectors.ssh.cmd;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 import com.inalogy.midpoint.connectors.ssh.AdaptiveSshConfiguration;
 
@@ -83,8 +85,9 @@ public class AuthenticationManager {
                 if (configuration.getPassphrase() != null) {
                     GuardedStringAccessor passphraseAccessor = new GuardedStringAccessor();
                     configuration.getPassphrase().access(passphraseAccessor);
+                    String keyContent = Files.readString(keyFile.toPath(), StandardCharsets.UTF_8);
                     keyProvider = ssh.loadKeys(
-                            keyFile.getAbsolutePath(),
+                            keyContent,
                             null,
                             PasswordUtils.createOneOff(passphraseAccessor.getClearChars())
                     );
