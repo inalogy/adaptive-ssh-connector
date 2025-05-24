@@ -212,11 +212,6 @@ public class SessionManager {
 
     public void startSession() {
         initSshClient();
-        String preloadScriptPath = "";
-        FlagSettings preloadScriptSettings = this.dynamicConfiguration.getSettings().getConnectorSettings().getPreloadScript();
-        if (preloadScriptSettings.isEnabled()){
-            preloadScriptPath = preloadScriptSettings.getValue();
-        }
         if (ssh != null && ssh.isConnected() && !ssh.isAuthenticated()) {
             authManager.authenticate(ssh);
         }
@@ -229,6 +224,11 @@ public class SessionManager {
                     shellWriter = shell.getOutputStream();
                     shellReader = new BufferedReader(new InputStreamReader(shell.getInputStream()));
 
+                    String preloadScriptPath = "";
+                    FlagSettings preloadScriptSettings = this.dynamicConfiguration.getSettings().getConnectorSettings().getPreloadScript();
+                    if (preloadScriptSettings != null && preloadScriptSettings.isEnabled()){
+                        preloadScriptPath = preloadScriptSettings.getValue();
+                    }
                     if (preloadScriptPath != null && !preloadScriptPath.isEmpty()) {
                         String command = ". '" + preloadScriptPath + "'\n";
                         try {
