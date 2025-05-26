@@ -102,21 +102,38 @@ public class SessionManager {
 
     private String execViaShell(String processedCommand) {
         startSession();
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-
         try {
-            String newLineSeparator = this.dynamicConfiguration.getSettings()
-                    .getScriptResponseSettings()
-                    .getResponseNewLineSeparator();
+            String output = runShellWithMarkers(processedCommand, configuration.getSshResponseTimeout());
 
-            String uuid = UUID.randomUUID().toString();
-            String startMarker = "__COMMAND_START__" + uuid;
-            String endMarker = "__COMMAND_DONE__" + uuid;
+            handleErrors(output);
+            return output;
 
-            String finalCommand = "echo " + startMarker + " ; " + processedCommand + " ; echo " + endMarker + "\r\n";
-            shellWriter.write(finalCommand.getBytes(StandardCharsets.UTF_8));
-            shellWriter.flush();
+        } catch (TimeoutException e) {
+            closeSession();
+            LOG.error("SSH shell command timed out. Closing session");
+            throw new ConnectorIOException("SSH shell command timed out after "
+                    + configuration.getSshResponseTimeout() + " seconds", e);
+        } catch (Exception e) {
+            throw new ConnectorIOException("Error executing command via shell: " + e.getMessage(), e);
+        }
+    }
 
+
+    private String runShellWithMarkers(String processedCommand, int timeoutSeconds) throws Exception {
+        String newLineSeparator = this.dynamicConfiguration.getSettings()
+                .getScriptResponseSettings()
+                .getResponseNewLineSeparator();
+
+        String uuid = UUID.randomUUID().toString();
+        String startMarker = "__COMMAND_START__" + uuid;
+        String endMarker = "__COMMAND_DONE__" + uuid;
+
+        String finalCommand = "echo " + startMarker + " ; " + processedCommand + " ; echo " + endMarker + "\r\n";
+        //FIXME: reconsider how expired sessions should be handled?!Custom error flag to reinit preloadScript
+        shellWriter.write(finalCommand.getBytes(StandardCharsets.UTF_8));
+        shellWriter.flush();
+
+        try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
             Callable<String> shellReadTask = () -> {
                 StringBuilder outputBuilder = new StringBuilder();
                 boolean insideCommandOutput = false;
@@ -145,22 +162,11 @@ public class SessionManager {
             };
 
             Future<String> future = executor.submit(shellReadTask);
-            String output = future.get(configuration.getSshResponseTimeout(), TimeUnit.SECONDS);
-
-            handleErrors(output);
-            return output;
-
-        } catch (TimeoutException e) {
-            closeSession();
-            LOG.error("SSH shell command timed out. Closing session");
-            throw new ConnectorIOException("SSH shell command timed out after "
-                    + configuration.getSshResponseTimeout() + " seconds", e);
-        } catch (Exception e) {
-            throw new ConnectorIOException("Error executing command via shell: " + e.getMessage(), e);
-        } finally {
-            executor.shutdownNow();
+            return future.get(timeoutSeconds, TimeUnit.SECONDS);
         }
     }
+
+
 
 
 
@@ -183,16 +189,21 @@ public class SessionManager {
         }
     }
 
-    public void handleErrors(String rawOutput){
-        String ALREADY_EXISTS_ERROR_RESPONSE = this.dynamicConfiguration.getSettings().getCreateOperationSettings().getAlreadyExistsErrorParameter();
-        String OBJECT_NOT_FOUND_ERROR_RESPONSE = this.dynamicConfiguration.getSettings().getUpdateOperationSettings().getUnknownUidException();
+    public void handleErrors(String rawOutput) {
+        String alreadyExistsMsg = dynamicConfiguration.getSettings().getCreateOperationSettings().getAlreadyExistsErrorParameter();
+        String unknownUidMsg = dynamicConfiguration.getSettings().getUpdateOperationSettings().getUnknownUidException();
+        String fatalErrorMsg = dynamicConfiguration.getSettings().getSearchOperationSettings().getGeneralFatalErrorMessage();
 
-        if (rawOutput.contains(ALREADY_EXISTS_ERROR_RESPONSE)){
+        if (alreadyExistsMsg != null && rawOutput.contains(alreadyExistsMsg)) {
+            LOG.warn("Handled AlreadyExists condition: {0}", rawOutput);
             throw new AlreadyExistsException(rawOutput);
-        } else if (rawOutput.contains(OBJECT_NOT_FOUND_ERROR_RESPONSE)) {
+        } else if (unknownUidMsg != null && rawOutput.contains(unknownUidMsg)) {
+            LOG.error("Unknown UID encountered: {0}", rawOutput);
             throw new UnknownUidException(rawOutput);
+        } else if (fatalErrorMsg != null && !fatalErrorMsg.isEmpty() && rawOutput.contains(fatalErrorMsg)) {
+            LOG.error("Fatal error in response: {0}", rawOutput);
+            throw new ConnectorException("Fatal error in response: " + rawOutput);
         }
-
     }
 
     public boolean isConnectionAlive(){
@@ -228,16 +239,8 @@ public class SessionManager {
                     FlagSettings preloadScriptSettings = this.dynamicConfiguration.getSettings().getConnectorSettings().getPreloadScript();
                     if (preloadScriptSettings != null && preloadScriptSettings.isEnabled()){
                         preloadScriptPath = preloadScriptSettings.getValue();
-                    }
-                    if (preloadScriptPath != null && !preloadScriptPath.isEmpty()) {
-                        String command = ". '" + preloadScriptPath + "'\n";
-                        try {
-                            shellWriter.write(command.getBytes(StandardCharsets.UTF_8));
-                            shellWriter.flush();
-                            LOG.ok("Preload script executed: {0}", preloadScriptPath);
-                        } catch (IOException e) {
-                            LOG.error("Failed to execute preload script: {0} {1}", e.getMessage(), e);
-                            throw new ConnectionFailedException("Failed to execute preload script: " + e.getMessage(), e);
+                        if (preloadScriptPath != null && !preloadScriptPath.isEmpty()){
+                            executePreloadScript(preloadScriptPath);
                         }
                     }
                 }
@@ -246,6 +249,28 @@ public class SessionManager {
             throw new ConnectionFailedException("Error starting SSH session/shell: " + e.getMessage(), e);
         }
     }
+
+    private void executePreloadScript(String preloadScriptPath) {
+        if (preloadScriptPath != null && !preloadScriptPath.isEmpty()) {
+            String command = ". '" + preloadScriptPath + "'";
+            try {
+                String output = runShellWithMarkers(command, configuration.getSshResponseTimeout());
+
+                if (!output.isEmpty()) {
+                    LOG.error("Preload script produced unexpected output:\n{0}", output);
+                    throw new ConnectorIOException("Unexpected output during preload script execution:\n" + output +
+                            "preloadScript must produce NO OUTPUT if execution was successful");
+                } else {
+                    LOG.ok("Preload script executed successfully: {0}", preloadScriptPath);
+                }
+
+            } catch (Exception e) {
+                LOG.error("Failed to execute preload script: {0} {1}", e.getMessage(), e);
+                throw new ConnectionFailedException("Failed to execute preload script: " + e.getMessage(), e);
+            }
+        }
+    }
+
 
     public void closeSession(){
         if (ssh.isConnected() && session.isOpen()) {
