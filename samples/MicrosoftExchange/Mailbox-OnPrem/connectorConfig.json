@@ -53,7 +53,8 @@
       "deleteSuccessResponse": ""
     },
     "searchOperationSettings": {
-      "noResultSuccessMessage": ""
+      "noResultSuccessMessage": "",
+      "generalFatalErrorMessage": "__FATAL_ERROR__"
     }
   }
 }
