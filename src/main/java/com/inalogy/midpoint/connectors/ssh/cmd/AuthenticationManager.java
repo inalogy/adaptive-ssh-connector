@@ -1,6 +1,9 @@
 package com.inalogy.midpoint.connectors.ssh.cmd;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 import com.inalogy.midpoint.connectors.ssh.AdaptiveSshConfiguration;
 
@@ -67,39 +70,50 @@ public class AuthenticationManager {
     private void authenticatePublicKey(SSHClient ssh) {
         LOG.ok("Authenticating to {0} using public key authentication", getConnectionDesc());
         try {
-            GuardedStringAccessor privateKey = new GuardedStringAccessor();
-            GuardedStringAccessor passphrase = new GuardedStringAccessor();
-
-            if (configuration.getPrivateKey() != null) {
-                configuration.getPrivateKey().access(privateKey);
-            }
-            if (configuration.getPassphrase() != null) {
-                configuration.getPassphrase().access(passphrase);
+            String privateKeyPath = configuration.getPrivateKeyFilePath();
+            if (privateKeyPath == null || privateKeyPath.isBlank()) {
+                throw new ConfigurationException("Private key file path is not configured.");
             }
 
-            if (privateKey.getClearChars() != null) {
-                KeyProvider keyProvider;
-                try {
-                    if (passphrase.getClearChars() != null) {
-                        keyProvider = ssh.loadKeys(privateKey.getClearString(), null, PasswordUtils.createOneOff(passphrase.getClearChars()));
-                    } else {
-                        keyProvider = ssh.loadKeys(privateKey.getClearString(), null, null);
-                    }
-                } catch (IOException e) {
-                    throw new ConfigurationException("Error parsing private key for SSH public key authentication", e);
+            File keyFile = new File(privateKeyPath);
+            if (!keyFile.exists()) {
+                throw new ConfigurationException("Private key file not found: " + privateKeyPath);
+            }
+
+            KeyProvider keyProvider;
+            try {
+                if (configuration.getPassphrase() != null) {
+                    GuardedStringAccessor passphraseAccessor = new GuardedStringAccessor();
+                    configuration.getPassphrase().access(passphraseAccessor);
+                    String keyContent = Files.readString(keyFile.toPath(), StandardCharsets.UTF_8);
+                    keyProvider = ssh.loadKeys(
+                            keyContent,
+                            null,
+                            PasswordUtils.createOneOff(passphraseAccessor.getClearChars())
+                    );
+                } else {
+                    keyProvider = ssh.loadKeys(keyFile.getAbsolutePath());
                 }
-                ssh.authPublickey(configuration.getUsername(), keyProvider);
-            } else {
-                ssh.authPublickey(configuration.getUsername());
+            } catch (IOException e) {
+                throw new ConfigurationException("Error loading private key from file: " + keyFile.getAbsolutePath(), e);
             }
+
+            ssh.authPublickey(configuration.getUsername(), keyProvider);
+
         } catch (UserAuthException e) {
-            LOG.error(e, "SSH public key authentication as {0} to {1} failed: {2}", configuration.getUsername(), getHostDesc(), e.getMessage());
-            throw new ConnectionFailedException("SSH public key authentication as "+configuration.getUsername()+" to "+getHostDesc()+" failed: " + e.getMessage(), e);
+            LOG.error(e, "SSH public key authentication as {0} to {1} failed: {2}",
+                    configuration.getUsername(), getHostDesc(), e.getMessage());
+            throw new ConnectionFailedException("SSH public key authentication as "
+                    + configuration.getUsername() + " to " + getHostDesc() + " failed: " + e.getMessage(), e);
+
         } catch (TransportException e) {
-            LOG.error(e, "Communication error during SSH public key authentication as {0} to {1} failed: {2}", configuration.getUsername(), getHostDesc(), e.getMessage());
-            throw new ConnectionFailedException("Communication error during SSH public key authentication as "+configuration.getUsername()+" to "+getHostDesc()+" failed: " + e.getMessage(), e);
+            LOG.error(e, "Communication error during SSH public key authentication as {0} to {1} failed: {2}",
+                    configuration.getUsername(), getHostDesc(), e.getMessage());
+            throw new ConnectionFailedException("Communication error during SSH public key authentication as "
+                    + configuration.getUsername() + " to " + getHostDesc() + " failed: " + e.getMessage(), e);
         }
     }
+
 
     protected String getConnectionDesc() {
         if (connectionDesc == null) {
