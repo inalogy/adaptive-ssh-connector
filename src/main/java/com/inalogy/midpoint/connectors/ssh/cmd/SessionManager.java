@@ -190,17 +190,8 @@ public class SessionManager {
     }
 
     public void handleErrors(String rawOutput) {
-        String alreadyExistsMsg = dynamicConfiguration.getSettings().getCreateOperationSettings().getAlreadyExistsErrorParameter();
-        String unknownUidMsg = dynamicConfiguration.getSettings().getUpdateOperationSettings().getUnknownUidException();
-        String fatalErrorMsg = dynamicConfiguration.getSettings().getSearchOperationSettings().getGeneralFatalErrorMessage();
-
-        if (alreadyExistsMsg != null && rawOutput.contains(alreadyExistsMsg)) {
-            LOG.warn("Handled AlreadyExists condition: {0}", rawOutput);
-            throw new AlreadyExistsException(rawOutput);
-        } else if (unknownUidMsg != null && rawOutput.contains(unknownUidMsg)) {
-            LOG.error("Unknown UID encountered: {0}", rawOutput);
-            throw new UnknownUidException(rawOutput);
-        } else if (fatalErrorMsg != null && !fatalErrorMsg.isEmpty() && rawOutput.contains(fatalErrorMsg)) {
+     String fatalErrorMsg = dynamicConfiguration.getSettings().getSearchOperationSettings().getGeneralFatalErrorMessage();
+        if (fatalErrorMsg != null && !fatalErrorMsg.isEmpty() && rawOutput.contains(fatalErrorMsg)) {
             LOG.error("Fatal error in response: {0}", rawOutput);
             throw new ConnectorException("Fatal error in response: " + rawOutput);
         }
