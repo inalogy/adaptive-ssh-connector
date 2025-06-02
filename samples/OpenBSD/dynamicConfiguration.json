@@ -1,5 +1,5 @@
 {
-  "configName": "Configuration for OPENBSD v1.1.0",
+  "configName": "Configuration for OPENBSD v1.3.0",
   "settings": {
 
     "scriptResponseSettings": {
@@ -18,7 +18,10 @@
         "enabled": false,
         "value": "doas"
       },
-
+      "preloadScript": {
+        "enabled": false,
+        "value": ""
+      },
       "icfsPasswordFlagEquivalent": {
         "enabled": true,
         "value": "password"
@@ -49,7 +52,8 @@
       "deleteSuccessResponse": ""
     },
     "searchOperationSettings": {
-      "noResultSuccessMessage": ""
+      "noResultSuccessMessage": "",
+      "generalFatalErrorMessage": "__FATAL_ERROR__"
     }
   }
 }

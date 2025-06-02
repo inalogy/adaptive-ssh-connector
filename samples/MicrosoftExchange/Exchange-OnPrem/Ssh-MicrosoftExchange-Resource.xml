@@ -21,7 +21,7 @@
         <icfc:configurationProperties xmlns:gen629="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/com.inalogy.midpoint.connectors.ssh/com.inalogy.midpoint.connectors.ssh.AdaptiveSshConnector">
             <gen629:host>ipAddr</gen629:host>
             <gen629:schemaFilePath>/opt/midpoint/var/ssh-schema/schemaConfig.json</gen629:schemaFilePath>
-            <gen629:dynamicConfigurationFilePath>/opt/midpoint/var/ssh-schema/connectorConfig.json</gen629:dynamicConfigurationFilePath>
+            <gen629:dynamicConfigurationFilePath>/opt/midpoint/var/ssh-schema/dynamicConfiguration.json</gen629:dynamicConfigurationFilePath>
             <gen629:shellType>powershell</gen629:shellType>
             <gen629:port>22</gen629:port>
             <gen629:username>svc-midpoint</gen629:username>

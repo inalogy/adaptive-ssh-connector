@@ -129,7 +129,7 @@ public class SessionManager {
         String endMarker = "__COMMAND_DONE__" + uuid;
 
         String finalCommand = "echo " + startMarker + " ; " + processedCommand + " ; echo " + endMarker + "\r\n";
-        //FIXME: reconsider how expired sessions should be handled?!Custom error flag to reinit preloadScript
+        //reconsider how expired sessions should be handled?!Custom error flag to reinit preloadScript? or kill session?
         shellWriter.write(finalCommand.getBytes(StandardCharsets.UTF_8));
         shellWriter.flush();
 
