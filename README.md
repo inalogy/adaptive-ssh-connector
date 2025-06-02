@@ -37,7 +37,7 @@ More info: https://github.com/PowerShell/Win32-OpenSSH/wiki/DefaultShell
 - Schema is generated from schemaConfig.json
 - Schema File should be properly secured and protected with appropriate permissions
 - Schema supports arbitrary number of ObjectClasses and their attributes
-- **Any modifications of schemaConfig.json or connectorConfig.json need to be carefully planned and tested, before any modification resource should be put into maintenance mode.**
+- **Any modifications of schemaConfig.json or dynamicConfiguration.json need to be carefully planned and tested, before any modification resource should be put into maintenance mode.**
 - script Paths containg white space need to be properly escaped 'with single quotes ' otherwise powershell reads them till first white space -> "C:\\Users\\**' PS Scripts'**\searchScript.ps1"
 - Every ObjectClass defined in schemaConfig.json must have the following parameters:
 ```
@@ -146,9 +146,9 @@ example:
   - for deleteOp it is recommended to define Constant that should be present in response when objectNotFound occurs
 
 ## Dynamic Connector Configuration
-#### Connector Configuration File: `connectorConfig.json`
+#### Dynamic Connector Configuration File: `dynamicConfiguration.json`
 
-The `connectorConfig.json` file serves as a centralized, flexible configuration hub for the adaptive SSH connector. This file decouples logic and behavior from hardcoding, enabling easier customization and maintenance. Below is a detailed explanation of its structure:
+The `dynamicConfiguration.json` file serves as a centralized, flexible configuration hub for the adaptive SSH connector. This file decouples logic and behavior from hardcoding, enabling easier customization and maintenance. Below is a detailed explanation of its structure:
 
 
 ### 1. **scriptResponseSettings**
@@ -162,6 +162,7 @@ Defines the formatting rules for processing responses from executed scripts:
 Manages connector-specific behaviors and transformations:
 - **`replaceWhiteSpaceCharacterInAttributeValues`**: Replaces spaces in attribute values with a custom character if enabled. If used remote script must handle replacing them back to spaces.
 - **`addSudoExecution`**: Enables or customizes sudo command execution for operations.
+- - **`preloadScript`**: Works only if connectorConfig usePersistentShell is enabled. Enables you to load and execute a PowerShell script once during the start of a persistent SSH session. See [Exchange Online preload script guide ➜](samples/MicrosoftExchange/Exchange-Online-Persistent-Shell:DistLists-Management/preloadScript-guide.md)
 - **`icfsPasswordFlagEquivalent`**: Maps the ICF `Password` flag to a custom equivalent parameter.
 - **`icfsUidFlagEquivalent`**: Maps the ICF `UID` flag to a custom equivalent parameter.
 - **`icfsNameFlagEquivalent`**: Maps the ICF `Name` flag to a custom equivalent parameter.
