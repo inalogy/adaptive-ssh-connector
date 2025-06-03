@@ -186,6 +186,7 @@ Customizes `DELETE` operations:
 ### 6. **searchOperationSettings**
 Adjusts `SEARCH` operation responses:
 - **`noResultSuccessMessage`**: Custom message when no search results are found.
+- **`generalFatalErrorMessage`**: General error can be thrown in every CRUD operation, should be thrown in case when fatal non-recoverable error.
 
 ---
 
