@@ -75,7 +75,7 @@ public class UniversalObjectsHandler {
             AttributeInfoBuilder nameAttrBuilder = new AttributeInfoBuilder(Name.NAME, String.class);
             nameAttrBuilder.setRequired(true);
             nameAttrBuilder.setCreateable(true);
-            nameAttrBuilder.setUpdateable(false);
+            nameAttrBuilder.setUpdateable(true);
             nameAttrBuilder.setReadable(true);
             objClassBuilder.addAttributeInfo(nameAttrBuilder.build());
         }
