@@ -20,7 +20,7 @@
         <assembly.path>src/main/assembly/connector.xml</assembly.path>
         <maven.jar.plugin.version>3.4.2</maven.jar.plugin.version>
         <java.version>21</java.version>
-        <com.hierynomus.version>0.38.0</com.hierynomus.version>
+        <com.hierynomus.version>0.40.0</com.hierynomus.version>
         <org.bouncycastle.version>1.70</org.bouncycastle.version>
         <org.testing.version>7.7.0</org.testing.version>
         <org.json.version>20230227</org.json.version>
