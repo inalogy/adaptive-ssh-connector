@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -104,24 +105,28 @@ public class SessionManager {
         startSession();
         try {
             String output = runShellWithMarkers(processedCommand, configuration.getSshResponseTimeout());
-
             handleErrors(output);
             return output;
 
-        } catch (TimeoutException e) {
+        } catch (TimeoutException | IOException e) {
             closeSession();
             LOG.error("SSH shell command timed out. Closing session");
             throw new ConnectorIOException("SSH shell command timed out after "
                     + configuration.getSshResponseTimeout() + " seconds", e);
-        } catch (Exception e) {
+        } catch (ExecutionException e) {
             closeSession();
-            LOG.error("Unexpected error while execViaShell {0}", e.getMessage());
-            throw new ConnectorIOException("Error executing command via shell: " + e.getMessage(), e);
+            Throwable cause = e.getCause() != null ? e.getCause() : e;
+            LOG.error("Shell execution failed", cause);
+            throw new ConnectorIOException("Shell execution failed: " + cause.getMessage(), cause);
+        } catch (InterruptedException e) {
+            closeSession();
+            LOG.error("Shell execution was interrupted", e);
+            throw new ConnectorIOException("Shell execution was interrupted", e);
         }
     }
 
 
-    private String runShellWithMarkers(String processedCommand, int timeoutSeconds) throws Exception {
+    private String runShellWithMarkers(String processedCommand, int timeoutSeconds) throws TimeoutException, IOException, ExecutionException, InterruptedException {
         String newLineSeparator = this.dynamicConfiguration.getSettings()
                 .getScriptResponseSettings()
                 .getResponseNewLineSeparator();
@@ -131,8 +136,6 @@ public class SessionManager {
         String endMarker = "__COMMAND_DONE__" + uuid;
 
         String finalCommand = "echo " + startMarker + " ; " + processedCommand + " ; echo " + endMarker + "\r\n";
-        //reconsider how expired sessions should be handled?!Custom error flag to reinit preloadScript? or kill session?
-        // or kill session on GeneralFatalError?
         shellWriter.write(finalCommand.getBytes(StandardCharsets.UTF_8));
         shellWriter.flush();
 
@@ -195,6 +198,9 @@ public class SessionManager {
     public void handleErrors(String rawOutput) {
      String fatalErrorMsg = dynamicConfiguration.getSettings().getSearchOperationSettings().getGeneralFatalErrorMessage();
         if (fatalErrorMsg != null && !fatalErrorMsg.isEmpty() && rawOutput.contains(fatalErrorMsg)) {
+            if (this.configuration.isUsePersistentShell()){
+                closeSession();
+            }
             LOG.error("Fatal error in response: {0}", rawOutput);
             throw new ConnectorException("Fatal error in response: " + rawOutput);
         }
