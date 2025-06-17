@@ -132,6 +132,7 @@ public class SessionManager {
 
         String finalCommand = "echo " + startMarker + " ; " + processedCommand + " ; echo " + endMarker + "\r\n";
         //reconsider how expired sessions should be handled?!Custom error flag to reinit preloadScript? or kill session?
+        // or kill session on GeneralFatalError?
         shellWriter.write(finalCommand.getBytes(StandardCharsets.UTF_8));
         shellWriter.flush();
 
