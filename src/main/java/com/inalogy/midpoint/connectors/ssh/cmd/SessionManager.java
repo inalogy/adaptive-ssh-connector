@@ -196,6 +196,9 @@ public class SessionManager {
      String fatalErrorMsg = dynamicConfiguration.getSettings().getSearchOperationSettings().getGeneralFatalErrorMessage();
         if (fatalErrorMsg != null && !fatalErrorMsg.isEmpty() && rawOutput.contains(fatalErrorMsg)) {
             LOG.error("Fatal error in response: {0}", rawOutput);
+            if (this.configuration.isUsePersistentShell()){
+                closeSession();
+            }
             throw new ConnectorException("Fatal error in response: " + rawOutput);
         }
     }
