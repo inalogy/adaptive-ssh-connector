@@ -114,6 +114,8 @@ public class SessionManager {
             throw new ConnectorIOException("SSH shell command timed out after "
                     + configuration.getSshResponseTimeout() + " seconds", e);
         } catch (Exception e) {
+            closeSession();
+            LOG.error("Unexpected error while execViaShell {0}", e.getMessage());
             throw new ConnectorIOException("Error executing command via shell: " + e.getMessage(), e);
         }
     }
@@ -263,11 +265,13 @@ public class SessionManager {
     }
 
 
-    public void closeSession(){
-        if (ssh.isConnected() && session.isOpen()) {
+    public void closeSession() {
+        if ((ssh.isConnected() && session != null && session.isOpen()) || configuration.isUsePersistentShell()) {
             LOG.ok("Disconnecting from {0}", authManager.getConnectionDesc());
             try {
-                session.close();
+                if (session != null) {
+                    session.close();
+                }
             } catch (ConnectionException | TransportException e) {
                 LOG.warn("Error closing SSH session for {0}: {1} (ignoring)", authManager.getConnectionDesc(), e.getMessage());
             }
