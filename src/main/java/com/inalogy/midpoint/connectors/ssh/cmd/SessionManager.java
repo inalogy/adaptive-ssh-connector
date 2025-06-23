@@ -139,7 +139,8 @@ public class SessionManager {
         shellWriter.write(finalCommand.getBytes(StandardCharsets.UTF_8));
         shellWriter.flush();
 
-        try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
             Callable<String> shellReadTask = () -> {
                 StringBuilder outputBuilder = new StringBuilder();
                 boolean insideCommandOutput = false;
@@ -169,7 +170,10 @@ public class SessionManager {
 
             Future<String> future = executor.submit(shellReadTask);
             return future.get(timeoutSeconds, TimeUnit.SECONDS);
+        } finally {
+            executor.shutdownNow();
         }
+
     }
 
 
