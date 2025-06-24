@@ -2,6 +2,7 @@ package com.inalogy.midpoint.connectors.ssh.cmd;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -244,7 +245,7 @@ public class SessionManager {
                     if (preloadScriptSettings != null && preloadScriptSettings.isEnabled()){
                         preloadScriptPath = preloadScriptSettings.getValue();
                         if (preloadScriptPath != null && !preloadScriptPath.isEmpty()){
-                            executePreloadScript(preloadScriptPath);
+                            executePreloadScript(preloadScriptPath, preloadScriptSettings);
                         }
                     }
                 }
@@ -254,18 +255,19 @@ public class SessionManager {
         }
     }
 
-    private void executePreloadScript(String preloadScriptPath) {
+    private void executePreloadScript(String preloadScriptPath,FlagSettings preloadScriptSettings) {
         if (preloadScriptPath != null && !preloadScriptPath.isEmpty()) {
             String command = ". '" + preloadScriptPath + "'";
             try {
                 String output = runShellWithMarkers(command, configuration.getSshResponseTimeout());
 
-                if (!output.isEmpty()) {
+                if (Objects.equals(output, preloadScriptSettings.getSuccessReturnValue())) {
+                    LOG.ok("Preload script executed successfully: {0}", preloadScriptPath);
+
+                } else {
                     LOG.error("Preload script produced unexpected output:\n{0}", output);
                     throw new ConnectorIOException("Unexpected output during preload script execution:\n" + output +
                             "preloadScript must produce NO OUTPUT if execution was successful");
-                } else {
-                    LOG.ok("Preload script executed successfully: {0}", preloadScriptPath);
                 }
 
             } catch (Exception e) {
