@@ -266,8 +266,7 @@ public class SessionManager {
 
                 } else {
                     LOG.error("Preload script produced unexpected output:\n{0}", output);
-                    throw new ConnectorIOException("Unexpected output during preload script execution:\n" + output +
-                            "preloadScript must produce NO OUTPUT if execution was successful");
+                    throw new ConnectorIOException("Unexpected output during preload script execution:\n" + output);
                 }
 
             } catch (Exception e) {
