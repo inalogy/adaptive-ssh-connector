@@ -232,7 +232,7 @@ public class SessionManager {
             authManager.authenticate(ssh);
         }
         try {
-            if (ssh != null && ssh.isConnected() && session == null) {
+            if (ssh != null && ssh.isConnected()) {
                 session = ssh.startSession();
                 if (configuration.isUsePersistentShell()) {
 
@@ -266,11 +266,13 @@ public class SessionManager {
 
                 } else {
                     LOG.error("Preload script produced unexpected output:\n{0}", output);
+                    closeSession();
                     throw new ConnectorIOException("Unexpected output during preload script execution:\n" + output);
                 }
 
             } catch (Exception e) {
                 LOG.error("Failed to execute preload script: {0} {1}", e.getMessage(), e);
+                closeSession();
                 throw new ConnectionFailedException("Failed to execute preload script: " + e.getMessage(), e);
             }
         }
@@ -283,6 +285,7 @@ public class SessionManager {
             try {
                 if (session != null) {
                     session.close();
+                    session = null;
                 }
             } catch (ConnectionException | TransportException e) {
                 LOG.warn("Error closing SSH session for {0}: {1} (ignoring)", authManager.getConnectionDesc(), e.getMessage());
