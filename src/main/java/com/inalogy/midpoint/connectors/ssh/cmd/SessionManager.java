@@ -232,7 +232,7 @@ public class SessionManager {
             authManager.authenticate(ssh);
         }
         try {
-            if (ssh != null && ssh.isConnected()) {
+            if (ssh != null && ssh.isConnected() && session == null) {
                 session = ssh.startSession();
                 if (configuration.isUsePersistentShell()) {
 
@@ -259,6 +259,7 @@ public class SessionManager {
         if (preloadScriptPath != null && !preloadScriptPath.isEmpty()) {
             String command = ". '" + preloadScriptPath + "'";
             try {
+                LOG.info("executing preload script {0}", command);
                 String output = runShellWithMarkers(command, configuration.getSshResponseTimeout());
 
                 if (Objects.equals(output, preloadScriptSettings.getSuccessReturnValue())) {
