@@ -227,7 +227,7 @@ public class AdaptiveSshConnector implements
         }
 
         String sshRawResponse = commandProcessor.processAndExecuteCommand(attributeSet, Constants.UPDATE_OPERATION, schemaType);
-        String response = new SshResponseHandler(schemaType, sshRawResponse, this.dynamicConfiguration).HandleUpdateOrDeleteResponse();
+        String response = new SshResponseHandler(schemaType, sshRawResponse, this.dynamicConfiguration).handleSearchOrUpdateOrDeleteResponse();
         if (response != null){
             LOG.error("Error occurred while updating entity: {0}", sshRawResponse);
             throw new RuntimeException("Error occurred while updating entity: " + sshRawResponse);
@@ -249,7 +249,7 @@ public class AdaptiveSshConnector implements
         Attribute attribute = AttributeBuilder.build(schemaType.getIcfsUid(), uid.getValue());
         attributeSet.add(attribute);
         String sshRawResponse = commandProcessor.processAndExecuteCommand(attributeSet, Constants.DELETE_OPERATION, schemaType);
-        String deleteResponse = new SshResponseHandler(schemaType, sshRawResponse, this.dynamicConfiguration).HandleUpdateOrDeleteResponse();
+        String deleteResponse = new SshResponseHandler(schemaType, sshRawResponse, this.dynamicConfiguration).handleSearchOrUpdateOrDeleteResponse();
         if (deleteResponse != null){
             LOG.error("Error occured while deleting entity: {0}", deleteResponse);
             throw new RuntimeException("Error occured while deleting entity: " + deleteResponse);

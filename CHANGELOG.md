@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.3.0] - 2024-06-04
+## [1.3.0] - 2024-07-01
 ### Added
 - new dynamicConfiguration.json Properties:
   - generalFatalErrorMessage: Usable if scripts throw unexpected error in CRUD operations
@@ -10,6 +10,9 @@ All notable changes to this project will be documented in this file.
 - Persistent shell functionality (Tested only on Windows):
     - by setting resource configuration **'usePersistentShell'** connector will create reusable session, in addition to this if dynamicConfiguration.json has **'preloadScript'** defined, preloadScript get executed each time new session is spawned this results in massive performance boost in Powershell Connect-Exchange, Connect-MsGraph since they're executed only once per persistent session, consecutive requests like executeQuery by id take 200-600ms. See [Exchange Online preload script guide ➜](samples/MicrosoftExchange/Exchange-Online-Persistent-Shell:DistLists-Management/preloadScript-guide.md)
 - sshj version bump to 0.40.0
+
+### Fixed
+- unknownUid error handling for searchOp
 
 ## [1.2.4] - 2024-05-24
 ### Added
