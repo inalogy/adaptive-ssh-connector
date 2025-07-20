@@ -162,7 +162,7 @@ Defines the formatting rules for processing responses from executed scripts:
 Manages connector-specific behaviors and transformations:
 - **`replaceWhiteSpaceCharacterInAttributeValues`**: Replaces spaces in attribute values with a custom character if enabled. If used remote script must handle replacing them back to spaces.
 - **`addSudoExecution`**: Enables or customizes sudo command execution for operations.
-- - **`preloadScript`**: Works only if connectorConfig usePersistentShell is enabled. Enables you to load and execute a PowerShell script once during the start of a persistent SSH session. See [Exchange Online preload script guide ➜](samples/MicrosoftExchange/Exchange-Online-Persistent-Shell:DistLists-Management/preloadScript-guide.md)
+- **`preloadScript`**: Works only if connectorConfig usePersistentShell is enabled. Enables you to load and execute a PowerShell script once during the start of a persistent SSH session. See [Exchange Online preload script guide ➜](samples/MicrosoftExchange/Exchange-Online-Persistent-Shell:DistLists-Management/preloadScript-guide.md)
     - Preload script must print/Write-Host keyword defined in **`successReturnValue`** otherwise any other output is treated as error (**this is executed also in test connection**)
 - #### IMPORTANT: In ``usePersistentShell`` mode conector capture only STDOUT, stderr will be ignored and must be handled with try/catch and print custom errors when needed
 - **`icfsPasswordFlagEquivalent`**: Maps the ICF `Password` flag to a custom equivalent parameter.
