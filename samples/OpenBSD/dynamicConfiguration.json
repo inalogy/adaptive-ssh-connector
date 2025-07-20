@@ -20,7 +20,8 @@
       },
       "preloadScript": {
         "enabled": false,
-        "value": ""
+        "value": "",
+        "successReturnValue": "__SUCCESS_PRELOAD_SCRIPT__"
       },
       "icfsPasswordFlagEquivalent": {
         "enabled": true,

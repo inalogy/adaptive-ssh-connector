@@ -20,7 +20,8 @@
       },
       "preloadScript": {
         "enabled": true,
-        "value": "C:/Users/test/powershell/MailUser/preload-script.ps1"
+        "value": "C:/Users/test/powershell/MailUser/preload-script.ps1",
+        "successReturnValue": "__SUCCESS_PRELOAD_SCRIPT__"
       },
 
       "icfsPasswordFlagEquivalent": {
