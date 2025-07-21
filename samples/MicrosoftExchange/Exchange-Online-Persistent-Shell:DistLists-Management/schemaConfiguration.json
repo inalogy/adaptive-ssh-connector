@@ -1,0 +1,111 @@
+{
+  "objects":[
+
+    {
+      "icfsName": "name",
+      "icfsUid": "guid",
+      "objectClass": "EXOMailUser",
+      "createScript": "C:\\Users\\test\\scripts\\exchange\\EXOMailUser\\createScript.ps1",
+      "updateScript": "C:\\Users\\test\\scripts\\exchange\\EXOMailUser\\updateScript.ps1",
+      "deleteScript": "C:\\Users\\test\\scripts\\exchange\\EXOMailUser\\deleteScript.ps1",
+      "searchScript": "C:\\Users\\test\\scripts\\exchange\\EXOMailUser\\searchScript.ps1",
+      "attributes": [
+        {
+          "memberOf": {
+            "required": false,
+            "creatable": false,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": true,
+            "returnedByDefault": true,
+            "readable": true
+          }
+        }
+      ]
+    },
+    {
+      "icfsName": "name",
+      "icfsUid": "guid",
+      "objectClass": "EXODistributionGroup",
+      "createScript": "C:\\Users\\test\\scripts\\exchange\\EXODistributionGroup\\createScript.ps1",
+      "updateScript": "C:\\Users\\test\\scripts\\exchange\\EXODistributionGroup\\updateScript.ps1",
+      "deleteScript": "C:\\Users\\test\\scripts\\exchange\\EXODistributionGroup\\deleteScript.ps1",
+      "searchScript": "C:\\Users\\test\\scripts\\exchange\\EXODistributionGroup\\searchScript.ps1",
+      "attributes": [
+        {
+          "displayName": {
+            "required": true,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": true,
+            "readable": true
+          }
+        },
+        {
+          "groupType": {
+            "required": false,
+            "creatable": true,
+            "updateable": false,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": true,
+            "readable": true
+          }
+        },
+        {
+          "description": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": true,
+            "readable": true
+          }
+        },
+        {
+          "alias": {
+            "required": true,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": true,
+            "readable": true
+          }
+        },
+        {
+            "members": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": true,
+            "returnedByDefault": true,
+            "readable": true
+          },
+          "primarySmtpAddress": {
+            "required": true,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": true,
+            "readable": true
+          },
+          "emailAddresses": {
+            "required": false,
+            "creatable": false,
+            "updateable": false,
+            "dataType": "String",
+            "multivalued": true,
+            "returnedByDefault": true,
+            "readable": true
+          }
+        }
+      ]
+    }
+  ]
+}

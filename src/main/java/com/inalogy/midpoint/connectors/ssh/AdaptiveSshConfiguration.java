@@ -74,7 +74,7 @@ public class AdaptiveSshConfiguration extends AbstractConfiguration implements S
 
     public String dynamicConfigurationFilePath;
     private String[] knownHosts;
-
+    private boolean isUsePersistentShell = false;
     @Override
     public void validate() {
         if (host == null || host.isBlank()) {
@@ -284,6 +284,18 @@ public class AdaptiveSshConfiguration extends AbstractConfiguration implements S
     public void setSshResponseTimeout(int sshResponseTimeout) {
         this.sshResponseTimeout = sshResponseTimeout;
     }
+    @ConfigurationProperty(order = 190,
+            displayMessageKey = "isUsePersistentShell.display",
+            helpMessageKey = "isUsePersistentShell.help")
+    public boolean isUsePersistentShell() {
+        return isUsePersistentShell;
+    }
+
+    public void setUsePersistentShell(boolean setUsePersistentShell) {
+        this.isUsePersistentShell = setUsePersistentShell;
+    }
+
+
 
     @Override
     public void release() {

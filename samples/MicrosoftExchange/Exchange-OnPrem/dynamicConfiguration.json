@@ -1,26 +1,31 @@
 {
-  "configName": "Configuration for OPENBSD v1.1.0",
+  "configName": "Configuration for Microsoft Exchange v1.3.0",
   "settings": {
 
     "scriptResponseSettings": {
       "scriptEmptyAttribute": "null",
       "multiValuedAttributeSeparator": "~",
       "responseNewLineSeparator": "\n",
-      "responseColumnSeparator": "|"
+      "responseColumnSeparator": "||"
     },
 
     "connectorSettings": {
       "replaceWhiteSpaceCharacterInAttributeValues": {
-        "enabled": true,
+        "enabled": false,
         "value": "---"
       },
       "addSudoExecution": {
         "enabled": false,
-        "value": "doas"
+        "value": "sudo"
+      },
+      "preloadScript": {
+        "enabled": true,
+        "value": "C:/Users/test/powershell/MailUser/preload-script.ps1",
+        "successReturnValue": "__SUCCESS_PRELOAD_SCRIPT__"
       },
 
       "icfsPasswordFlagEquivalent": {
-        "enabled": true,
+        "enabled": false,
         "value": "password"
       },
 
@@ -49,7 +54,8 @@
       "deleteSuccessResponse": ""
     },
     "searchOperationSettings": {
-      "noResultSuccessMessage": ""
+      "noResultSuccessMessage": "",
+      "generalFatalErrorMessage": "__FATAL_ERROR__"
     }
   }
 }

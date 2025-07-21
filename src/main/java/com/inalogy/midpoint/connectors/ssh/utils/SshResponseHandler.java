@@ -50,6 +50,7 @@ public class SshResponseHandler {
      * @return A set of maps where each map represents an individual result from the search operation. The keys of the map are attribute names and the values are the corresponding attribute values.
      */
     public Set<Map<String, String>> parseSearchOperation() {
+        handleSearchOrUpdateOrDeleteResponse();
         String RESPONSE_NEW_LINE_SEPARATOR = this.dynamicConfiguration.getSettings().getScriptResponseSettings().getResponseNewLineSeparator();
         String RESPONSE_COLUMN_SEPARATOR = this.dynamicConfiguration.getSettings().getScriptResponseSettings().getResponseColumnSeparator();
         String[] lines = this.rawResponse.split(RESPONSE_NEW_LINE_SEPARATOR);
@@ -131,17 +132,21 @@ public class SshResponseHandler {
     /**
      * @return null if updateOperation or deleteOperation was successful otherwise return error message
      */
-    public String HandleUpdateOrDeleteResponse() {
+    public String handleSearchOrUpdateOrDeleteResponse() {
         String UPDATE_SUCCESS_RESPONSE = this.dynamicConfiguration.getSettings().getUpdateOperationSettings().getUpdateSuccessResponse();
         String DELETE_SUCCESS_RESPONSE = this.dynamicConfiguration.getSettings().getDeleteOperationSettings().getDeleteSuccessResponse();
-        if (this.rawResponse.equals(UPDATE_SUCCESS_RESPONSE)){
+        String OBJECT_NOT_FOUND_ERROR_RESPONSE = this.dynamicConfiguration.getSettings().getUpdateOperationSettings().getUnknownUidException();
+        if (this.rawResponse.contains(OBJECT_NOT_FOUND_ERROR_RESPONSE)) {
+            throw new UnknownUidException(this.rawResponse);
+        }
+        else if (this.rawResponse.equals(UPDATE_SUCCESS_RESPONSE)){
             return null;
         }
         else if (this.rawResponse.equals(DELETE_SUCCESS_RESPONSE)){
             return null;
         }
-        return this.rawResponse;
 
+        return this.rawResponse;
     }
 
     /**
@@ -188,15 +193,12 @@ public class SshResponseHandler {
 
     private void handleCreateOperationErrors(){
         String ALREADY_EXISTS_ERROR_RESPONSE = this.dynamicConfiguration.getSettings().getCreateOperationSettings().getAlreadyExistsErrorParameter();
-        String OBJECT_NOT_FOUND_ERROR_RESPONSE = this.dynamicConfiguration.getSettings().getUpdateOperationSettings().getUnknownUidException();
 
-        if (this.rawResponse.contains(ALREADY_EXISTS_ERROR_RESPONSE)){
-            throw new AlreadyExistsException(this.rawResponse);
-        } else if (this.rawResponse.contains(OBJECT_NOT_FOUND_ERROR_RESPONSE)) {
-            throw new UnknownUidException(this.rawResponse);
-        }
         if (this.rawResponse.isEmpty()){
             throw new NoCreateScriptResponseException();
+        }
+        if (this.rawResponse.contains(ALREADY_EXISTS_ERROR_RESPONSE)){
+            throw new AlreadyExistsException(this.rawResponse);
         }
         if (!this.rawResponse.contains(this.schemaType.getIcfsName()) || !this.rawResponse.contains(this.schemaType.getIcfsUid())){
             throw new InvalidCreateScriptOutputException(this.rawResponse);

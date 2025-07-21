@@ -1,0 +1,55 @@
+{
+  "configName": "Configuration for Microsoft Exchange Online connectorVersion 1.3.0",
+  "settings": {
+    "scriptResponseSettings": {
+      "scriptEmptyAttribute": "__NULL_VALUE__",
+      "multiValuedAttributeSeparator": " ",
+      "responseNewLineSeparator": "\n",
+      "responseColumnSeparator": "|"
+    },
+    "connectorSettings": {
+      "replaceWhiteSpaceCharacterInAttributeValues": {
+        "enabled": false,
+        "value": "~"
+      },
+      "addSudoExecution": {
+        "enabled": false,
+        "value": ""
+      },
+      "preloadScript": {
+        "enabled": true,
+        "value": "C:\\Users\\test\\scripts\\exchange\\preloadScript.ps1",
+        "successReturnValue": "__SUCCESS_PRELOAD_SCRIPT__"
+      },
+      "icfsPasswordFlagEquivalent": {
+        "enabled": false,
+        "value": "password"
+      },
+      "icfsUidFlagEquivalent": {
+        "enabled": false,
+        "value": ""
+      },
+      "icfsNameFlagEquivalent": {
+        "enabled": true,
+        "value": "name"
+      }
+    },
+    "createOperationSettings": {
+      "alreadyExistsErrorParameter": "ObjectAlreadyExists",
+      "successStatusMessage": ""
+    },
+    "updateOperationSettings": {
+      "unknownUidException": "UnknownUid",
+      "updateDeltaAddParameter": "ADD:",
+      "updateDeltaRemoveParameter": "REMOVE:",
+      "updateSuccessResponse": ""
+    },
+    "deleteOperationSettings": {
+      "deleteSuccessResponse": ""
+    },
+    "searchOperationSettings": {
+      "noResultSuccessMessage": "__NO_RESULT__",
+      "generalFatalErrorMessage": "__FATAL_ERROR__"
+    }
+  }
+}

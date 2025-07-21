@@ -4,6 +4,7 @@ public class FlagSettings {
 
     private boolean enabled;
     private String value;
+    private String successReturnValue;
 
     public FlagSettings(){}
 
@@ -18,6 +19,14 @@ public class FlagSettings {
 
     public String getValue() {
         return value;
+    }
+
+    public String getSuccessReturnValue() {
+        return successReturnValue;
+    }
+
+    public void setSuccessReturnValue(String successReturnValue) {
+        this.successReturnValue = successReturnValue;
     }
 
     protected void setValue(String value) {
