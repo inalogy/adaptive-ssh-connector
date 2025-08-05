@@ -117,12 +117,12 @@ public class SessionManager {
         } catch (ExecutionException e) {
             closeSession();
             Throwable cause = e.getCause() != null ? e.getCause() : e;
-            LOG.error("Shell execution failed", cause);
+            LOG.error("Shell execution failed {0}", cause);
             throw new ConnectorIOException("Shell execution failed: " + cause.getMessage(), cause);
         } catch (InterruptedException e) {
             closeSession();
-            LOG.error("Shell execution was interrupted", e);
-            throw new ConnectorIOException("Shell execution was interrupted", e);
+            LOG.error("Shell execution was interrupted {0}", e);
+            throw new ConnectorIOException("Shell execution was interrupted ", e);
         }
     }
 
@@ -218,6 +218,11 @@ public class SessionManager {
     public void disposeSshClient(){
         if (ssh != null && ssh.isConnected()){
             try {
+                FlagSettings disposeScriptSettings = this.dynamicConfiguration.getSettings().getConnectorSettings().getDisposeScript();
+                if (this.configuration.isUsePersistentShell() && disposeScriptSettings != null && disposeScriptSettings.isEnabled()){
+                    LOG.info("Executing DisposeScript.");
+                    this.execViaShell(disposeScriptSettings.getValue());
+                }
                 LOG.info("Disposing SSHClient");
                 ssh.disconnect();
             } catch (IOException e) {

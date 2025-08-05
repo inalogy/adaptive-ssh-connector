@@ -2,10 +2,16 @@ package com.inalogy.midpoint.connectors.ssh.utils.dynamicconfig;
 
 public class ConnectorSettings {
 
+    private FlagSettings icfsUidFlagEquivalent;
+    private FlagSettings icfsNameFlagEquivalent;
+
     private FlagSettings replaceWhiteSpaceCharacterInAttributeValues;
     private FlagSettings addSudoExecution;
     private FlagSettings icfsPasswordFlagEquivalent;
     private FlagSettings preloadScript;
+
+    private FlagSettings disposeScript;
+
 
     public ConnectorSettings(){}
 
@@ -49,10 +55,14 @@ public class ConnectorSettings {
         this.icfsNameFlagEquivalent = icfsNameFlagEquivalent;
     }
 
-    private FlagSettings icfsUidFlagEquivalent;
-    private FlagSettings icfsNameFlagEquivalent;
 
+    public FlagSettings getDisposeScript() {
+        return disposeScript;
+    }
 
+    public void setDisposeScript(FlagSettings disposeScript) {
+        this.disposeScript = disposeScript;
+    }
     public FlagSettings getPreloadScript() {
         return preloadScript;
     }
