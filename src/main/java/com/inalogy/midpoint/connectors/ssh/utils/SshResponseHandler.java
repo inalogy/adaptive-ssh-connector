@@ -1,5 +1,6 @@
 package com.inalogy.midpoint.connectors.ssh.utils;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashMap;
@@ -116,8 +117,8 @@ public class SshResponseHandler {
             }
         } else {
             LOG.error("Fatal error: The number of attribute names does not match the number of attribute values " +
-                    "Possible cause: Bad script design, empty attributes should be defined as: " + RESPONSE_EMPTY_ATTRIBUTE_SYMBOL);
-            throw new ConnectorException("the number of attribute names does not match the number of attribute values.");
+                   " headerAttributeNames: {0}  received attributeValues: {1}", Arrays.toString(attributeNames),  Arrays.toString(attributeValues)) ;
+            throw new ConnectorException("the number of attribute names does not match the number of attribute values. expectedAttributeNames: " + Arrays.toString(attributeNames) + "received attributeValues: " + Arrays.toString(attributeValues));
         }
         //validate if icfsUid and name are not empty strings
         if (validAttributes.get("icfsName").isEmpty() || validAttributes.get("icfsUid").isEmpty()){
