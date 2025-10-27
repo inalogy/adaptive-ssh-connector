@@ -27,7 +27,7 @@ jobs:
         run: mvn --batch-mode clean install -DskipTests=true
 
       - name: Upload Connector
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Adaptive SSH Connector
           path: ./target/connector-adaptive-ssh-${{ env.VERSION }}.jar
