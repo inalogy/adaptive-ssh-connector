@@ -117,6 +117,8 @@ example:
 ```
 * **case2:** icfsName and icfsUid will have different value that corresponds to smtpGuid column and smtpMail
 ### Powershell Scripts limitations
+#### **Important: when using publicKey authentication: Kerberos authentication will not work! So we advise to not use publicKey authentication when onPrem operations are needed**
+
 - Powershell scripts for microsoft exchange use weird UI element when importing remote session in terminal, sshj which is responsible for executing/reading output  crash since by default sshj create connection with -T flag, so it needs to be bypassed
 - to bypass this every command should be imported separately
 - To test this simply connect to your testing server with ssh -T name@host and execute test script
