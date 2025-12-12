@@ -137,7 +137,7 @@ public class SessionManager {
         String endMarker = "__COMMAND_DONE__" + uuid;
 
         String finalCommand = "echo " + startMarker + " ; " + processedCommand + " ; echo " + endMarker + "\r\n";
-        shellWriter.write(finalCommand.getBytes(StandardCharsets.UTF_8));
+        shellWriter.write(finalCommand.getBytes(Charset.forName(this.configuration.getRemoteCharset())));
         shellWriter.flush();
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -245,7 +245,10 @@ public class SessionManager {
 
                     shell = session.startShell();
                     shellWriter = shell.getOutputStream();
-                    shellReader = new BufferedReader(new InputStreamReader(shell.getInputStream()));
+                    shellReader = new BufferedReader(new InputStreamReader(
+                            shell.getInputStream(),
+                            Charset.forName(configuration.getRemoteCharset())
+                    ));
 
                     String preloadScriptPath = "";
                     FlagSettings preloadScriptSettings = this.dynamicConfiguration.getSettings().getConnectorSettings().getPreloadScript();
