@@ -1,0 +1,59 @@
+{
+  "configName": "Configuration for Microsoft Exchange, connector version 1.3.1",
+  "settings": {
+    "scriptResponseSettings": {
+      "scriptEmptyAttribute": "__NULL_VALUE__",
+      "multiValuedAttributeSeparator": " ",
+      "responseNewLineSeparator": "\n",
+      "responseColumnSeparator": "|"
+    },
+    "connectorSettings": {
+      "replaceWhiteSpaceCharacterInAttributeValues": {
+        "enabled": false,
+        "value": "~"
+      },
+      "addSudoExecution": {
+        "enabled": false,
+        "value": ""
+      },
+      "preloadScript": {
+        "successReturnValue": "BASE-OK",
+        "enabled": true,
+        "value": "C:\\Users\\test\\scripts\\exchange\\baseScript.ps1"
+      },
+      "disposeScript": {
+        "enabled": true,
+        "value": "C:\\Users\\test\\scripts\\exchange\\disposeScript.ps1"
+      },
+      "icfsPasswordFlagEquivalent": {
+        "enabled": false,
+        "value": "password"
+      },
+      "icfsUidFlagEquivalent": {
+        "enabled": false,
+        "value": ""
+      },
+      "icfsNameFlagEquivalent": {
+        "enabled": true,
+        "value": "name"
+      }
+    },
+    "createOperationSettings": {
+      "alreadyExistsErrorParameter": "ObjectAlreadyExists",
+      "successStatusMessage": ""
+    },
+    "updateOperationSettings": {
+      "unknownUidException": "UnknownUid",
+      "updateDeltaAddParameter": "ADD:",
+      "updateDeltaRemoveParameter": "REMOVE:",
+      "updateSuccessResponse": ""
+    },
+    "deleteOperationSettings": {
+      "deleteSuccessResponse": ""
+    },
+    "searchOperationSettings": {
+      "noResultSuccessMessage": "",
+      "generalFatalErrorMessage": "__FATAL_ERROR__"
+    }
+  }
+}

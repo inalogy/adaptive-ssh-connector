@@ -1,0 +1,247 @@
+{
+  "objects":[
+
+    {
+      "icfsName": "name",
+      "icfsUid": "guid",
+      "objectClass": "MailboxOnPrem",
+      "createScript": "C:\\Users\\test\\scripts\\exchange\\mailBoxOnPrem\\createScript.ps1",
+      "updateScript": "C:\\Users\\test\\scripts\\exchange\\mailBoxOnPrem\\updateScript.ps1",
+      "deleteScript": "C:\\Users\\test\\scripts\\exchange\\mailBoxOnPrem\\deleteScript.ps1",
+      "searchScript": "C:\\Users\\test\\scripts\\exchange\\mailBoxOnPrem\\searchScript.ps1",
+      "attributes": [
+        {
+          "primarySmtpAddress": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": false,
+            "readable": true
+          }
+        },
+        {
+          "alias": {
+            "required": false,
+            "creatable": false,
+            "updateable": false,
+            "dataType": "String",
+            "multivalued": true,
+            "returnedByDefault": false,
+            "readable": true
+          }
+        },
+        {
+          "database": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": false,
+            "readable": true
+          }
+        },
+        {
+          "imapEnabled": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": false,
+            "readable": true
+          }
+        },
+        {
+          "emailAddressPolicyEnabled": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": false,
+            "readable": true
+          }
+        }
+      ]
+    },
+    {
+      "icfsName": "name",
+      "icfsUid": "guid",
+      "objectClass": "MailboxCloud",
+      "createScript": "C:\\Users\\test\\scripts\\exchange\\mailBoxCloud\\createScript.ps1",
+      "updateScript": "C:\\Users\\test\\scripts\\exchange\\mailBoxCloud\\updateScript.ps1",
+      "deleteScript": "C:\\Users\\test\\scripts\\exchange\\mailBoxCloud\\deleteScript.ps1",
+      "searchScript": "C:\\Users\\test\\scripts\\exchange\\mailBoxCloud\\searchScript.ps1",
+      "attributes": [
+        {
+          "primarySmtpAddress": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": false,
+            "readable": true
+          }
+        },
+        {
+          "remoteRoutingAddress": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": false,
+            "readable": true
+          }
+        },
+        {
+          "alias": {
+            "required": false,
+            "creatable": false,
+            "updateable": false,
+            "dataType": "String",
+            "multivalued": true,
+            "returnedByDefault": false,
+            "readable": true
+          }
+        },
+        {
+          "database": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": false,
+            "readable": true
+          }
+        },
+        {
+          "imapEnabled": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": false,
+            "readable": true
+          }
+        },
+        {
+          "emailAddressPolicyEnabled": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": false,
+            "readable": true
+          }
+        }
+      ]
+    },
+    {
+      "icfsName": "name",
+      "icfsUid": "guid",
+      "objectClass": "MailUser",
+      "createScript": "C:\\Users\\test\\scripts\\exchange\\mailUser\\createScript.ps1",
+      "updateScript": "C:\\Users\\test\\scripts\\exchange\\mailUser\\updateScript.ps1",
+      "deleteScript": "C:\\Users\\test\\scripts\\exchange\\mailUser\\deleteScript.ps1",
+      "searchScript": "C:\\Users\\test\\scripts\\exchange\\mailUser\\searchScript.ps1",
+      "attributes": [
+        {
+          "primarySmtpAddress": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": false,
+            "readable": true
+          }
+        },
+        {
+          "alias": {
+            "required": false,
+            "creatable": false,
+            "updateable": false,
+            "dataType": "String",
+            "multivalued": true,
+            "returnedByDefault": false,
+            "readable": true
+          }
+        },
+        {
+          "externalEmailAddress": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": false,
+            "readable": true
+          }
+        },
+        {
+          "emailAddressPolicyEnabled": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": false,
+            "readable": true
+          }
+        }
+      ]
+    },
+    {
+      "icfsName": "name",
+      "icfsUid": "guid",
+      "objectClass": "MailContact",
+      "createScript": "C:\\Users\\test\\scripts\\exchange\\mailContact\\createScript.ps1",
+      "updateScript": "C:\\Users\\test\\scripts\\exchange\\mailContact\\updateScript.ps1",
+      "deleteScript": "C:\\Users\\test\\scripts\\exchange\\mailContact\\deleteScript.ps1",
+      "searchScript": "C:\\Users\\test\\scripts\\exchange\\mailContact\\searchScript.ps1",
+      "attributes": [
+        {
+          "primarySmtpAddress": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": false,
+            "readable": true
+          }
+        },
+        {
+          "externalEmailAddress": {
+            "required": false,
+            "creatable": true,
+            "updateable": true,
+            "dataType": "String",
+            "multivalued": false,
+            "returnedByDefault": false,
+            "readable": true
+          }
+        },
+        {
+          "alias": {
+            "required": false,
+            "creatable": false,
+            "updateable": false,
+            "dataType": "String",
+            "multivalued": true,
+            "returnedByDefault": false,
+            "readable": true
+          }
+        }
+      ]
+    }
+  ]
+}
