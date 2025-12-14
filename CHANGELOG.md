@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.1] - 2024-12-14
+### Added
+- new connectorConfiguration (native) Properties:
+    - remoteCharset: enforce different charset encoding for SSH connection (persistent mode)See [Exchange Online preload script guide ➜](samples/MicrosoftExchange/Exchange-OnPrem-Persistent-Shell/sshd_config-enforce-encoding.md)
+    - connectTimeout: define initial connect timeout in seconds
+    - with resource configuration **'usePersistentShell'** == true
+
+
+- Full configuration Sample for persistentShell Microsoft Exchange onPrem:
+    - mailUser
+    - mailContact
+    - mailBoxCloud
+    - mailBoxOnpRem
+
+
+- added new 'dynamicConfiguration.json' property **disposeScript**
+    - used for cleanup/closing opened Exchange sessions if fatal error occurs that result in midPoint dispose of connector See [Base Script DisposeSession Method](samples/MicrosoftExchange/Exchange-OnPrem-Persistent-Shell/baseScript.ps1)
+
+### Fixed
+- NonPersistent shell configuration resulted in 'sessionIsUsedUp' error.
+
 ## [1.3.0] - 2024-07-01
 ### Added
 - new dynamicConfiguration.json Properties:
@@ -51,7 +72,7 @@ All notable changes to this project will be documented in this file.
 
 - public release
 
-
+[1.3.1]: https://github.com/inalogy/ssh-connector/releases/tag/v1.3.1
 [1.3.0]: https://github.com/inalogy/ssh-connector/releases/tag/v1.3.0
 [1.2.4]: https://github.com/inalogy/ssh-connector/releases/tag/v1.2.4
 [1.2.3]: https://github.com/inalogy/ssh-connector/releases/tag/v1.2.3
