@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [1.3.1] - 2024-12-14
 ### Added
 - new connectorConfiguration (native) Properties:
-    - remoteCharset: enforce different charset encoding for SSH connection (persistent mode)See [Exchange Online preload script guide ➜](samples/MicrosoftExchange/Exchange-OnPrem-Persistent-Shell/sshd_config-enforce-encoding.md)
+    - remoteCharset: enforce different charset encoding for SSH connection (persistent mode)See [RemoteCharset ➜](samples/MicrosoftExchange/Exchange-OnPrem-Persistent-Shell/sshd_config-enforce-encoding.md)
     - connectTimeout: define initial connect timeout in seconds
     - with resource configuration **'usePersistentShell'** == true
 
