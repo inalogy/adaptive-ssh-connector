@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Set;
 
 public class AdaptiveSshConfiguration extends AbstractConfiguration implements StatefulConfiguration {
 
@@ -71,6 +72,41 @@ public class AdaptiveSshConfiguration extends AbstractConfiguration implements S
     private String shellType = Constants.TYPE_SHELL;
 
     public String schemaFilePath;
+
+    private String remoteCharset = "UTF-8";
+
+    public static final Set<String> SUPPORTED_CHARSETS = Set.of(
+            "UTF-8",
+            "UTF-16",
+            "UTF-16BE",
+            "UTF-16LE",
+            "US-ASCII",
+            "ISO-8859-1",
+            "ISO-8859-2",
+            "ISO-8859-15",
+            "Windows-1250",
+            "Windows-1251",
+            "Windows-1252",
+            "Windows-1253",
+            "Windows-1254",
+            "Windows-1255",
+            "Windows-1256"
+    );
+
+    //timeout for initial connection
+    private int connectTimeout = 10;
+
+    @ConfigurationProperty(order = 191,
+            displayMessageKey = "ConnectTimeout.display",
+            helpMessageKey = "ConnectTimeout.help")
+    public int getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    public void setConnectTimeout(int connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
+
 
     public String dynamicConfigurationFilePath;
     private String[] knownHosts;
@@ -138,6 +174,18 @@ public class AdaptiveSshConfiguration extends AbstractConfiguration implements S
 
         } else {
             throw new IllegalArgumentException("Unsupported authentication scheme: " + authenticationScheme);
+        }
+
+        if (remoteCharset != null && !remoteCharset.isBlank()) {
+            if (!SUPPORTED_CHARSETS.contains(remoteCharset)) {
+                throw new IllegalArgumentException(
+                        "Unsupported charset: " + remoteCharset +
+                                ". Supported charsets: " + String.join(", ", SUPPORTED_CHARSETS)
+                );
+            }
+        }
+        if (connectTimeout < 1 || connectTimeout > 300) {
+            throw new IllegalArgumentException("Connect timeout must be between 1 and 300 seconds.");
         }
     }
 
@@ -295,6 +343,17 @@ public class AdaptiveSshConfiguration extends AbstractConfiguration implements S
         this.isUsePersistentShell = setUsePersistentShell;
     }
 
+
+    @ConfigurationProperty(order = 195,
+            displayMessageKey = "RemoteCharset.display",
+            helpMessageKey = "RemoteCharset.help")
+    public String getRemoteCharset() {
+        return remoteCharset;
+    }
+
+    public void setRemoteCharset(String remoteCharset) {
+        this.remoteCharset = remoteCharset;
+    }
 
 
     @Override

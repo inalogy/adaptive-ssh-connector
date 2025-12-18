@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.nio.charset.Charset;
 
 import com.inalogy.midpoint.connectors.ssh.AdaptiveSshConfiguration;
 import com.inalogy.midpoint.connectors.ssh.utils.dynamicconfig.DynamicConfiguration;
@@ -62,44 +63,43 @@ public class SessionManager {
 
     private String execViaExec(String processedCommand) {
         startSession();
-        final Session.Command cmd;
+        Session.Command cmd = null;
         try {
             cmd = session.exec(processedCommand);
-        } catch (ConnectionException | TransportException e) {
-            throw new ConnectorIOException("Network error while executing SSH command: "+e.getMessage(), e);
-        }
-        String output;
-        String error;
-        try {
+
             LOG.ok("---- executing ssh command -----------");
             LOG.ok("processedCommand: {0} ", processedCommand);
-            output = IOUtils.readFully(cmd.getInputStream()).toString();
+
+            String output = IOUtils.readFully(cmd.getInputStream()).toString();
             LOG.ok("SSH command output: {0}", output);
-            error = IOUtils.readFully(cmd.getErrorStream()).toString();
+
+            String error = IOUtils.readFully(cmd.getErrorStream()).toString();
             LOG.ok("SSH command error: {0}", error);
-            LOG.ok("command error: {0}", error);
             LOG.ok("command exitErrorMsg: {0}", cmd.getExitErrorMessage());
             LOG.ok("command exitStatus: {0}", cmd.getExitStatus());
             LOG.ok("command exitSignal: {0}", cmd.getExitSignal());
             LOG.ok("--------------------------------------");
 
-            if (!error.isEmpty()){
+            if (!error.isEmpty()) {
                 throw new ConnectorException("Error executing SSH command: " + error);
             }
-        } catch (IOException e) {
-            throw new ConnectorIOException("Error reading output of SSH command: "+e.getMessage(), e);
-        }
 
-        try {
             cmd.join(configuration.getSshResponseTimeout(), TimeUnit.SECONDS);
-        } catch (ConnectionException e) {
-            throw new ConnectorIOException("Error \"joining\" SSH command: "+e.getMessage(), e);
-        }
+            LOG.ok("SSH command exit status: {0}", cmd.getExitStatus());
 
-        LOG.ok("SSH command exit status: {0}", cmd.getExitStatus());
-        closeSession();
-        handleErrors(output);
-        return output;
+            handleErrors(output);
+            return output;
+
+        } catch (ConnectionException | TransportException e) {
+            throw new ConnectorIOException("Network error: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new ConnectorIOException("Error reading output: " + e.getMessage(), e);
+        } finally {
+            if (cmd != null) {
+                try { cmd.close(); } catch (Exception ignored) {}
+            }
+            closeSession();
+        }
     }
 
     private String execViaShell(String processedCommand) {
@@ -117,12 +117,12 @@ public class SessionManager {
         } catch (ExecutionException e) {
             closeSession();
             Throwable cause = e.getCause() != null ? e.getCause() : e;
-            LOG.error("Shell execution failed", cause);
+            LOG.error("Shell execution failed {0}", cause);
             throw new ConnectorIOException("Shell execution failed: " + cause.getMessage(), cause);
         } catch (InterruptedException e) {
             closeSession();
-            LOG.error("Shell execution was interrupted", e);
-            throw new ConnectorIOException("Shell execution was interrupted", e);
+            LOG.error("Shell execution was interrupted {0}", e);
+            throw new ConnectorIOException("Shell execution was interrupted ", e);
         }
     }
 
@@ -137,7 +137,7 @@ public class SessionManager {
         String endMarker = "__COMMAND_DONE__" + uuid;
 
         String finalCommand = "echo " + startMarker + " ; " + processedCommand + " ; echo " + endMarker + "\r\n";
-        shellWriter.write(finalCommand.getBytes(StandardCharsets.UTF_8));
+        shellWriter.write(finalCommand.getBytes(Charset.forName(this.configuration.getRemoteCharset())));
         shellWriter.flush();
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -186,6 +186,8 @@ public class SessionManager {
             DefaultConfig defaultConfig = new DefaultConfig();
             defaultConfig.setKeepAliveProvider(KeepAliveProvider.KEEP_ALIVE);
             ssh = new SSHClient(defaultConfig);
+            ssh.setRemoteCharset(Charset.forName(this.configuration.getRemoteCharset()));
+            ssh.setConnectTimeout(configuration.getConnectTimeout() * 1000);
             ssh.getConnection().getKeepAlive().setKeepAliveInterval(Constants.SSH_CLIENT_KEEP_ALIVE_INTERVAL);
             ssh.addHostKeyVerifier(hostKeyVerifier);
             try {
@@ -218,6 +220,11 @@ public class SessionManager {
     public void disposeSshClient(){
         if (ssh != null && ssh.isConnected()){
             try {
+                FlagSettings disposeScriptSettings = this.dynamicConfiguration.getSettings().getConnectorSettings().getDisposeScript();
+                if (this.configuration.isUsePersistentShell() && disposeScriptSettings != null && disposeScriptSettings.isEnabled()){
+                    LOG.info("Executing DisposeScript.");
+                    this.execViaShell(disposeScriptSettings.getValue());
+                }
                 LOG.info("Disposing SSHClient");
                 ssh.disconnect();
             } catch (IOException e) {
@@ -238,7 +245,10 @@ public class SessionManager {
 
                     shell = session.startShell();
                     shellWriter = shell.getOutputStream();
-                    shellReader = new BufferedReader(new InputStreamReader(shell.getInputStream()));
+                    shellReader = new BufferedReader(new InputStreamReader(
+                            shell.getInputStream(),
+                            Charset.forName(configuration.getRemoteCharset())
+                    ));
 
                     String preloadScriptPath = "";
                     FlagSettings preloadScriptSettings = this.dynamicConfiguration.getSettings().getConnectorSettings().getPreloadScript();
@@ -281,17 +291,16 @@ public class SessionManager {
 
 
     public void closeSession() {
-        if ((ssh.isConnected() && session != null && session.isOpen()) || configuration.isUsePersistentShell()) {
-            LOG.ok("Disconnecting from {0}", authManager.getConnectionDesc());
-            try {
-                if (session != null) {
-                    session.close();
-                    session = null;
-                }
-            } catch (ConnectionException | TransportException e) {
-                LOG.warn("Error closing SSH session for {0}: {1} (ignoring)", authManager.getConnectionDesc(), e.getMessage());
+        if (session == null) return;
+
+        try {
+            if (ssh.isConnected() && session.isOpen()) {
+                session.close();
             }
-            LOG.ok("Connection to {0} disconnected", authManager.getConnectionDesc());
+        } catch (Exception e) {
+            LOG.warn("Error closing session: {0}", e.getMessage());
+        } finally {
+            session = null;
         }
     }
 }

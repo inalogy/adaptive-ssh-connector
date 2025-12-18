@@ -1,0 +1,396 @@
+<resource xmlns:apti="http://midpoint.evolveum.com/xml/ns/public/common/api-types-3"
+          xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+          xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"
+          xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3"
+          xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
+          xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3"
+          xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+          xmlns:mr="http://prism.evolveum.com/xml/ns/public/matching-rule-3"
+          oid="dd221b92-d2f4-47a7-be44-0b7042d1f766">
+    
+    <name>Exchange</name>
+    <connectorRef>
+        <filter>
+            <q:text>connectorType = 'com.inalogy.midpoint.connectors.ssh.AdaptiveSshConnector'</q:text>
+        </filter>
+    </connectorRef>
+    <connectorConfiguration xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3">
+        <icfc:configurationProperties xmlns:gen629="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/com.inalogy.midpoint.connectors.ssh/com.inalogy.midpoint.connectors.ssh.AdaptiveSshConnector">
+            <gen629:host>fixme</gen629:host>
+            <gen629:port>fixme</gen629:port>
+            <gen629:username>fixme</gen629:username>
+            <gen629:password>
+                <t:encryptedData>
+                    <t:encryptionMethod>
+                        <t:algorithm>http://www.w3.org/2001/04/xmlenc#aes256-cbc</t:algorithm>
+                    </t:encryptionMethod>
+                    <t:keyInfo>
+                        <t:keyName></t:keyName>
+                    </t:keyInfo>
+                    <t:cipherData>
+                        <t:cipherValue></t:cipherValue>
+                    </t:cipherData>
+                </t:encryptedData>
+            </gen629:password>
+            <gen629:authenticationScheme>password</gen629:authenticationScheme>
+            <gen629:shellType>powershell</gen629:shellType>
+            <gen629:usePersistentShell>true</gen629:usePersistentShell>
+            <gen629:schemaFilePath>fixme</gen629:schemaFilePath>
+            <gen629:dynamicConfigurationFilePath>fixme</gen629:dynamicConfigurationFilePath>
+            <gen629:sshResponseTimeout>300</gen629:sshResponseTimeout>
+        </icfc:configurationProperties>
+        <icfc:connectorPoolConfiguration>
+            <icfc:minIdle>3</icfc:minIdle>
+        </icfc:connectorPoolConfiguration>
+    </connectorConfiguration>
+    <schemaHandling>
+
+        <objectType>
+            <kind>account</kind>
+            <intent>general</intent>
+            <abstract>true</abstract>
+
+            <focus>
+                <type>UserType</type>
+            </focus>
+
+            <attribute>
+                <ref>icfs:name</ref>
+                <outbound>
+                    <strength>strong</strength>
+                    <source>
+                        <path>name</path>
+                    </source>
+                </outbound>
+            </attribute>
+
+            <attribute>
+                <ref>ri:primarySmtpAddress</ref>
+                <c:matchingRule>stringIgnoreCase</c:matchingRule>
+                <outbound>
+                    <strength>strong</strength>
+                    <source>
+                        <path>emailAddress</path>
+                    </source>
+                </outbound>
+            </attribute>
+
+            <correlation>
+                <correlators>
+                    <filter>
+                        <ownerFilter>
+                            <q:equal>
+                                <q:matching>polyStringStrict</q:matching>
+                                <q:path>name</q:path>
+                                <expression>
+                                    <path>$shadow/attributes/icfs:name</path>
+                                </expression>
+                            </q:equal>
+                        </ownerFilter>
+                    </filter>
+                </correlators>
+            </correlation>
+
+            <synchronization>
+                <reaction>
+                    <situation>unmatched</situation>
+                </reaction>
+                <reaction>
+                    <situation>unlinked</situation>
+                    <actions>
+                        <link/>
+                    </actions>
+                </reaction>
+                <reaction>
+                    <situation>deleted</situation>
+                    <actions>
+                        <unlink/>
+                    </actions>
+                </reaction>
+            </synchronization>
+
+        </objectType>
+
+        <objectType>
+            <kind>account</kind>
+            <intent>general_mailcontact_mailuser</intent>
+            <abstract>true</abstract>
+
+            <super>
+                <kind>account</kind>
+                <intent>general</intent>
+            </super>
+
+            <attribute>
+                <ref>ri:externalEmailAddress</ref>
+                <c:matchingRule>stringIgnoreCase</c:matchingRule>
+                <outbound>
+                    <strength>strong</strength>
+                    <source>
+                        <path>$focus/emailAddress</path>
+                    </source>
+                    <source>
+                        <path>$focus/extension/hasSunOneRole</path>
+                    </source>
+                    <source>
+                        <path>$focus/extension/reservedEmail</path>
+                    </source>
+                    <expression>
+                        <script>
+                            <code>
+                                <![CDATA[
+                                if (!hasSunOneRole)
+                                    return "SMTP:" + emailAddress
+
+                                if (!reservedEmail) {
+                                    log.warn("extension/reservedEmail cannot be null")
+                                    return "SMTP:" + emailAddress
+                                }
+
+                                def indexOfAt = reservedEmail.indexOf("@")
+                                if (indexOfAt == -1) {
+                                    log.warn("extension/reservedEmail is in invalid format: {}", reservedEmail)
+                                    return "SMTP:" + emailAddress
+                                }
+
+                                def sunOneDomain = ''
+                                return "SMTP:" + reservedEmail.substring(0, indexOfAt) + sunOneDomain
+                                ]]>
+                            </code>
+                        </script>
+                    </expression>
+                    <condition>
+                        <script>
+                            <code>
+                                <![CDATA[
+                                def externalEmailAddress = basic.getAttributeValue(shadow, 'http://midpoint.evolveum.com/xml/ns/public/resource/instance-3', "externalEmailAddress");
+
+                                if (!hasSunOneRole || !reservedEmail)
+                                    return !("SMTP:" + emailAddress).equalsIgnoreCase(externalEmailAddress)
+
+                                def indexOfAt = reservedEmail.indexOf("@")
+                                if (indexOfAt == -1)
+                                    return !("SMTP:" + emailAddress).equalsIgnoreCase(externalEmailAddress)
+
+                                def sunOneDomain = ''
+                                return !("SMTP:" + reservedEmail.substring(0, indexOfAt) + sunOneDomain).equalsIgnoreCase(externalEmailAddress)
+                                ]]>
+                            </code>
+                        </script>
+                    </condition>
+                </outbound>
+            </attribute>
+
+        </objectType>
+
+        <objectType>
+            <displayName>Mailbox Abstract</displayName>
+            <intent>general_mailbox</intent>
+            <abstract>true</abstract>
+
+            <super>
+                <kind>account</kind>
+                <intent>general</intent>
+            </super>
+
+            <dependency>
+                <resourceRef oid="dfdd1edc-ed0c-4bb0-9ebe-9aaf80791399"
+                             relation="org:default"
+                             type="c:ResourceType">
+                    <!-- Active_Directory -->
+                </resourceRef>
+                <strictness>relaxed</strictness>
+                <kind>account</kind>
+                <intent>account</intent>
+            </dependency>
+
+            <attribute>
+                <ref>ri:emailAddressPolicyEnabled</ref>
+                <c:matchingRule>stringIgnoreCase</c:matchingRule>
+                <outbound>
+                    <strength>weak</strength>
+                    <expression>
+                        <value>true</value>
+                    </expression>
+                </outbound>
+            </attribute>
+
+        </objectType>
+
+        <objectType>
+            <displayName>Mailbox Cloud</displayName>
+            <kind>account</kind>
+            <intent>MailboxCloud</intent>
+            <delineation>
+                <objectClass>ri:MailboxCloud</objectClass>
+            </delineation>
+
+            <super>
+                <kind>account</kind>
+                <intent>general_mailbox</intent>
+            </super>
+
+            <attribute>
+                <ref>ri:remoteRoutingAddress</ref>
+                <c:matchingRule>stringIgnoreCase</c:matchingRule>
+                <outbound>
+                    <strength>strong</strength>
+                    <source>
+                        <path>emailAddress</path>
+                    </source>
+                    <c:expression>
+                        <script>
+                            <c:code><![CDATA[
+                                if (!emailAddress) return null
+                                int indexAt = emailAddress.indexOf('@')
+                                return (indexAt > 0 ? "SMTP:" + emailAddress.substring(0, indexAt) + '
+                                ]]></c:code>
+                        </script>
+                    </c:expression>
+                </outbound>
+            </attribute>
+
+        </objectType>
+
+        <objectType>
+            <displayName>Mailbox On-prem</displayName>
+            <kind>account</kind>
+            <intent>MailboxOnPrem</intent>
+            <default>false</default>
+            <delineation>
+                <objectClass>ri:MailboxOnPrem</objectClass>
+            </delineation>
+
+            <super>
+                <kind>account</kind>
+                <intent>general_mailbox</intent>
+            </super>
+
+            <c:attribute>
+                <c:ref>ri:database</c:ref>
+                <c:tolerant>true</c:tolerant>
+                <c:outbound>
+                    <c:strength>weak</c:strength>
+                    <c:source>
+                        <c:path>extension/EXDB</c:path>
+                    </c:source>
+                </c:outbound>
+            </c:attribute>
+
+            <attribute>
+                <ref>ri:imapEnabled</ref>
+                <c:matchingRule>stringIgnoreCase</c:matchingRule>
+                <outbound>
+                    <c:strength>strong</c:strength>
+                    <expression>
+                        <script>
+                            <code>
+                                <![CDATA[
+                                    return 'false'
+                                ]]>
+                            </code>
+                        </script>
+                    </expression>
+                </outbound>
+            </attribute>
+
+        </objectType>
+
+        <objectType>
+            <displayName>Mail User</displayName>
+            <kind>account</kind>
+            <intent>MailUser</intent>
+            <delineation>
+                <objectClass>ri:MailUser</objectClass>
+            </delineation>
+
+            <dependency>
+                <resourceRef oid="dfdd1edc-ed0c-4bb0-9ebe-9aaf80791399"/>
+                <strictness>relaxed</strictness>
+                <kind>account</kind>
+                <intent>account</intent>
+            </dependency>
+
+            <super>
+                <kind>account</kind>
+                <intent>general_mailcontact_mailuser</intent>
+            </super>
+
+            <attribute>
+                <ref>ri:emailAddressPolicyEnabled</ref>
+                <c:matchingRule>stringIgnoreCase</c:matchingRule>
+                <outbound>
+                    <strength>strong</strength>
+                    <expression>
+                        <value>false</value>
+                    </expression>
+                </outbound>
+            </attribute>
+
+        </objectType>
+
+        <objectType>
+            <displayName>Mail Contact</displayName>
+            <kind>account</kind>
+            <intent>MailContact</intent>
+            <default>true</default>
+            <delineation>
+                <objectClass>ri:MailContact</objectClass>
+            </delineation>
+
+            <dependency>
+                <resourceRef oid="dfdd1edc-ed0c-4bb0-9ebe-9aaf80791399"/>
+                <strictness>relaxed</strictness>
+                <kind>account</kind>
+                <intent>default</intent>
+            </dependency>
+
+            <super>
+                <kind>account</kind>
+                <intent>general_mailcontact_mailuser</intent>
+            </super>
+
+        </objectType>
+
+    </schemaHandling>
+
+    <projection>
+        <assignmentPolicyEnforcement>full</assignmentPolicyEnforcement>
+    </projection>
+
+    <consistency>
+        <operationRetryMaxAttempts>0</operationRetryMaxAttempts>
+        <deadShadowRetentionPeriod>PT15M</deadShadowRetentionPeriod>
+        <connectorErrorCriticality>
+            <network>partial</network>
+            <security>partial</security>
+            <policy>partial</policy>
+            <generic>partial</generic>
+            <configuration>partial</configuration>
+            <schema>partial</schema>
+        </connectorErrorCriticality>
+    </consistency>
+
+    <capabilities>
+        <native xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3">
+            <cap:schema/>
+            <cap:create/>
+            <cap:read>
+                <cap:returnDefaultAttributesOption>false</cap:returnDefaultAttributesOption>
+            </cap:read>
+            <cap:update>
+                <cap:delta>true</cap:delta>
+                <cap:addRemoveAttributeValues>true</cap:addRemoveAttributeValues>
+            </cap:update>
+            <cap:delete/>
+            <cap:testConnection/>
+            <cap:script>
+                <cap:host>
+                    <cap:type>connector</cap:type>
+                </cap:host>
+            </cap:script>
+        </native>
+    </capabilities>
+</resource>
