@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.3.1] - 2024-12-14
+## [1.3.1] - 2025-12-14
 ### Added
 - new connectorConfiguration (native) Properties:
     - remoteCharset: enforce different charset encoding for SSH connection (persistent mode)See [RemoteCharset ➜](samples/MicrosoftExchange/Exchange-OnPrem-Persistent-Shell/sshd_config-enforce-encoding.md)
@@ -23,7 +23,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - NonPersistent shell configuration resulted in 'sessionIsUsedUp' error.
 
-## [1.3.0] - 2024-07-01
+## [1.3.0] - 2025-07-01
 ### Added
 - new dynamicConfiguration.json Properties:
   - generalFatalErrorMessage: Usable if scripts throw unexpected error in CRUD operations
@@ -35,7 +35,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - unknownUid error handling for searchOp
 
-## [1.2.4] - 2024-05-24
+## [1.2.4] - 2025-05-24
 ### Added
 - Validation of configuration Properties
 - PrivateKeyFilePath configuration property
@@ -48,30 +48,31 @@ All notable changes to this project will be documented in this file.
 ### Removed
 - unused BouncyCastle dependency
 
-## [1.2.3] - 2024-05-15
+## [1.2.3] - 2025-05-15
 ### Added
 
 - SSH_RESPONSE_TIMEOUT as configuration property
 - proper Message properties for configuration properties
 
-## [1.2.2] - 2024-04-01
+## [1.2.2] - 2025-04-01
 ### Fixed
 
 - nullValue replace  based on connectorConfig 'scriptEmptyAttribute' for singleValue attributes
 
 
-## [1.2.1] - 2024-02-27
+## [1.2.1] - 2025-02-27
 ### Fixed
 
 - incorrect null value handling in executeQuery for multiValued attributes.
 
 
-## [1.2.0] - 2024-01-09
+## [1.2.0] - 2025-01-09
 
 ### Added
 
 - public release
 
+[1.3.2]: https://github.com/inalogy/ssh-connector/releases/tag/v1.3.2
 [1.3.1]: https://github.com/inalogy/ssh-connector/releases/tag/v1.3.1
 [1.3.0]: https://github.com/inalogy/ssh-connector/releases/tag/v1.3.0
 [1.2.4]: https://github.com/inalogy/ssh-connector/releases/tag/v1.2.4
