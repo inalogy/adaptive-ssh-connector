@@ -44,10 +44,21 @@ jobs:
           cp target/bom.json ./bom.json
           cp target/bom.xml ./bom.xml
 
-      - name: Commit and push SBOM files
+      - name: Commit and push SBOM to new branch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b chore/update-sbom-${{ github.run_id }}
           git add bom.json bom.xml
-          git diff --staged --quiet || git commit -m "chore: update SBOM [skip ci]"
-          git push
+          git diff --staged --quiet || git commit -m "chore: update SBOM"
+          git push origin chore/update-sbom-${{ github.run_id }}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: chore/update-sbom-${{ github.run_id }}
+          base: main
+          title: "chore: update SBOM"
+          body: "Automatically generated SBOM files (bom.json, bom.xml) by GitHub Actions."
+          labels: automated, sbom
