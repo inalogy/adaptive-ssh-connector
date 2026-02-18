@@ -4,19 +4,18 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # allows manual trigger
+  workflow_dispatch:
 
 jobs:
   generate-sbom:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # needed to commit files back to repo
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -44,21 +43,16 @@ jobs:
           cp target/bom.json ./bom.json
           cp target/bom.xml ./bom.xml
 
-      - name: Commit and push SBOM to new branch
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -b chore/update-sbom-${{ github.run_id }}
-          git add bom.json bom.xml
-          git diff --staged --quiet || git commit -m "chore: update SBOM"
-          git push origin chore/update-sbom-${{ github.run_id }}
-
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: chore/update-sbom-${{ github.run_id }}
+          commit-message: "chore: update SBOM"
+          branch: chore/update-sbom
           base: main
           title: "chore: update SBOM"
           body: "Automatically generated SBOM files (bom.json, bom.xml) by GitHub Actions."
           labels: automated, sbom
+          add-paths: |
+            bom.json
+            bom.xml
