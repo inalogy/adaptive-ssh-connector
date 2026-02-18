@@ -35,7 +35,7 @@ jobs:
 
       - name: Generate SBOM (CycloneDX)
         run: |
-          mvn org.cyclonedx:cyclonedx-maven-plugin:2.8.0:makeAggregateBom \
+          mvn org.cyclonedx:cyclonedx-maven-plugin:2.9.1:makeAggregateBom \
             -DoutputFormat=all \
             -DoutputName=bom \
             --no-transfer-progress
