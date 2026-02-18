@@ -1,0 +1,53 @@
+name: Generate SBOM
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # allows manual trigger
+
+jobs:
+  generate-sbom:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # needed to commit files back to repo
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Generate SBOM (CycloneDX)
+        run: |
+          mvn org.cyclonedx:cyclonedx-maven-plugin:2.8.0:makeAggregateBom \
+            -DoutputFormat=all \
+            -DoutputName=bom \
+            --no-transfer-progress
+
+      - name: Move SBOM files to root
+        run: |
+          cp target/bom.json ./bom.json
+          cp target/bom.xml ./bom.xml
+
+      - name: Commit and push SBOM files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add bom.json bom.xml
+          git diff --staged --quiet || git commit -m "chore: update SBOM [skip ci]"
+          git push
