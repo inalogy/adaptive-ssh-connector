@@ -1,0 +1,76 @@
+{
+  "objects": [
+    {
+      "icfsName": "name",
+      "icfsUid": "guid",
+      "objectClass": "MailboxOnPrem",
+      "createScript": "/scripts/mbx/create.ps1",
+      "updateScript": "/scripts/mbx/update.ps1",
+      "deleteScript": "/scripts/mbx/delete.ps1",
+      "searchScript": "/scripts/mbx/search.ps1",
+      "attributes": [
+        {
+          "primarySmtpAddress": {
+            "required": false, "creatable": true, "updateable": true,
+            "dataType": "String", "multivalued": false, "returnedByDefault": true, "readable": true
+          },
+          "alias": {
+            "required": false, "creatable": true, "updateable": true,
+            "dataType": "String", "multivalued": true, "returnedByDefault": true, "readable": true
+          }
+        }
+      ]
+    },
+    {
+      "icfsName": "name",
+      "icfsUid": "guid",
+      "objectClass": "MailboxCloud",
+      "createScript": "/scripts/cloud/create.ps1",
+      "updateScript": "/scripts/cloud/update.ps1",
+      "deleteScript": "/scripts/cloud/delete.ps1",
+      "searchScript": "/scripts/cloud/search.ps1",
+      "attributes": [
+        {
+          "primarySmtpAddress": {
+            "required": false, "creatable": true, "updateable": true,
+            "dataType": "String", "multivalued": false, "returnedByDefault": true, "readable": true
+          }
+        }
+      ]
+    },
+    {
+      "icfsName": "name",
+      "icfsUid": "guid",
+      "objectClass": "MailUser",
+      "createScript": "/scripts/mu/create.ps1",
+      "updateScript": "/scripts/mu/update.ps1",
+      "deleteScript": "/scripts/mu/delete.ps1",
+      "searchScript": "/scripts/mu/search.ps1",
+      "attributes": [
+        {
+          "externalEmailAddress": {
+            "required": true, "creatable": true, "updateable": true,
+            "dataType": "String", "multivalued": false, "returnedByDefault": true, "readable": true
+          }
+        }
+      ]
+    },
+    {
+      "icfsName": "name",
+      "icfsUid": "guid",
+      "objectClass": "MailContact",
+      "createScript": "/scripts/mc/create.ps1",
+      "updateScript": "/scripts/mc/update.ps1",
+      "deleteScript": "/scripts/mc/delete.ps1",
+      "searchScript": "/scripts/mc/search.ps1",
+      "attributes": [
+        {
+          "externalEmailAddress": {
+            "required": true, "creatable": true, "updateable": true,
+            "dataType": "String", "multivalued": false, "returnedByDefault": true, "readable": true
+          }
+        }
+      ]
+    }
+  ]
+}
