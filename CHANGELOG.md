@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.2] - 2026-04-10
+### Added
+- Comprehensive test framework (143 tests) with embedded Apache MINA SSHD server
+  - Unit tests for response parsing, command building, schema loading, config validation
+  - Integration tests for exec mode and persistent shell mode (preload, dispose, CRUD cycle)
+  - Sample configuration validation for all 4 existing samples
+- TestNG groups support: `mvn test` runs all, `mvn test -DtestGroups=unit` for unit only
+
+### Changed
+- slf4j version bump from 2.0.5 to 2.0.17
+- TestNG dependency scoped to test
+- Added test dependencies: Apache MINA SSHD 2.15.0, EdDSA 0.3.0 (test scope only, not shipped in connector JAR)
+
+### Removed
+- Legacy test classes (TestClient, TestProcessor, TestSshResponseHandler, TestUniversalSchemaHandler)
+
 ## [1.3.1] - 2025-12-14
 ### Added
 - new connectorConfiguration (native) Properties:
