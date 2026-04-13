@@ -1,0 +1,14 @@
+{
+  "objects": [
+    {
+      "icfsName": "name",
+      "icfsUid": "id",
+      "objectClass": "account",
+      "createScript": "/scripts/create.sh",
+      "updateScript": "/scripts/update.sh",
+      "deleteScript": "/scripts/delete.sh",
+      "searchScript": "/scripts/search.sh",
+      "attributes": []
+    }
+  ]
+}

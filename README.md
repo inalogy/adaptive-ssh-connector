@@ -8,8 +8,9 @@
 6. [Dynamic Connector Configuration](#dynamic-connector-configuration)
 7. [JavaDoc](#javadoc)
 8. [Build](#build)
-9. [TODO](#todo)
-10. [Special Thanks](#special-thanks)
+9. [Tests](#tests)
+10. [TODO](#todo)
+11. [Special Thanks](#special-thanks)
 # Introduction
   ### adaptive-ssh-connector
 Standalone Adaptive SSH Connector for midPoint IDM, capable of managing any system or server that supports SSH and scripting, including customizations for Microsoft Exchange and other shell-based environments.
@@ -204,26 +205,37 @@ mvn clean javadoc:javadoc
 ```
 ## Build
 ```
-mvn clean install
+mvn clean package
 ```
 ## Build without Tests
 ```
-mvn clean install -DskipTests=True
+mvn clean package -DskipTests
 ```
 After successful build, you can find connector-adaptive-ssh-{**versionNumber**}.jar in target directory where **versionNumber** is the number of the current release.
 
+## Tests
+Unit and integration tests run automatically during build. Integration tests use an embedded SSH server (Apache MINA SSHD) — no external SSH server needed.
+```bash
+# run all tests
+mvn test
+
+# run only unit tests
+mvn test -DtestGroups=unit
+
+# run a specific test class
+mvn test -Dtest=SshResponseHandlerTest
+```
+
 ## TODO
-- Proper tests
 - Response handler for different type of script output e.g. json
 - Feature that will optionally allow to store schema file within the connector jar
-- Test on Unix/Linux based systems
 - Script validator that validate SchemaFile/SchemaType obj. with script return values
 ## Special Thanks
 This project is inspired by and owes a debt of gratitude to the [Evolveum SSH Connector](https://github.com/Evolveum/connector-ssh) project.
 
 # Status
-Tested only on Microsoft Windows server with powershell version 5.1.17763
+Production-ready. Tested on Microsoft Windows Server with PowerShell 5.1 and OpenBSD with sh/bash.
 
 The scripts and configuration files included in this project are for informational purposes only. They must be perfectly tailored for specific environments.
 
-Ssh Connector is intended for production use. Tested with MidPoint version 4.6. The connector was introduced as a contribution to midPoint project by Inalogy and is not officially supported by Evolveum. If you need support, please contact info@inalogy.com.
+Ssh Connector is intended for production use. Tested with midPoint version 4.6+. The connector was introduced as a contribution to midPoint project by Inalogy and is not officially supported by Evolveum. If you need support, please contact info@inalogy.com.

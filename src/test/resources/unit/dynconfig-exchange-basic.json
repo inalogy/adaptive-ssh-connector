@@ -1,0 +1,59 @@
+{
+  "configName": "Test Configuration Exchange Basic",
+  "settings": {
+    "scriptResponseSettings": {
+      "scriptEmptyAttribute": "null",
+      "multiValuedAttributeSeparator": "~",
+      "responseNewLineSeparator": "\n",
+      "responseColumnSeparator": "||"
+    },
+    "connectorSettings": {
+      "replaceWhiteSpaceCharacterInAttributeValues": {
+        "enabled": false,
+        "value": "---"
+      },
+      "addSudoExecution": {
+        "enabled": false,
+        "value": "sudo"
+      },
+      "icfsPasswordFlagEquivalent": {
+        "enabled": false,
+        "value": "password"
+      },
+      "icfsUidFlagEquivalent": {
+        "enabled": false,
+        "value": ""
+      },
+      "icfsNameFlagEquivalent": {
+        "enabled": true,
+        "value": "name"
+      },
+      "preloadScript": {
+        "enabled": false,
+        "value": "",
+        "successReturnValue": ""
+      },
+      "disposeScript": {
+        "enabled": false,
+        "value": ""
+      }
+    },
+    "createOperationSettings": {
+      "alreadyExistsErrorParameter": "ObjectAlreadyExists",
+      "successStatusMessage": ""
+    },
+    "updateOperationSettings": {
+      "unknownUidException": "UnknownUid",
+      "updateDeltaAddParameter": "ADD:",
+      "updateDeltaRemoveParameter": "REMOVE:",
+      "updateSuccessResponse": ""
+    },
+    "deleteOperationSettings": {
+      "deleteSuccessResponse": ""
+    },
+    "searchOperationSettings": {
+      "noResultSuccessMessage": "",
+      "generalFatalErrorMessage": "__FATAL_ERROR__"
+    }
+  }
+}

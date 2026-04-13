@@ -32,6 +32,10 @@ public class DynamicConfiguration {
         }
         return instance;
     }
+
+    protected static void resetInstance() {
+        instance = null;
+    }
     // Initialization method
     public void init(String externalConfigurationPath) {
         LOG.info("initializing dynamic configuration");

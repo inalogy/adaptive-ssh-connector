@@ -1,0 +1,59 @@
+{
+  "configName": "Test Configuration OpenBSD",
+  "settings": {
+    "scriptResponseSettings": {
+      "scriptEmptyAttribute": "null",
+      "multiValuedAttributeSeparator": "~",
+      "responseNewLineSeparator": "\n",
+      "responseColumnSeparator": "|"
+    },
+    "connectorSettings": {
+      "replaceWhiteSpaceCharacterInAttributeValues": {
+        "enabled": true,
+        "value": "---"
+      },
+      "addSudoExecution": {
+        "enabled": false,
+        "value": "doas"
+      },
+      "icfsPasswordFlagEquivalent": {
+        "enabled": true,
+        "value": "password"
+      },
+      "icfsUidFlagEquivalent": {
+        "enabled": false,
+        "value": ""
+      },
+      "icfsNameFlagEquivalent": {
+        "enabled": true,
+        "value": "name"
+      },
+      "preloadScript": {
+        "enabled": false,
+        "value": "",
+        "successReturnValue": "__SUCCESS_PRELOAD_SCRIPT__"
+      },
+      "disposeScript": {
+        "enabled": false,
+        "value": ""
+      }
+    },
+    "createOperationSettings": {
+      "alreadyExistsErrorParameter": "ObjectAlreadyExists",
+      "successStatusMessage": ""
+    },
+    "updateOperationSettings": {
+      "unknownUidException": "UnknownUid",
+      "updateDeltaAddParameter": "ADD:",
+      "updateDeltaRemoveParameter": "REMOVE:",
+      "updateSuccessResponse": ""
+    },
+    "deleteOperationSettings": {
+      "deleteSuccessResponse": ""
+    },
+    "searchOperationSettings": {
+      "noResultSuccessMessage": "",
+      "generalFatalErrorMessage": "__FATAL_ERROR__"
+    }
+  }
+}

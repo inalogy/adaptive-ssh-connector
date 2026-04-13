@@ -1,6 +1,7 @@
 package com.inalogy.midpoint.connectors.ssh.objects;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -134,13 +135,11 @@ public class UniversalObjectsHandler {
                     .orElse(false);
             if (multivaluedAttribute) {
                 LOG.ok("converting multivalued attribute {0}", attribute.getKey());
-                String[] values = null;
-                if (attribute.getValue() != null) {
-                   values = attribute.getValue().split(Pattern.quote(RESPONSE_MULTIVALUED_SEPARATOR));
+                if (attribute.getValue() != null && !attribute.getValue().isEmpty()) {
+                    String[] values = attribute.getValue().split(Pattern.quote(RESPONSE_MULTIVALUED_SEPARATOR));
+                    builder.addAttribute(AttributeBuilder.build(attribute.getKey(), Arrays.asList(values)));
                 }
-                builder.addAttribute(AttributeBuilder.build(attribute.getKey(), values));
             } else {
-                // Attribute is not multiValued. Add it as a single value.
                 builder.addAttribute(AttributeBuilder.build(attribute.getKey(), attribute.getValue()));
             }
         }
