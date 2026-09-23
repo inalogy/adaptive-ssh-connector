@@ -26,10 +26,14 @@
         <org.jetbrains.version>26.1.0</org.jetbrains.version>
         <slf4j.version>2.0.17</slf4j.version>
         <jakarta.json.version>2.0.1</jakarta.json.version>
-        <jackson.version>2.19.4</jackson.version>
+        <!-- jackson-annotations has no patch releases since 2.20, so versions come from jackson-bom -->
+        <jackson.bom.version>2.21.7</jackson.bom.version>
+        <!-- BouncyCastle is transitive via sshj; pinned in dependencyManagement to override sshj's version -->
+        <bouncycastle.version>1.86</bouncycastle.version>
         <testGroups>unit,integration</testGroups>
         <apache.sshd.version>2.15.0</apache.sshd.version>
         <maven.javadoc.plugin.version>3.12.0</maven.javadoc.plugin.version>
+        <maven.enforcer.plugin.version>3.5.0</maven.enforcer.plugin.version>
         <com.evolveum.polygon.javadoc.link>https://connid.tirasa.net/apidocs/1.5/</com.evolveum.polygon.javadoc.link>
     </properties>
 
@@ -55,6 +59,33 @@
             <url>https://repo.maven.apache.org/maven2</url>
         </repository>
     </repositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson.bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk18on</artifactId>
+                <version>${bouncycastle.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk18on</artifactId>
+                <version>${bouncycastle.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcutil-jdk18on</artifactId>
+                <version>${bouncycastle.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -123,17 +154,14 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
@@ -143,6 +171,36 @@
     </dependencies>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${maven.enforcer.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>enforce-secure-dependency-versions</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <!-- Fails the build if a vulnerable BouncyCastle or Jackson version is resolved
+                                     again, e.g. after an sshj bump. Minimums are fixed on purpose, independent
+                                     of the version properties above. -->
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>org.bouncycastle:*:(,1.86)</exclude>
+                                        <!-- Legacy BC artifacts contain the same classes and would sit next to jdk18on in lib/ -->
+                                        <exclude>org.bouncycastle:*-jdk15on</exclude>
+                                        <exclude>org.bouncycastle:*-jdk15to18</exclude>
+                                        <exclude>com.fasterxml.jackson.core:jackson-core:(,2.21.7)</exclude>
+                                        <exclude>com.fasterxml.jackson.core:jackson-databind:(,2.21.7)</exclude>
+                                    </excludes>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>${maven.jar.plugin.version}</version>
