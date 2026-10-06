@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.3] - 2026-10-05
+### Security
+- BouncyCastle 1.80 → 1.86 (transitive via sshj, pinned in dependencyManagement)
+- Jackson 2.19.4 → 2.21.7 (jackson-core, jackson-databind; jackson-annotations 2.21), managed via jackson-bom
+### Added
+- maven-enforcer-plugin rule: build fails if BouncyCastle < 1.86, jackson-core/databind < 2.21.7, or legacy BC artifacts are resolved
+- GitHub Actions build.yml: runs `mvn verify` on every PR and push to main
+
 ## [1.3.2] - 2026-04-10
 ### Added
 - Comprehensive test framework (143 tests) with embedded Apache MINA SSHD server
