@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bom serialNumber="urn:uuid:466623cf-0eb9-3baf-9aa9-411ce11eea46" version="1" xmlns="http://cyclonedx.org/schema/bom/1.6">
+<bom serialNumber="urn:uuid:f2dc050a-f9c2-344a-bfd5-87f6dadbdc65" version="1" xmlns="http://cyclonedx.org/schema/bom/1.6">
   <metadata>
-    <timestamp>2026-04-13T06:59:38Z</timestamp>
+    <timestamp>2026-10-06T04:12:04Z</timestamp>
     <lifecycles>
       <lifecycle>
         <phase>build</phase>
@@ -28,11 +28,11 @@
         </component>
       </components>
     </tools>
-    <component type="library" bom-ref="pkg:maven/com.inalogy.midpoint.connectors/ssh@1.3.2?type=jar">
+    <component type="library" bom-ref="pkg:maven/com.inalogy.midpoint.connectors/ssh@1.3.3?type=jar">
       <group>com.inalogy.midpoint.connectors</group>
       <name>ssh</name>
-      <version>1.3.2</version>
-      <purl>pkg:maven/com.inalogy.midpoint.connectors/ssh@1.3.2?type=jar</purl>
+      <version>1.3.3</version>
+      <purl>pkg:maven/com.inalogy.midpoint.connectors/ssh@1.3.3?type=jar</purl>
       <externalReferences>
         <reference type="distribution-intake">
           <url>https://nexus.evolveum.com/nexus/content/repositories/releases/</url>
@@ -79,21 +79,21 @@
         </reference>
       </externalReferences>
     </component>
-    <component type="library" bom-ref="pkg:maven/org.bouncycastle/bcprov-jdk18on@1.80?type=jar">
+    <component type="library" bom-ref="pkg:maven/org.bouncycastle/bcprov-jdk18on@1.86?type=jar">
       <group>org.bouncycastle</group>
       <name>bcprov-jdk18on</name>
-      <version>1.80</version>
-      <description>The Bouncy Castle Crypto package is a Java implementation of cryptographic algorithms. This jar contains the JCA/JCE provider and low-level API for the BC Java version 1.80 for Java 8 and later.</description>
+      <version>1.86</version>
+      <description>The Bouncy Castle Crypto package is a Java implementation of cryptographic algorithms. This jar contains the  JCA/JCE provider and low-level API for the BC Java version 1.86 for Java 1.8 and later.</description>
       <scope>required</scope>
       <hashes>
-        <hash alg="MD5">b688fbc4b7e001d7643106b177b91f80</hash>
-        <hash alg="SHA-1">e22100b41042decf09cab914a5af8d2c57b5ac4a</hash>
-        <hash alg="SHA-256">e8ad209f8c58d291a37ca9750e9e9fac60596956c983e49dd8282381dd8b3249</hash>
-        <hash alg="SHA-512">0773042bd35e22a582cbe89f4be8a8476487b6e030ee83e86038d43cba0d6c775e91c51ad31f126e19b440ced6c03f73e4fdac79fc17b664d0c84b4e859fa90d</hash>
-        <hash alg="SHA-384">299d02af765f4a84c41b14d19e25762f7440a6edb08944da4e8b3ff39d8692ad575ae225e968efb5ebb7c51f4cc1f505</hash>
-        <hash alg="SHA3-384">a5fae0cb015e99e48b9133a8290e62a7bf147c118cab91dd4523d683152bc8718890cc32666a2a7e5f625a125671701c</hash>
-        <hash alg="SHA3-256">9a967449d57dca95e6d013ab07f47aa98c8c9f9725bfecb87514fda817611b34</hash>
-        <hash alg="SHA3-512">0e92dc766d6250299b4a4b04b4993bb55ab428f9f814d0fa9512706c797664633c5d457d097821202e4c3302330afb241bda79422a5cb75d487c85feb660660e</hash>
+        <hash alg="MD5">be1401108af4f440b82b47194c72506b</hash>
+        <hash alg="SHA-1">830c8467bed8e4c1148262386b09fc42aedcf262</hash>
+        <hash alg="SHA-256">2af190b300cbb0b35e248ccf5f4a06b6072030aeb3da7a98ec73abe5b4cb371f</hash>
+        <hash alg="SHA-512">4502851281929ef645316ae96ad7d6db6a54d11ce024a66bec654c2eef62b80f174b67a2a15de86b2698f33b696459e21ecfec4a846350f4297394e9a331c43b</hash>
+        <hash alg="SHA-384">57247c80abb35a29f4f4e0b6d21fd842635a37be2275bb2759e5a10095a9864ee30310fe4b630e22ff786f325fb9d8d6</hash>
+        <hash alg="SHA3-384">202f0933e870819363c1f189f5afe122ea5308994d2b8b5ce737fd5fd80880339eec4bb99579145b505728fda75a353e</hash>
+        <hash alg="SHA3-256">0719f22928c6193425cb53e335dae9bf103c49425276aad6833f8e7131b615e1</hash>
+        <hash alg="SHA3-512">a77e4e6333032744f390c63a0a48c366bc1e0bcd4b5755f4ba18549be761af8ebe37e6fd2c7bec0f0c85fd235150fb7d4c57f3518b500dbd079749646ed3654f</hash>
       </hashes>
       <licenses>
         <license>
@@ -101,7 +101,7 @@
           <url>https://www.bouncycastle.org/licence.html</url>
         </license>
       </licenses>
-      <purl>pkg:maven/org.bouncycastle/bcprov-jdk18on@1.80?type=jar</purl>
+      <purl>pkg:maven/org.bouncycastle/bcprov-jdk18on@1.86?type=jar</purl>
       <externalReferences>
         <reference type="website">
           <url>https://www.bouncycastle.org/download/bouncy-castle-java/</url>
@@ -114,21 +114,21 @@
         </reference>
       </externalReferences>
     </component>
-    <component type="library" bom-ref="pkg:maven/org.bouncycastle/bcpkix-jdk18on@1.80?type=jar">
+    <component type="library" bom-ref="pkg:maven/org.bouncycastle/bcpkix-jdk18on@1.86?type=jar">
       <group>org.bouncycastle</group>
       <name>bcpkix-jdk18on</name>
-      <version>1.80</version>
-      <description>The Bouncy Castle Java APIs for CMS, PKCS, EAC, TSP, CMP, CRMF, OCSP, and certificate generation. This jar contains APIs for JDK 1.8 and up. The APIs are designed primarily to be used in conjunction with the BC Java provider but may also be used with other providers providing cryptographic services.</description>
+      <version>1.86</version>
+      <description>The Bouncy Castle Java APIs for CMS, PKCS, EAC, TSP, CMP, CRMF, OCSP, and certificate generation. This jar contains  APIs for Java 1.8 and later. The APIs are designed primarily to be used in conjunction with the BC Java provider but may also be used with other providers providing cryptographic services.</description>
       <scope>required</scope>
       <hashes>
-        <hash alg="MD5">ab14be97baf490336431a6782af9adf2</hash>
-        <hash alg="SHA-1">5277dfaaef2e92ce1d802499599a0ca7488f86e6</hash>
-        <hash alg="SHA-256">4f4ba6a92617ea19dc183f0fa5db492eee426fdde2a0a2d6c94777ffd1af6413</hash>
-        <hash alg="SHA-512">a7bcd25a8c93e163fd6c5f43d8b9d102c77c94edd78614e5a98b90412ea3519a7752cd9efd035eb0647b5fc6c261cfec56080ec067dc84df2fc22c5ebb317d3f</hash>
-        <hash alg="SHA-384">bf9ac90fe578e4cec5d42607d363af611f3f84dbfa00ddfb978945d360dde02cc24c0545fb7e767367ca3f0713595379</hash>
-        <hash alg="SHA3-384">4fe4f78ba475ef8063438840312087d2a4d4b972c28990ac1a50ff107bd7e5df2fb4671693b4815f401f8749bbf93234</hash>
-        <hash alg="SHA3-256">a5a0e4c33b87c40d4ff788ddf39a3004fdbff74667bb7a7bb1f466f65d1a6be7</hash>
-        <hash alg="SHA3-512">beb80af2b09f3cce55968ec0bfbebb156826a0da7466ab9366949c27f7cb98c296aeb52875a7f41a9964ae8ac035b22a10bbfafbaf2594b49bccc54a9d8664d1</hash>
+        <hash alg="MD5">f99f3ee0907b890a9c87411fd5a696db</hash>
+        <hash alg="SHA-1">fb5ea65959db10fe5d61148bb2b77f6e231455b1</hash>
+        <hash alg="SHA-256">8d8b41a4b149bdae8d331f059a578870954d1e3ff29f8269a9eb3ee19a7e4ef7</hash>
+        <hash alg="SHA-512">2923c0da3848b47d1953bdba3ae50441f3a3416f3646a26244c080414f31fbde875e4e50619a0ef34670c877367a45438a346260fc8b047e753b553debd40b37</hash>
+        <hash alg="SHA-384">a176fbe121a322d83017263c5e9e0d53383ad58a0c46dbd9e52c4862f2114f1f85db2b8b5f093ef6b0c00d8dea4578da</hash>
+        <hash alg="SHA3-384">7525c6ff2f539fecc61f380113bb1480d2bdf6de70786001f0641057b3328312f75246bc8faccd96fe5c048fb6943de2</hash>
+        <hash alg="SHA3-256">2784ec8965c90cb2c8da5669017f006be339972bda47c20921740159ce1eed16</hash>
+        <hash alg="SHA3-512">7ac8aa04c956d7066b8161f177378c71cf3be58d35624d6567ffc7efb80a61365f0c02f1480861b7e25b818d823d184c9dfa23c0f3b94a5b81e0b087f69de7bd</hash>
       </hashes>
       <licenses>
         <license>
@@ -136,7 +136,7 @@
           <url>https://www.bouncycastle.org/licence.html</url>
         </license>
       </licenses>
-      <purl>pkg:maven/org.bouncycastle/bcpkix-jdk18on@1.80?type=jar</purl>
+      <purl>pkg:maven/org.bouncycastle/bcpkix-jdk18on@1.86?type=jar</purl>
       <externalReferences>
         <reference type="website">
           <url>https://www.bouncycastle.org/download/bouncy-castle-java/</url>
@@ -149,21 +149,21 @@
         </reference>
       </externalReferences>
     </component>
-    <component type="library" bom-ref="pkg:maven/org.bouncycastle/bcutil-jdk18on@1.80?type=jar">
+    <component type="library" bom-ref="pkg:maven/org.bouncycastle/bcutil-jdk18on@1.86?type=jar">
       <group>org.bouncycastle</group>
       <name>bcutil-jdk18on</name>
-      <version>1.80</version>
-      <description>The Bouncy Castle Java APIs for ASN.1 extension and utility APIs used to support bcpkix and bctls. This jar contains APIs for Java 8 and later.</description>
+      <version>1.86</version>
+      <description>The Bouncy Castle Java APIs for ASN.1 extension and utility APIs used to support bcpkix and bctls. This jar contains  APIs for Java 1.8 and later.</description>
       <scope>required</scope>
       <hashes>
-        <hash alg="MD5">40838f69055183d6c0656598cb929bfa</hash>
-        <hash alg="SHA-1">b95726d1d49a0c65010c59a3e6640311d951bfd1</hash>
-        <hash alg="SHA-256">22eca687f7955411f456af33e6ea8e68fc73cd80cb8b32aa5f7a8b1827d7c678</hash>
-        <hash alg="SHA-512">e2afe829c431efff86c5cd4ce1c153fc3020bb3098d78bc902856ec093a8bdb46bf0ea33379cc4a4fdf9959a6530927c8884b01a3cd85d557bf0be708c1aeebf</hash>
-        <hash alg="SHA-384">7bbf7f26f64bfb16da27960dd1cfd399ef6d478a2ced4d7f57c007a25ad1bce676c423c4e8ef6470e17e69a90baac5b4</hash>
-        <hash alg="SHA3-384">18ac900ba90195b29d6a2a1dce3a67448ecbbdd9588986614b12494856432958ac05121907af4515a6260b71de7bfd4d</hash>
-        <hash alg="SHA3-256">95b92e6e72a2a5362b8e77c2d421b2f819f1dbe59cbae6bfca3dc0ab35c3066c</hash>
-        <hash alg="SHA3-512">b1e9d70ba8931bc5b0b156eed18cb6e6b062347666b0530b6e61b5dcbd53b92295f11f5171adba8bf0491bf084d6d5fdf6bc629e37a7ac9eb4290fffa249c93c</hash>
+        <hash alg="MD5">c409099f16278109e7545aad128cc029</hash>
+        <hash alg="SHA-1">2c8e77f5601c2b84c8773af4caf403a34daca357</hash>
+        <hash alg="SHA-256">1c268e15f785aafb1e4670d8d6e5f856f69475e96c162dadcd1ff9b350e9139f</hash>
+        <hash alg="SHA-512">aeb9138f96d5c48491974974534bb3b07931a18d36ccbed828940ae0361f5ef8f5b0ad6c776a1aebb4d2c0416edf8b7d143d821bfe7136d7948c4e5807b1c426</hash>
+        <hash alg="SHA-384">2f4ceb52be9fd05b578257258042aa6ba00e61f4e1e665e1823db85b19adb34d7e20fbee9941aec7ab861cb512c8295b</hash>
+        <hash alg="SHA3-384">8feb7bc4f93aa8c2f1f4fd0c869720c97f146d272830cbe20472ca4f6daaccc03b5ae5ab20ee7ee24b8a0dfa8e48bb4c</hash>
+        <hash alg="SHA3-256">5409b4b49308f8cc6b45e368d2dde5486c92d76706a0428d2987e30e7e86e20e</hash>
+        <hash alg="SHA3-512">d4443dba282b4d01c04e10df23c9d7be8b896d20cf70adbbffdf065307b40a30ab4e21617f890f7d4a64e261617fa0a2091fa3a1461e73921411c42133df6134</hash>
       </hashes>
       <licenses>
         <license>
@@ -171,7 +171,7 @@
           <url>https://www.bouncycastle.org/licence.html</url>
         </license>
       </licenses>
-      <purl>pkg:maven/org.bouncycastle/bcutil-jdk18on@1.80?type=jar</purl>
+      <purl>pkg:maven/org.bouncycastle/bcutil-jdk18on@1.86?type=jar</purl>
       <externalReferences>
         <reference type="website">
           <url>https://www.bouncycastle.org/download/bouncy-castle-java/</url>
@@ -367,29 +367,29 @@
         </reference>
       </externalReferences>
     </component>
-    <component type="library" bom-ref="pkg:maven/com.fasterxml.jackson.core/jackson-core@2.19.4?type=jar">
+    <component type="library" bom-ref="pkg:maven/com.fasterxml.jackson.core/jackson-core@2.21.7?type=jar">
       <publisher>FasterXML</publisher>
       <group>com.fasterxml.jackson.core</group>
       <name>jackson-core</name>
-      <version>2.19.4</version>
+      <version>2.21.7</version>
       <description>Core Jackson processing abstractions (aka Streaming API), implementation for JSON</description>
       <scope>required</scope>
       <hashes>
-        <hash alg="MD5">6957ee67737918a9650f801f1a6d1fe1</hash>
-        <hash alg="SHA-1">a720ca9b800742699e041c3890f3731fe516085e</hash>
-        <hash alg="SHA-256">466ae4dc4f7054f51525f4211df411d9a64d65cc169995d32bf49e20e6f586e5</hash>
-        <hash alg="SHA-512">987de559d452fb78557c038a02289454cf1354985bdb79df1087c5bc33db35c9510ee6c1c1dd3816e220a86a35d19820a8c32176a7d4fc4e5d3c7e65df5536d4</hash>
-        <hash alg="SHA-384">405a289fa3b96989f1e5b4230eb4871c63f4a7531ad3ca278150a6b4c891ad7cd29ff7ea7757db55b3929d68923a661a</hash>
-        <hash alg="SHA3-384">6ace06c6d194c246f694ca779106f50fa878371f1985927f068a915787dea4c2ee9e80d487884d67650caf5007e97c2e</hash>
-        <hash alg="SHA3-256">603507f149cba4cd047e14835cd11b14a026a59b38083c3c8a64d18145d572bd</hash>
-        <hash alg="SHA3-512">4db53d6dfc83d842cd4b4a19576e696e238372fc079207c3359b8c9535b9d0287b3aa0b3214e4c575d2a0d6925f5ebb1b4207dabaf3993b1fb6270bda33a0def</hash>
+        <hash alg="MD5">3b91b1c736a66b115e5a09378f418016</hash>
+        <hash alg="SHA-1">5abfb904683e642f4a5458f2a78ab9308c7c5a46</hash>
+        <hash alg="SHA-256">8c5623b98f32d5f7e1287ff61ed50e08ab7b11381e991fff89327faabba42261</hash>
+        <hash alg="SHA-512">a4f38908ebf7cb3da776955c398c7b55b0c056ae7265a511b4a2a37ef5a4c6fed433d611ee4f3a1071aa966cc5d16b1fcb95a0e7d672002ece9d89367a4f8f85</hash>
+        <hash alg="SHA-384">3aeabfb54452889a3f00a573046f8b0f66be7bf358cc4508797dd8e806620ca60cc27074fe171a50512c0db609bc6e44</hash>
+        <hash alg="SHA3-384">1ab7ec68a3ef0fa912b69466362cf4d85367548836d4339187d348c6af885accb34405c0f6674c5049ddc25ddc292582</hash>
+        <hash alg="SHA3-256">e36426bcb4ad4fc45330029f2fe3f7ec89867d556dbf67824ea9b939fa15f62f</hash>
+        <hash alg="SHA3-512">f3b933bcc044f42d550481f8cbf69e1f3dc5061386de5e893c20ee00b82fd14f8c46b57ff5785819ad2613f2c1d12cce685d21477670c5cf055724780cf855b8</hash>
       </hashes>
       <licenses>
         <license>
           <id>Apache-2.0</id>
         </license>
       </licenses>
-      <purl>pkg:maven/com.fasterxml.jackson.core/jackson-core@2.19.4?type=jar</purl>
+      <purl>pkg:maven/com.fasterxml.jackson.core/jackson-core@2.21.7?type=jar</purl>
       <externalReferences>
         <reference type="website">
           <url>https://github.com/FasterXML/jackson-core</url>
@@ -405,29 +405,29 @@
         </reference>
       </externalReferences>
     </component>
-    <component type="library" bom-ref="pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.19.4?type=jar">
+    <component type="library" bom-ref="pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.21.7?type=jar">
       <publisher>FasterXML</publisher>
       <group>com.fasterxml.jackson.core</group>
       <name>jackson-databind</name>
-      <version>2.19.4</version>
+      <version>2.21.7</version>
       <description>General data-binding functionality for Jackson: works on core streaming API</description>
       <scope>required</scope>
       <hashes>
-        <hash alg="MD5">11866a41e8db8fc1219fccb98c5ddd38</hash>
-        <hash alg="SHA-1">7a39bf9257b726b90b80f27fa3f5174bc75162a5</hash>
-        <hash alg="SHA-256">b781c431be870deb0bf84421e99e774c256a701f4ba678df80248f55cd16ff74</hash>
-        <hash alg="SHA-512">02a80c97ea12874f66802cb2c8909e5358639b41050bd04da495c0ee8db496a0d9d609a3c62a1dca7cbd89681bf340d6f6dbc507d4f21602aa1a7f31b2285ba8</hash>
-        <hash alg="SHA-384">1be21941f32555c3907bc1bdc43e5f4e494e95424bbad940ec0ce287a1caa9af8c018dd76cc42d617274d3ef76bb28d7</hash>
-        <hash alg="SHA3-384">d48288057426bce8a2498bdd2e850826969a0ba2eb0971b1f9270e6140239edcfe73b4848ade8c7f889197be4ecdd1a0</hash>
-        <hash alg="SHA3-256">310a28bf25e9522b8a51477d72ec74f418c3d0365ca92f27b6caa67caac0a0c9</hash>
-        <hash alg="SHA3-512">b547ee573c6406e7fff62f7d76035a75e78fa2ebe5cdccd17fe2c9e52fb8f7d248b11e8cd0274496d4c6fd6b427bce753b69b5f2e1e02d40898b6f5aba0065bf</hash>
+        <hash alg="MD5">71abb795e3c9beff91198f789d2572e9</hash>
+        <hash alg="SHA-1">a2ebbc72e3092323f0f3defa786ff3bb0c47218c</hash>
+        <hash alg="SHA-256">1290c2795e93e8a6861a6c4d9ff0d844d32f5ea178362cb2721edf5561e828b1</hash>
+        <hash alg="SHA-512">3485a31a4815ef2577b91667768eebb10bea7ece6b1b7cc0fa3c06f2746c003f4f32c19c52cc30ad13813eff9941ae212caffa9353c717d00947ab80ecc76bd3</hash>
+        <hash alg="SHA-384">dec105362feb79f6674df0f7b635ec1cc0dc798a6b1626d8c8b9be0cadd2cfe52a674b572a03405f6bc1eefa52622570</hash>
+        <hash alg="SHA3-384">a06bbc372c5ee02cd721366e6349291290075927b27e5fd6b7849cabba3e564ab2e40b954e5db53815b68dfc3c95c853</hash>
+        <hash alg="SHA3-256">5ddf3f0b32ae55b476de1f267be264b18d7ffd372ac1b0e35787986255e68c84</hash>
+        <hash alg="SHA3-512">5b58ad040187c209248ac0ebd60299056f7bba7984bf8bb8195391fab99778a4dc1df71057537244bf3e4f2c20ee92c35d8979c0cf8054e0ada0ba7aa1ed09b8</hash>
       </hashes>
       <licenses>
         <license>
           <id>Apache-2.0</id>
         </license>
       </licenses>
-      <purl>pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.19.4?type=jar</purl>
+      <purl>pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.21.7?type=jar</purl>
       <externalReferences>
         <reference type="website">
           <url>https://github.com/FasterXML/jackson</url>
@@ -443,29 +443,29 @@
         </reference>
       </externalReferences>
     </component>
-    <component type="library" bom-ref="pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.19.4?type=jar">
+    <component type="library" bom-ref="pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.21?type=jar">
       <publisher>FasterXML</publisher>
       <group>com.fasterxml.jackson.core</group>
       <name>jackson-annotations</name>
-      <version>2.19.4</version>
+      <version>2.21</version>
       <description>Core annotations used for value types, used by Jackson data binding package.</description>
       <scope>required</scope>
       <hashes>
-        <hash alg="MD5">d676ca7a5c3f6d2d3f2c32c57cfd5a52</hash>
-        <hash alg="SHA-1">bbb09b1e7f7f5108890270eb701cb3ddef991c05</hash>
-        <hash alg="SHA-256">ab26383fa3c10c0df1ffd1bb035d81161c059b1af71927d73c24473c058baa16</hash>
-        <hash alg="SHA-512">22a2ce8150c380b9dc00bfbdd026f26e626f483e8ceebfbb2087e9abd63462781daf4e18ca09543a7d0eb7b5c5625f02332d3251e29c2abc6016d69a7194a565</hash>
-        <hash alg="SHA-384">1b3882f9b38f4b1681df69e2b83f184785f6a0db6ca25a52be05e7530b9f75f2d669b7bff3b35c25c27b1f3c34e74310</hash>
-        <hash alg="SHA3-384">20b8040bbb6dcf358446f4f7a3ab6004393b837953fe3a160b7c5246f8be4f4d0f0f7cbcf8fd6847a897a153258ac0f3</hash>
-        <hash alg="SHA3-256">0142d2fd6a9f15a84cdab3313ef0b8e79e663e81c1f86cf795ffaef24241b0cb</hash>
-        <hash alg="SHA3-512">56208e493ab2fa9fb2b09c048e384cfd9a3915be61d16fc351eefb5619f77105ae8237651fdc14ad22c3c32365fb694c4aa1cfc3146e7bca76e5b3570da65e2a</hash>
+        <hash alg="MD5">e0d0c3e7300954f73e43c67d933aaea4</hash>
+        <hash alg="SHA-1">b1bc1868bf02dc0bd6c7836257a036a331005309</hash>
+        <hash alg="SHA-256">53ca085f4a150f703f49e1aabd935bd03b43e1ea3d55d135438292af22cef56b</hash>
+        <hash alg="SHA-512">d832a99867acc2d5afb2596da760c50e6a6b54c1bbc8e6c4186f267a16e1d55c7a916ef8b034ad6b277c41e3342b91dcdc2e3dcea8bdccfe89e7c147894591be</hash>
+        <hash alg="SHA-384">30b15d68f8da6f6c26aa9f6c95d09152b6c1a8092cd976cf600d63d1751509a73865f937e0ad97d8d55bf20f6a749b44</hash>
+        <hash alg="SHA3-384">5205b51f6ed689cf31b58b98a61ca9e17a439c15d669dcb408ec4d430e77ac9ac57d39d5ca1f9973e8d184f6dd57ec4f</hash>
+        <hash alg="SHA3-256">d6782d188a72b2bb96e4b595343e783012b3f98c30f7b9950244c21739334509</hash>
+        <hash alg="SHA3-512">b648f1e9ffe818227d53fbde409e61858ac22d3f78705eaf08065587ed512c9b33b0f5e2222356bfb33fb2973bb5a3184e31d2a7099f8fc8d2fd23eb4612a4bf</hash>
       </hashes>
       <licenses>
         <license>
           <id>Apache-2.0</id>
         </license>
       </licenses>
-      <purl>pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.19.4?type=jar</purl>
+      <purl>pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.21?type=jar</purl>
       <externalReferences>
         <reference type="website">
           <url>https://github.com/FasterXML/jackson</url>
@@ -576,14 +576,14 @@
       <version>1.5.2.0</version>
       <scope>required</scope>
       <hashes>
-        <hash alg="MD5">63d530f4f9f6b3c07f6e186ab61e497a</hash>
-        <hash alg="SHA-1">2c7ee1222c8b48e777575de6f19df7f78e72cd17</hash>
-        <hash alg="SHA-256">d8f61c40afb1ad13b17c5d880d05531384d44c8330338fc4212f2cd965751979</hash>
-        <hash alg="SHA-512">4eeb393841ea113f432d8cecd0f3147efe245d409cc217961d597650a342bce866d157547a79512232992e7630633b28ec3bc350328466da9a2ff4f53f3da42a</hash>
-        <hash alg="SHA-384">f030d507a5345a89e653e8498d074521c317b8358c6113694e2dd1092fb90b056c85aad9ce985251ec0b8dc2c19a6068</hash>
-        <hash alg="SHA3-384">177d9bf497624ac0fa29a8b0fc9989b247c37911962b91210448983883b1acfc986e854f2d9dbc28a91b26322fda4231</hash>
-        <hash alg="SHA3-256">4970353b9baccc37f060125a79478731a786bac723bfb3a78d10fb12bdae824f</hash>
-        <hash alg="SHA3-512">88c68e9dcf98ed0bb313a0e38713b515369a6b5b7779c65a1141828732dfb2da3dca8459882c3e535218df498485085b2c5801adc6a696e33513f2c98d8719c8</hash>
+        <hash alg="MD5">ef3c2610a34abd78ea76bff06e8aacad</hash>
+        <hash alg="SHA-1">727a57803abe0784fb0f31900835d2e6837d58e1</hash>
+        <hash alg="SHA-256">6aacd95943a065fe931d01567eb62ec714b61c10c8e5d9c46be3c6a43f555865</hash>
+        <hash alg="SHA-512">29fb7e1e647f0e0365dc78b478a7a0a141a296ea8594e97d634ff90631b86a8218c0812793bfc54ca1ed01e8d3e9cab552e32c483311587497da42f20290441f</hash>
+        <hash alg="SHA-384">d3743a1a9302245a890c95c9b876c29f07f089f25a6704a3e21e003e033cb4d64b1a16ac54087c5376c014d2ac32e827</hash>
+        <hash alg="SHA3-384">df26021f1217c5d5efd2d43b08da9ac877268b74b92e1af20fbccad5324a1dd0c6e2e78e8e726f7aa2cc1154482947c5</hash>
+        <hash alg="SHA3-256">aeb38f8e105f4d77ad949aa7ec6db0967070fa1c3abe2f79f4dfdc2cbd08d93c</hash>
+        <hash alg="SHA3-512">8a3119e1af1b169cc51b0eccd08b5537a62895643770bb3ffdec6dfd4f0bcb0b865f46acee9734092b0ab3e2688a06428e40fcffd2555a6c3bc44138f0df0090</hash>
       </hashes>
       <purl>pkg:maven/com.evolveum.polygon/connector-common@1.5.2.0?type=jar</purl>
       <externalReferences>
@@ -594,30 +594,30 @@
     </component>
   </components>
   <dependencies>
-    <dependency ref="pkg:maven/com.inalogy.midpoint.connectors/ssh@1.3.2?type=jar">
+    <dependency ref="pkg:maven/com.inalogy.midpoint.connectors/ssh@1.3.3?type=jar">
       <dependency ref="pkg:maven/com.hierynomus/sshj@0.40.0?type=jar"/>
       <dependency ref="pkg:maven/org.jetbrains/annotations@26.1.0?type=jar"/>
       <dependency ref="pkg:maven/org.slf4j/slf4j-api@2.0.17?type=jar"/>
       <dependency ref="pkg:maven/org.slf4j/slf4j-simple@2.0.17?type=jar"/>
       <dependency ref="pkg:maven/jakarta.json/jakarta.json-api@2.0.1?type=jar"/>
-      <dependency ref="pkg:maven/com.fasterxml.jackson.core/jackson-core@2.19.4?type=jar"/>
-      <dependency ref="pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.19.4?type=jar"/>
-      <dependency ref="pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.19.4?type=jar"/>
+      <dependency ref="pkg:maven/com.fasterxml.jackson.core/jackson-core@2.21.7?type=jar"/>
+      <dependency ref="pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.21.7?type=jar"/>
+      <dependency ref="pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.21?type=jar"/>
       <dependency ref="pkg:maven/org.glassfish/jakarta.json@2.0.1?type=jar"/>
       <dependency ref="pkg:maven/net.tirasa.connid/connector-framework@1.5.2.0?type=jar"/>
       <dependency ref="pkg:maven/com.evolveum.polygon/connector-common@1.5.2.0?type=jar"/>
     </dependency>
     <dependency ref="pkg:maven/com.hierynomus/sshj@0.40.0?type=jar">
-      <dependency ref="pkg:maven/org.bouncycastle/bcprov-jdk18on@1.80?type=jar"/>
-      <dependency ref="pkg:maven/org.bouncycastle/bcpkix-jdk18on@1.80?type=jar"/>
+      <dependency ref="pkg:maven/org.bouncycastle/bcprov-jdk18on@1.86?type=jar"/>
+      <dependency ref="pkg:maven/org.bouncycastle/bcpkix-jdk18on@1.86?type=jar"/>
       <dependency ref="pkg:maven/com.hierynomus/asn-one@0.6.0?type=jar"/>
     </dependency>
-    <dependency ref="pkg:maven/org.bouncycastle/bcprov-jdk18on@1.80?type=jar"/>
-    <dependency ref="pkg:maven/org.bouncycastle/bcpkix-jdk18on@1.80?type=jar">
-      <dependency ref="pkg:maven/org.bouncycastle/bcutil-jdk18on@1.80?type=jar"/>
+    <dependency ref="pkg:maven/org.bouncycastle/bcprov-jdk18on@1.86?type=jar"/>
+    <dependency ref="pkg:maven/org.bouncycastle/bcpkix-jdk18on@1.86?type=jar">
+      <dependency ref="pkg:maven/org.bouncycastle/bcutil-jdk18on@1.86?type=jar"/>
     </dependency>
-    <dependency ref="pkg:maven/org.bouncycastle/bcutil-jdk18on@1.80?type=jar">
-      <dependency ref="pkg:maven/org.bouncycastle/bcprov-jdk18on@1.80?type=jar"/>
+    <dependency ref="pkg:maven/org.bouncycastle/bcutil-jdk18on@1.86?type=jar">
+      <dependency ref="pkg:maven/org.bouncycastle/bcprov-jdk18on@1.86?type=jar"/>
     </dependency>
     <dependency ref="pkg:maven/com.hierynomus/asn-one@0.6.0?type=jar"/>
     <dependency ref="pkg:maven/org.jetbrains/annotations@26.1.0?type=jar"/>
@@ -626,12 +626,12 @@
       <dependency ref="pkg:maven/org.slf4j/slf4j-api@2.0.17?type=jar"/>
     </dependency>
     <dependency ref="pkg:maven/jakarta.json/jakarta.json-api@2.0.1?type=jar"/>
-    <dependency ref="pkg:maven/com.fasterxml.jackson.core/jackson-core@2.19.4?type=jar"/>
-    <dependency ref="pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.19.4?type=jar">
-      <dependency ref="pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.19.4?type=jar"/>
-      <dependency ref="pkg:maven/com.fasterxml.jackson.core/jackson-core@2.19.4?type=jar"/>
+    <dependency ref="pkg:maven/com.fasterxml.jackson.core/jackson-core@2.21.7?type=jar"/>
+    <dependency ref="pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.21.7?type=jar">
+      <dependency ref="pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.21?type=jar"/>
+      <dependency ref="pkg:maven/com.fasterxml.jackson.core/jackson-core@2.21.7?type=jar"/>
     </dependency>
-    <dependency ref="pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.19.4?type=jar"/>
+    <dependency ref="pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.21?type=jar"/>
     <dependency ref="pkg:maven/org.glassfish/jakarta.json@2.0.1?type=jar"/>
     <dependency ref="pkg:maven/net.tirasa.connid/connector-framework@1.5.2.0?type=jar"/>
     <dependency ref="pkg:maven/com.evolveum.polygon/connector-common@1.5.2.0?type=jar">
